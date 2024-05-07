@@ -1,0 +1,134 @@
+.clinox-about-section-3 {
+	overflow: hidden;
+	padding: 160px 0px 135px;
+	.clinox-bg-shape {
+		right: 0;
+		bottom: 0;
+	}
+}
+.clinox-about-img-3 {
+	z-index: 1;
+	.ab-shape2 {
+		left: 0;
+		top: -40px;
+	}
+	.ab-shape3 {
+		top: -40px;
+		right: 23%;
+		animation: Move_animation_1 15s infinite linear alternate;
+	}
+	.ab-shape4 {
+		left: 0;
+		bottom: -40px;
+		animation: Move_animation_2 15s infinite linear alternate;
+	}
+	.inner-img-wrap {
+		z-index: 1;
+		margin: 0 auto;
+		overflow: hidden;
+		max-width: 500px;
+		border-radius: 10px;
+		border-top-right-radius: 100px;
+	}
+	.inner-bottom-img {
+		right: 0;
+		z-index: 2;
+		bottom: -40px;
+		img {
+			border-radius: 10px;
+		}
+		.ab-shape1 {
+			top: -15px;
+			left: -15px;
+			z-index: -1;
+		}
+	}
+}
+.clinox-about-text-area-3 {
+	padding: 20px 0px 0px 40px;
+}
+.clinox-about-text-wrap-3 {
+	padding-top: 30px;
+	h3 {
+		color: $black;
+		font-size: 18px;
+		font-weight: 600;
+		max-width: 470px;
+		line-height: 1.667;
+	}
+	.clinox-about-feature-list-3 {
+		margin-top: 30px;
+		.inner-img {
+			width: 170px;
+			height: 120px;
+			overflow: hidden;
+			border-radius: 5px;
+			margin-right: 25px;
+		}
+		.inner-text  {
+			li {
+				color: $black;
+				font-weight: 600;
+				padding-left: 35px;
+				position: relative;
+				margin-bottom: 12px;
+				&:last-child {
+					margin-bottom: 0;
+				}
+				&:before {
+					top: 0;
+					left: 0;
+					color: #000;
+					width: 25px;
+					height: 25px;
+					font-size: 14px;
+					content: '\f00c';
+					line-height: 25px;
+					font-weight: 900;
+					text-align: center;
+					position: absolute;
+					border-radius: 100%;
+					background-color: #ffcd05;
+					font-family: 'Font Awesome 5 Pro';
+				}
+			}
+		}
+	}
+	.clinox-about-cta-btn-grp {
+		margin-top: 50px;
+		.clinox-btn-3 {
+			margin-right: 50px;
+		}
+		.about-cta {
+			i {
+				width: 60px;
+				color: #000;
+				height: 60px;
+				display: -webkit-box;
+				display: -ms-flexbox;
+				display: flex;
+				font-size: 22px;
+				margin-right: 20px;
+				border-radius: 100%;
+				-webkit-box-align: center;
+				-ms-flex-align: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-ms-flex-pack: center;
+				justify-content: center;
+				background-color: #ffcd05;
+			}
+			.about-cta-text {
+				span,a {
+					color: #000;
+					display: block;
+					font-size: 16px;
+					font-weight: 500;
+				}
+				span {
+					margin-bottom: 5px;
+				}
+			}
+		}
+	}
+}

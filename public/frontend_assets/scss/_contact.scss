@@ -1,0 +1,125 @@
+.clinox-contact-section,
+.clinox-contact-section-2 {
+	padding: 120px 0px;
+	background-color: #f2fcfc;
+}
+.clinox-contact-section-3 {
+	padding: 120px 0px;
+}
+.clinox-contact-form {
+	margin-top: 45px;
+	input,textarea,select {
+		width: 100%;
+		height: 60px;
+		padding: 15px;
+		margin-bottom: 30px;
+		border: 1px solid #ebebeb;
+	}
+	textarea {
+		height: 150px;
+	}
+	select {
+		-webkit-appearance: none;
+	}
+	button {
+		color: #fff;
+		width: 200px;
+		height: 60px;
+		border: none;
+		background-color: $base-color;
+		transition: 500ms all ease;
+		box-shadow: 0px 0px 20px 0px rgba(1, 83, 159, 0.4);
+		&:hover {
+			background-color: #000e58;
+		}
+	}
+	.service-select {
+		&:after {
+			top: 20px;
+			right: 15px;
+			content: '\f078';
+			font-weight: 900;
+			position: absolute;
+			font-family: 'Font Awesome 5 Pro';
+		}
+	}
+}
+.clinox-contact-info-wrap {
+	padding-top: 65px;
+	padding-left: 30px;
+	h3 {
+		color: $black;
+		font-size: 30px;
+		font-weight: 700;
+	}
+}
+.clinox-contact-info {
+	padding-top: 50px;
+}
+.contact-info-item {
+	margin-bottom: 35px;
+	.inner-icon {
+		width: 60px;
+		margin-right: 20px;
+	}
+	.inner-text {
+		width: 200px;
+		h4 {
+			color: $black;
+			font-size: 20px;
+			font-weight: 606;
+			padding-bottom: 8px;
+		}
+		span {
+			display: block;
+			max-width: 200px;
+		}
+	}
+	&:hover {
+		.inner-icon {
+			animation: icon-bounce .8s ease-out infinite;
+		}
+	}
+}
+.google-map-container {
+	height: 185px;
+	transition: 500ms all ease;
+}
+.clinox-contact-section-2 {
+	.clinox-contact-form {
+		input,select,button,textarea {
+			border-radius: 30px;
+			padding: 20px;
+		}
+		textarea {
+			padding: 20px 25px;
+		}
+	}
+}
+.clinox-booking-form-section {
+	.clinox-contact-form-wrap {
+		padding-left: 20px;
+	}
+}
+.booking-form-cta-content {
+	margin-top: 100px;
+	.clinox-section-title {
+		padding-bottom: 60px;
+	}
+	.booking-cta-item {
+		padding: 35px;
+		border: 1px solid #ebebeb;
+		.inner-icon {
+			margin-right: 20px;
+		}
+		.inner-text {
+			max-width: 190px;;
+			h4 {
+				color: $black;
+				font-size: 20px;
+				font-weight: 600;
+				padding-bottom: 8px;
+			}
+		}
+	}
+}

@@ -1,0 +1,70 @@
+.clinox-estimate-section {
+	padding: 75px 0px;
+	background-color: #ffcd05;
+}
+.clinox-estimate-form {
+	h2 {
+		color: $black;
+		font-size: 30px;
+		font-weight: 700;
+		padding-bottom: 40px;
+	}
+}
+.estimate-form-wrap {
+	input,select,button {
+		width: 100%;
+		height: 60px;
+		border: none;
+		border-radius: 4px;
+		padding-left: 20px;
+		background-color: #fff;
+		&::placeholder {
+			color: #7a7a7a;
+		}
+	}
+	select {
+		-webkit-appearance: none;
+	}
+	button {
+		color: #fff;
+		overflow: hidden;
+		font-weight: 600;
+		position: relative;
+		background-color: $base-color;
+		&:before,
+		&:after {
+			right: 20px;
+			content: '';
+			width: 20px;
+			bottom: -5px;
+			height: 20px;
+			position: absolute;
+			background-repeat: no-repeat;
+			transition: 500ms all ease;
+			background-image: url(../img/img-5/shape/btn-sh3.png);
+		}
+		&:after {
+			right: 34px;
+			bottom: -7px;
+			background-image: url(../img/img-5/shape/btn-sh4.png);
+		}
+		&:hover {
+			&:before {
+				right: 38px;
+			}
+			&:after {
+				right: 20px;
+			}
+		}
+	}
+	.est-input-area {
+		&:before {
+			top: 18px;
+			right: 15px;
+			content: '\f078';
+			font-weight: 900;
+			position: absolute;
+			font-family: 'Font Awesome 5 Pro';
+		}
+	}
+}

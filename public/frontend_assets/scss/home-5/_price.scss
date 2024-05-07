@@ -1,0 +1,101 @@
+.clinox-price-section-3 {
+	padding: 120px 0px;
+}
+.clinox-price-content-3 {
+	padding-top: 50px;
+}
+.clinox-price-item-3 {
+	padding: 40px 0px 45px;
+	background-color: rgb(255, 255, 255);
+	box-shadow: 0px 0px 17px 3px rgba(0, 0, 0, 0.03);
+	.inner-tittle {
+		h3 {
+			color: #000000;
+			font-size: 24px;
+			font-weight: 600;
+		}
+		.cl-price,
+		.cl-price-plan {
+			display: block;
+		}
+		.cl-price {
+			font-size: 36px;
+			font-weight: 600;
+			color: $base-color;
+			padding-top: 5px;
+		}
+		.cl-price-plan {
+			font-size: 14px;
+		}
+	}
+	.inner-list {
+		padding: 90px 0px;
+		li {
+			margin: 0 auto;
+			max-width: 210px;
+			text-align: left;
+			padding-left: 25px;
+			margin-bottom: 15px;
+			position: relative;
+			&:before {
+				top: 0;
+				left: 0;
+				content: '\f00c';
+				font-weight: 900;
+				color: $base-color;
+				position: absolute;
+				font-family: 'Font Awesome 5 Pro';
+			}
+		} 
+	}
+	.inner-btn {
+		a {
+			z-index: 1;
+			color: #fff;
+			width: 170px;
+			height: 60px;
+			overflow: hidden;
+			position: relative;
+			border-radius: 5px;
+			background-color: $base-color;
+			&:after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: -200%;
+				width: 200%;
+				height: 100%;
+				-webkit-transform: skewX(-20deg);
+				-khtml-transform: skewX(-20deg);
+				-moz-transform: skewX(-20deg);
+				-ms-transform: skewX(-20deg);
+				-o-transform: skewX(-20deg);
+				transform: skewX(-20deg);
+				background-image: -webkit-gradient(linear,left top,right top,from(transparent),color-stop(rgba(255,255,255,.4)),to(transparent));
+				background-image: linear-gradient(to right,transparent,rgba(255,255,255,.4),transparent);
+				z-index: -1;
+			}
+			&:hover {
+				&:after {
+					-webkit-animation: btn_shine 1.2s ease;
+					animation: btn_shine 1.2s ease;
+					-webkit-animation-delay: .1s;
+					animation-delay: .1s;
+				}
+			}
+		}
+	}
+	&.active {
+		.inner-tittle {
+			.cl-price {
+				color: #ffcd05;
+			}
+		}
+		.inner-btn {
+			a {
+				color: #000;
+				background-color: #ffcd05;
+			}
+		}
+	}
+}

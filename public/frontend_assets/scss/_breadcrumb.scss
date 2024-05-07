@@ -1,0 +1,42 @@
+.breadcrumb-content {
+	padding: 180px 0px;
+	h2 {
+		color: #fff;
+		font-size: 48px;
+		font-weight: 700;
+		padding-bottom: 15px;
+	}
+	li {
+		color: #fff;
+		position: relative;
+		margin-right: 25px;
+		&:after {
+			top: 0;
+			color: #fff;
+			right: -20px;
+			content: '\f105';
+			font-weight: 900;
+			position: absolute;
+			transition: 500ms all ease;
+			font-family: 'Font Awesome 5 Pro';
+		}
+		&:last-child {
+			margin-right: 0;
+			&:after {
+				display: none;
+			}
+		}
+	}
+}
+.breadcrumb_overlay {
+	&::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: #0E3D4B;
+		content: "";
+		opacity: 0.5;
+	}
+}

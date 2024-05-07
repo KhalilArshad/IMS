@@ -1,0 +1,106 @@
+.clinox-blog-section-3 {
+	padding: 120px 0px;
+}
+.clinox-blog-content-3 {
+	padding-top: 55px;
+}
+.clinox-blog-item-3 {
+	&:before {
+		left: 0;
+		bottom: 0;
+		content: "";
+		width: 100%;
+		z-index: -1;
+		height: 70%;
+		position: absolute;
+		background-color: #fff;
+		box-shadow: 0px 0px 16px 4px rgba(0, 0, 0, 0.05);
+	}
+	.inner-img {
+		margin: 0 auto;
+		max-width: 340px;
+		border-radius: 5px;
+		overflow: hidden;
+		img {
+			transition: 500ms all ease;
+		}
+	}
+	.inner-text {
+		padding: 25px 30px 40px;
+		h3 {
+			color: #000;
+			font-size: 20px;
+			font-weight: 700;
+			line-height: 1.5;
+			padding-bottom: 15px;
+			&:hover {
+				color: $base-color;
+			}
+		}
+		.blog-meta {
+			margin-bottom: 25px;
+			a {
+				color: #7a7a7a;
+				margin-right: 25px;
+				i {
+					margin-right: 5px;
+				}
+				&:last-child {
+					margin-right: 0;
+				}
+			}
+		}
+		.read-more-btn {
+			a {
+				z-index: 1;
+				color: #fff;
+				width: 140px;
+				height: 45px;
+				position: relative;
+				border-radius: 3px;
+				background-color: $base-color;
+				&:after {
+					content: '';
+					position: absolute;
+					top: 0;
+					left: -200%;
+					width: 200%;
+					height: 100%;
+					-webkit-transform: skewX(-20deg);
+					-khtml-transform: skewX(-20deg);
+					-moz-transform: skewX(-20deg);
+					-ms-transform: skewX(-20deg);
+					-o-transform: skewX(-20deg);
+					transform: skewX(-20deg);
+					background-image: -webkit-gradient(linear,left top,right top,from(transparent),color-stop(rgba(255,255,255,.4)),to(transparent));
+					background-image: linear-gradient(to right,transparent,rgba(255,255,255,.4),transparent);
+					z-index: -1;
+				}
+				&:hover {
+					&:after {
+						-webkit-animation: btn_shine 1.2s ease;
+						animation: btn_shine 1.2s ease;
+						-webkit-animation-delay: .1s;
+						animation-delay: .1s;
+					}
+				}
+			}
+		}
+	}
+	&:hover {
+		.inner-img {
+			img  {
+				transform: scale(1.1);
+			}
+		}
+	}
+}
+.clinox-sponsor-section-3 {
+	overflow: hidden;
+	padding: 80px 0px 70px;
+	background-color: #f9f9f9;
+}
+.clinox-sponsor-img-3 {
+	width: 180px;
+	margin: 0 auto;
+}

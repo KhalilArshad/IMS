@@ -1,0 +1,36 @@
+/*=========
+Font load
+===========*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@font-face {font-family: "Segoe Print V1";
+  src: url("../fonts/c455d94eee43dc4ceeb83c0c0fd0d4c8.eot"); 
+  src: url("../fonts/c455d94eee43dc4ceeb83c0c0fd0d4c8.eot?#iefix") format("embedded-opentype"), 
+  url("../fonts/c455d94eee43dc4ceeb83c0c0fd0d4c8.woff2") format("woff2"), 
+  url("../fonts/c455d94eee43dc4ceeb83c0c0fd0d4c8.woff") format("woff"), 
+  url("../fonts/c455d94eee43dc4ceeb83c0c0fd0d4c8.ttf") format("truetype"), 
+  url("../fonts/c455d94eee43dc4ceeb83c0c0fd0d4c8.svg#Segoe Print V1") format("svg"); 
+}
+$body-font: 'Poppins';
+$heading: 'Poppins';
+$font-2: "Segoe Print V1";
+
+/*=========
+Color Code
+===========*/
+$body-color: #555555;
+$base-color: #02aaf9 ;
+$black: #101010;
+         
+
+// fonts
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+:root {
+    --font: 'DM Sans', sans-serif;
+    --color-primary: #0E3D4B;
+    --color-black: #000;
+    --color-deep: #0E3D4B;
+    --color-body: #535353;
+    --color-yellow: #FFA800;
+    --color-white: #fff;
+}

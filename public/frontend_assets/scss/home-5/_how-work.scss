@@ -1,0 +1,67 @@
+.clinox-how-work-section-3 {
+	padding: 120px 0px;
+}
+.clinox-how-work-content-3 {
+	padding-top: 70px;
+	.line-shape {
+		left: 0;
+		top: 70px;
+	}
+}
+.clinox-how-work-item-3 {
+	.serial {
+		left: 0;
+		right: 0;
+		top: -15px;
+		z-index: 2;
+		color: #000;
+		width: 30px;
+		height: 30px;
+		margin: 0 auto;
+		font-weight: 600;
+		border-radius: 100%;
+		background-color: #ffcd05;
+	}
+	.inner-icon {
+		z-index: 1;
+		width: 150px;
+		height: 150px;
+		margin: 0 auto;
+		margin-bottom: 40px;
+		border-radius: 100%;
+		background-color: #fff;
+		border: 1px solid #ebebeb;
+		&:before,
+		&:after {
+			left: 0;
+			top: 10px;
+			z-index: -1;
+			width: 100%;
+			height: 100%;
+			content: '';
+			position: absolute;
+			border-radius: 100%;
+			transition: 500ms all ease;
+			background-color: $base-color;
+		} 
+		&:after {
+			top: 0;
+			background-color: #fff;
+		}
+	}
+	.inner-text {
+		h3 {
+			color: $black;
+			font-size: 22px;
+			font-weight: 700;
+			padding-bottom: 20px;
+		}
+	}
+	&:hover {
+		.inner-icon {
+			&:before {
+				background-color: #ffcd05;
+			}
+		}
+	}
+}

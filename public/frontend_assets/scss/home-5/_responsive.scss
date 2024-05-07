@@ -1,0 +1,267 @@
+@media screen and (max-width:  1500px) {  
+	.clinox-banner-section-3 .clinox-banner-img-wrapper-3 {
+		right: -300px;
+	}
+	.clinox-service-content-3 .ser3_left_arrow {
+		left: -50px;
+	}
+	.clinox-service-content-3 .ser3_right_arrow {
+		right: -50px;
+	}
+}
+@media screen and (max-width:  1280px) {  
+	.clinox-service-content-3 .ser3_left_arrow {
+		left: -20px;
+	}
+	.clinox-service-content-3 .ser3_right_arrow {
+		right: -20px;
+	}
+}
+@media screen and (max-width:  1100px) { 
+	.header-navigation-content .main-navigation li {
+		margin-right: 35px;
+	}
+	.header-navigation-content {
+		padding-left: 0;
+	}
+	.clinox-header-section.sticky-on .header-navigation-content .main-navigation li {
+		margin-right: 20px;
+	}
+	.header-cart-btn-search .h-cta-btn a {
+		width: 170px;
+		font-size: 14px;
+	}
+	.header-cart-btn-search button {
+		margin-left: 20px;
+	}
+	.header-cart-btn-search .h-cart-btn button:before {
+		left: -10px;
+	}
+	.banner-text-3 h1 {
+		font-size: 60px;
+	}
+	.clinox-banner-section-3 .clinox-banner-img-wrapper-3 {
+		right: -470px;
+	}
+	.clinox-banner-content-3 {
+		padding: 130px 0px 150px;
+	}
+	.clinox-service-content-3 .carousel_nav button {
+		height: 40px;
+		width: 40px;
+		margin: 0px 8px;
+		position: static;
+		display: inline-block;
+		transform: translateY(0);
+	}
+	.clinox-service-content-3 .carousel_nav {
+		display: flex;
+		margin-top: 30px;
+		justify-content: center;
+	}
+	.clinox-more-service-btn-3 {
+		margin-top: 40px;
+	}
+	.clinox-why-choose-feature-wrap-3:before,
+	.clinox-why-choose-feature-wrap-3:after {
+		display: none;
+	}
+	.clinox-service-item-3,
+	.clinox-project-item-3,
+	.clinox-blog-item-3 {
+		margin: 0 auto;
+		max-width: 370px;
+	}
+	.clinox-blog-item-3 {
+		margin-bottom: 40px;
+	}
+}
+@media screen and (max-width:  991px) {
+	.clinox-banner-section-3 .clinox-banner-img-wrapper-3 {
+		display: none;
+	}
+	.clinox-header-logo-cta {
+		display: none;
+	} 
+	.clinox-header-section .sticky-brand-logo {
+		display: block;
+	}
+	.header-cart-btn-search .h-cta-btn {
+		display: none;
+	}
+	.clinox-header-section.header-style-three .header-navigation-content-wrapper{
+		padding: 25px 0px;
+	}
+	.clinox-header-section.header-style-three .header-navigation-content .main-navigation {
+		display: none;
+	}
+	.clinox-header-section.header-style-three .mobile_menu_button {
+		display: block;
+	}
+	.banner-text-3 {
+		margin: 0 auto;
+		text-align: center;
+		.clinox-btn-3 {
+			display: flex;
+			justify-content: center;
+		}
+	}
+	.estimate-form-wrap input, .estimate-form-wrap select, .estimate-form-wrap button {
+		margin-bottom: 15px;
+	}
+	.clinox-about-img-3,
+	.clinox-about-text-area-3,
+	.clinox-why-choose-text-wrap-3,
+	.clinox-why-choose-img-3,
+	.clinox-faq-img-3,
+	.clinox-faq-text-wrapper-3,
+	.clenfix-testi-img-wrap-3,
+	.clinox-testimonial-text-wrap-3 {
+		margin: 0 auto;
+		max-width: 570px;
+	}
+	.clinox-about-text-area-3,
+	.clinox-faq-text-wrapper-3,
+	.clinox-testimonial-text-wrap-3 {
+		margin-top: 50px;
+	}
+	.clinox-why-choose-section-3 .clinox-wc-sidebg,
+	.clinox-faq-section-3 .clinox-fq-sidebg {
+		display: none;
+	}
+	.clinox-fun-fact-item-3 {
+		margin-bottom: 40px;
+	}
+	.clinox-faq-text-wrapper-3 {
+		padding-left: 0;
+	}
+	.clinox-project-top-content-3,
+	.clinox-blog-top-content-3 {
+		flex-wrap: wrap;
+	}
+	.clnix-project-title-text-3 {
+		margin-top: 30px;
+	}
+	.clinox-testimonial-section-3 {
+		padding-bottom: 80px;
+	}
+	.clinox-price-item-3 {
+		margin-bottom: 40px;
+	}
+	.clinox-footer-widget-3 .newsleter-widget {
+		padding-left: 0;
+	}
+	.clinox-footer-widget-3 .logo-widget p {
+		max-width: 100%;
+	}
+	.clinox-price-item-3 {
+		margin: 0 auto;
+		max-width: 370px;
+		margin-bottom: 40px;
+	}
+	.clinox-about-text-area-3 {
+		padding-left: 0;
+	}
+	.clinox-about-section-3 .clinox-bg-shape,
+	.clinox-why-choose-section-3 .clinox-wc-sidebg2,
+	.clinox-faq-section-3 .clinox-fq-sidebg2 {
+		display: none;
+	}
+	.clinox-header-section.header-style-three .header-navigation-content-wrapper {
+		background-color: #fff;
+	}
+	.clinox-header-section.header-style-three .header-cart-btn-search button {
+		color: #000;
+	}
+	.clinox-header-section.header-style-three .header-cart-btn-search .h-cart-btn button:before {
+		background-color: #000;
+	}
+	.clinox-header-section.header-style-three .header-navigation-content {
+		padding-left: 0;
+	}
+	.clinox-header-section.header-style-three .sticky-brand-logo {
+		display: block;
+	}
+}
+@media screen and (max-width: 767px) { 
+	.clinox-footer-widget-3 .widget-title {
+		padding-bottom: 20px
+	}
+	.clinox-footer-widget-3 {
+		margin-bottom: 40px;
+	}
+	.clinox-how-work-item-3 {
+		margin-top: 40px;
+	}
+}
+@media screen and (max-width: 480px) { 
+	.banner-text-3 h1 {
+		font-size: 40px;
+	}
+	.clinox-btn-3 a {
+		height: 50px;
+		width: 180px;
+		span {
+			line-height: 50px;
+		}
+	}
+	.clinox-section-title-3 h2 {
+		font-size: 28px;
+	}
+	.clinox-about-text-wrap-3 .clinox-about-feature-list-3,
+	.about-cta-btn-wrapper {
+		flex-wrap: wrap;
+	}
+	.clinox-about-text-wrap-3 .clinox-about-feature-list-3 .inner-img {
+		margin-bottom: 30px;
+	}
+	.clinox-about-text-wrap-3 .clinox-about-cta-btn-grp {
+		margin-top: 30px;
+	}
+	.clinox-about-text-wrap-3 .clinox-about-cta-btn-grp .about-cta {
+		margin-top: 20px;
+	}
+	.clinox-about-section-3 {
+		padding: 100px 0px 60px;
+	}
+	.clinox-service-section-3,
+	.clinox-why-choose-section-3,
+	.clinox-how-work-section-3,
+	.clinox-project-section,
+	.clinox-price-section-3,
+	.clinox-blog-section-3 {
+		padding: 60px 0px;
+	}
+	.clinox-why-choose-text-wrap-3 {
+		padding-top: 0;
+	}
+	.clinox-why-choose-inner-item-3 {
+		width: 100%;
+		margin-bottom: 30px;
+	}
+	.clinox-why-choose-img-3 {
+		margin-top: 50px
+	}
+	.clinox-fun-fact-item-3 h3 {
+		font-size: 30px;
+	}
+	.clinox-fun-fact-item-3 {
+		justify-content: inherit !important;
+	}
+	.clinox-fun-fact-section-3 {
+		padding: 60px 0px 20px;
+	}
+	.clinox-faq-section-3 {
+		padding: 80px 0px 60px;
+	}
+	.clinox-footer-section-3 {
+		padding-top: 60px;
+	}
+	.clinox-copyright-wrap {
+		margin-top: 20px;
+	}
+	.clinox-service-content-3 .ser3_left_arrow,
+	.clinox-service-content-3 .ser3_right_arrow {
+		opacity: 1;
+	}
+}

@@ -1,0 +1,220 @@
+.clinox-project-section {
+	overflow: hidden;
+	padding: 120px 0px 140px;
+}
+.clinox-project-content {
+	padding-top: 65px;
+	.slick-dots {
+		@extend%slider-dot;	
+	}
+}
+.clinox-project-item {
+	&:before {
+		top: 0;
+		opacity: 0;
+		width: 100%;
+		content: '';
+		height: 100%;
+		position: absolute;
+		transition: 500ms all ease;
+		background-color: rgba(0, 14, 88, .9);
+	}
+	.read-more {
+		top: 35px;
+		opacity: 0;
+		right: 50px;
+		transition: 500ms all ease;
+		transition-delay: .1s;
+		a {
+			width: 40px;
+			height: 40px;
+			color: $base-color;
+			border-radius: 100%;
+			background-color: #fff;
+		}
+	}
+	.inner-text {
+		left: 35px;
+		bottom: 45px;
+		span {
+			opacity: 0;
+			color: #fff;
+			display: block;
+			font-weight: 600;
+			transition: 500ms all ease;
+			transform: translateX(30px);
+			transition-delay: .2s;
+		}
+		h3 {
+			opacity: 0;
+			color: #fff;
+			font-size: 22px;
+			font-weight: 700;
+			padding-top: 12px;
+			transition: 500ms all ease;
+			transform: translateX(30px);
+			transition-delay: .3s;
+		}
+	}
+	&:hover {
+		&:before {
+			opacity: 1;
+		}
+		.read-more {
+			opacity: 1;
+			right: 35px;
+		}
+		.inner-text {
+			span {
+				opacity: 1;
+				transform: translateX(0);
+			}
+			h3 {
+				opacity: 1;
+				transform: translateX(0);
+			}
+		}
+	}
+}
+.project-feed-filter-btn {
+	margin-bottom: 40px;
+	li {
+		color: $black;
+		cursor: pointer;
+		margin: 0px 15px;
+		font-weight: 500;
+		border-radius: 5px;
+		padding: 15px 35px;
+		background-color: #fff;
+		transition: 500ms all ease;
+		box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, 0.08);
+		&.filtr-active {
+			color: #fff;
+			background-color: $base-color;
+		}
+	}
+}
+.project-feed-wrap {
+	.clinox-project-item {
+		max-width: 370px;
+		overflow: hidden;
+		border-radius: 5px;
+		margin-bottom: 30px;
+	}
+}
+.project-slider-nav {
+	margin: 0 auto;
+	max-width: 550px;
+	.nav-inner-img {
+		height: 100px;
+		cursor: pointer;
+		margin: 10px 5px;
+		overflow: hidden;
+		border-radius: 5px;
+	}
+}
+.clinox-project-details-slider {
+	.pr-nav-left_arrow,
+	.pr-nav-right_arrow {
+		bottom: 10px;
+		width: 100px;
+		border: none;
+		height: 100px;
+		position: absolute;
+		border-radius: 5px;
+		transition: 500ms all ease;
+		background-color: #f2fcfc;
+		i {
+			font-size: 40px;
+		}
+		&:hover {
+			color: #fff;
+			background-color: $base-color;
+		}
+	}
+	.pr-nav-left_arrow {
+		left: 0;
+	}
+	.pr-nav-right_arrow {
+		right: 0;
+	}
+}
+.clinox-project-details-feature {
+	padding: 50px 40px; 
+	background-color: #fff;
+	box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, 0.08);
+	h3 {
+		color: $black;
+		font-size: 24px;
+		font-weight: 700;
+		padding-bottom: 40px;
+	}
+	.feature-list {
+		li {
+			width: 100%;
+			color: $black;
+			font-weight: 500;
+			margin-bottom: 15px;
+			padding-bottom: 15px;
+			border-bottom: 1px solid #dedede;
+			span {
+				float: right;
+				font-weight: 400;
+				color: $body-color;
+			}
+		}
+	}
+	.project-share {
+		margin-top: 30px;
+		.title {
+			color: $black;
+			font-weight: 700;
+		}
+		.share-social {
+			a {
+				color: $black;
+				margin-left: 5px;
+				&:hover {
+					color: $base-color;
+				}
+			}
+		}
+	}
+}
+.project-details-text-content {
+	padding-top: 90px;
+	h3 {
+		color: $black;
+		font-size: 30px;
+		font-weight: 700;
+		padding-bottom: 25px;
+	}
+	p {
+		line-height: 1.875;
+	}
+}
+.clinox-project-overview {
+	padding-top: 110px;
+	.clinox-about-service-img-wrap {
+		padding-right: 0;
+	}
+	.clinox-about-service-img-wrap .img-shape {
+		top: -25px;
+		width: 180px;
+		height: 380px;
+	}
+	.clinox-service-feature-items {
+		.clinox-service-feature-text {
+			color: $body-color;
+			h3 {
+				color: $black;
+			}
+		}
+	}
+}
+.clinox-project-next-prev-btn  {
+	padding-top: 120px;
+}
+.clinox-portfolio-details-section {
+	overflow: hidden;
+}

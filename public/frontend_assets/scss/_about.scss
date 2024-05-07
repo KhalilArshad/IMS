@@ -1,0 +1,248 @@
+.clinox-about-section {
+	padding: 120px 0px;
+}
+.clinox-about-img-wrapper {
+	&:before {
+		left: 0;
+		right: 0;
+		top: 50%;
+		content: '';
+		width: 400px;
+		height: 400px;
+		margin: 0 auto;
+		position: absolute;
+		transform: translateY(-50%);
+		background-color: #ffcd05;
+		border-top-right-radius: 80px;
+		border-bottom-right-radius: 80px;
+	}
+	.clinox-about-img1 {
+		mask-image: url(../img/bg/ab-bg.png);
+		background-size: contain;
+		background-position: center;
+		background-repeat: no-repeat;
+		mask-repeat: no-repeat;
+		mask-position: center;
+	}
+	.about-exp {
+		right: 6px;
+		bottom: 0;
+		color: #fff;
+		width: 272px;
+		height: 90px;
+		background-color: #000e58;
+		h3 {
+			color: #fff;
+			font-size: 52px;
+			font-weight: 700;
+			margin-right: 10px;
+		}
+		span {
+			width: 90px;
+			color: #fff;
+			max-width: 90px;
+			font-weight: 500;
+		}
+	}
+}
+.clinox-about-text-wrap {
+	padding: 15px 0px 0px 30px;
+}
+.about-feature-wrapper {
+	margin-top: 40px;
+}
+.about-feature-item-wrap {
+	padding-left: 55px;
+	margin-bottom: 50px;
+	&:before {
+		top: 0;
+		left: 0;
+		width: 5px;
+		content: '';
+		height: 100%;
+		position: absolute;
+		background-color: $base-color;
+	}
+}
+.about-feature-item {
+	z-index: 1;
+	overflow: hidden;
+	border-radius: 4px;
+	position: relative;
+	margin-bottom: 30px;
+	background-color: #fff;
+	box-shadow: 0px 0px 61px 0px rgba(0, 0, 0, 0.07);
+	&:before {
+		top: 0;
+		left: 0;
+		z-index: -1;
+		content: '';
+		width: 0%;
+		height: 100%;
+		position: absolute;
+		transition: 700ms all ease;
+		background-color: $base-color;
+	}
+	&:hover {
+		&:before {
+			width: 100%;
+		}
+		.about-ft-text  {
+			h3 {
+				color: #fff;
+			}
+		}
+		.about-ft-icon {
+			background-color: #000e58;
+		}
+	}
+	&:last-child {
+		margin-bottom: 0;
+	}
+	.about-ft-icon {
+		width: 80px;
+		height: 75px;
+		margin-right: 20px;
+		background-color: $base-color;
+		transition: 500ms all ease;
+	}
+	.about-ft-text {
+		z-index: 1;
+		h3 {
+			color: $black;
+			font-size: 20px;
+			font-weight: 700;
+			transition: 500ms all ease;
+		}
+	}
+}
+.clinox-about-section-2 {
+	padding: 120px 0px;
+}
+.clinox-about-img-wrap-2  {
+	.star-vector1 {
+		top: 0;
+		right: 0;
+		z-index: 2;
+		animation: Zooming 5s infinite alternate ease-in-out;
+	}
+	.star-vector2 {
+		left: 0;
+		bottom: 0;
+		animation: Zooming 3s infinite alternate ease-in-out;
+	}
+	.img-shape {
+		left: 0;
+		z-index: -1;
+		top: 30px;
+		width: 100%;
+		height: 100%;
+		border-radius: 250px;
+	}
+	.clinox-about-img1 {
+		z-index: 1;
+		display: inline-block;
+		.img-shape {
+			background-color: $base-color;
+		}
+	}
+	.clinox-about-img2 {
+		top: 0;
+		left: 0;
+		z-index: 2;
+		.img-shape {
+			top: 20px;
+			background-color: #f4c22d;
+		}
+	}
+}
+.clinox-about-text-wrap-2 {
+	padding: 15px 0px 0px 40px;
+	.about-signature-cta-wrap .about-cta-btn .banner-btn-wrapper .banner-btn a {
+		color: #fff;
+		background-color: $base-color;
+	}
+}
+.about-feature-item-wrap-2 {
+	padding: 25px 0px 28px;
+	li {
+		position: relative;
+		padding-left: 28px;
+		margin-bottom: 15px;
+		&:before {
+			left: 0;
+			top: 7px;
+			width: 10px;
+			content: '';
+			height: 10px;
+			position: absolute;
+			border-radius: 100%;
+			background-color: $base-color;
+		}
+	}
+}
+.about-signature-img {
+	margin-bottom: 50px;
+	.inner-img {
+		width: 120px;
+		height: 100px;
+		overflow: hidden;
+		margin-right: 25px;
+		border-radius: 10px;
+	}
+	.inner-text {
+		h3 {
+			color: $black;
+			font-size: 18px;
+			font-weight: 600;
+			max-width: 250px;
+			line-height: 1.667;
+		}
+	}
+	.sign-img {
+		bottom: 0;
+		right: -60px;
+	}
+}
+.about-signature-cta-wrap {
+	.about-cta-btn {
+		.banner-btn-wrapper .banner-btn a {
+			border-radius: 30px;
+			box-shadow: 0px 0px 20px 0px rgba(1, 83, 159, 0.4);
+		}
+		.banner-btn-wrapper .banener-cta span,
+		.banner-btn-wrapper .banener-cta a {
+			color: $black;
+			display: block;
+			font-size: 16px;
+		}
+		.banner-btn-wrapper .banener-cta span {
+			margin-bottom: 5px;
+		}
+	}
+}
+.about-signature-img-2 {
+	width: 270px;
+	margin-right: 15px;
+	.inner-img {
+		width: 110px;
+		height: 100px;
+		margin-right: 20px;
+	}
+	.inner-text {
+		h4 {
+			color: $black;
+			font-size: 16px;
+			font-weight: 700;
+		}
+	}
+	.sign-img {
+		display: block;
+		margin-top: 20px;
+	}
+}
+.clinox-about-content-2 {
+	.clinox-about-text-wrap {
+		padding-top: 35px;
+	}
+}

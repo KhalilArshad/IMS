@@ -1,0 +1,35 @@
+.clinox-fun-fact-section,
+.clinox-fun-fact-section-2 {
+	padding: 100px 0px;
+}
+.clinox-fun-fact-item {
+	h3 {
+		font-size: 46px;
+		font-weight: 700;
+		position: relative;
+		color: $base-color;
+		padding-bottom: 35px;
+		&:after {
+			left: 0;
+			width: 50px;
+			height: 2px;
+			content: '';
+			bottom: 20px;
+			position: absolute;
+			background-color: #ffcd05;
+		}
+	}
+	p {
+		color: #fff;
+		font-size: 20px;
+		font-weight: 600;
+	}
+}
+.clinox-fun-fact-section-2 {
+	overflow: hidden;
+	background-color: #000e58;
+	.fn-bg-shape {
+		left: 30px;
+		bottom: -150px;
+	}
+}

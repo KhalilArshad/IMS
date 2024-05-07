@@ -1,0 +1,77 @@
+.clinox-promo-section {
+	padding: 120px 0px;
+}
+.clinox-promo-content {
+	max-width: 690px;
+	.clinox-section-title {
+		h2,p {
+			color: #fff;
+		}
+		h2 {
+			line-height: 1.548;
+			span {
+				&:before {
+					bottom: 5px;
+				}
+			}
+		}
+	}
+	.banner-btn-wrapper {
+		margin-top: 40px;
+		.banner-btn {
+			a {
+				&:hover {
+					color: #fff;
+				}
+			}
+		}
+		.banener-cta {
+			a,span {
+				font-size: 20px;
+			}
+		}
+	}
+}
+.clinox-promo-section-2 {
+	overflow: hidden;
+	padding: 120px 0px 130px;
+	background-color: #000e58;
+	.side-shape1 {
+		left: 0;
+		top: -20px;
+	}
+	.side-shape2 {
+		right: 0;
+		bottom: -60px;
+	}	
+	.star-vector1 {
+		left: 10%;
+		bottom: 50px;
+		animation: Zooming 5s infinite alternate ease-in-out;
+	}
+	.star-vector2 {
+		top: 50px;
+		right: 10%;
+		animation: Zooming 3s infinite alternate ease-in-out;
+	}
+}
+.clinox-promo-content-2 {
+	.clinox-section-title-2 {
+		max-width: 750px;
+		h2 {
+			color: #fff;
+		}
+	}
+	.banner-btn-wrapper {
+		margin-top: 35px;
+	}
+	.banner-btn-wrapper .banener-cta a,
+	.banner-btn-wrapper .banener-cta span {
+		font-size: 20px;
+	}
+	.banner-btn-wrapper .banner-btn a {
+		color: #fff;
+		border-radius: 30px;
+		background-color: $base-color;
+	}
+}

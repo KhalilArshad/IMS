@@ -1,0 +1,108 @@
+@keyframes icon-bounce {
+	0%,
+	100%,
+	20%,
+	50%,
+	80% {
+		-webkit-transform: translateY(0);
+		-ms-transform: translateY(0);
+		transform: translateY(0);
+	}
+	40% {
+		-webkit-transform: translateY(-10px);
+		-ms-transform: translateY(-10px);
+		transform: translateY(-10px);
+	}
+	60% {
+		-webkit-transform: translateY(-5px);
+		-ms-transform: translateY(-5px);
+		transform: translateY(-5px);
+	}
+}
+.clinox-why-choose-section-3 {
+	overflow: hidden;
+	padding: 150px 0px;
+	.clinox-wc-sidebg {
+		top: 0;
+		right: 0;
+		width: 44%;
+		height: 100%;
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+	.clinox-wc-sidebg2 {
+		top: -170px;
+		left: -170px;
+	}
+}
+.clinox-why-choose-text-wrap-3 {
+	max-width: 530px;
+	padding-top: 40px;
+}
+.clinox-why-choose-inner-item-3 {
+	width: 50%;
+	margin-bottom: 65px;
+	.inner-icon {
+		margin-right: 25px;
+	}
+	.inner-text {
+		h3 {
+			color: #000;
+			font-size: 18px;
+			max-width: 160px;
+			font-weight: 600;
+			line-height: 1.667;
+		}
+	}
+	&:hover {
+		.inner-icon {
+			animation: icon-bounce 0.8s ease-out infinite;
+		}
+	}
+}
+.clinox-why-choose-feature-wrap-3 {
+	margin-top: 35px;
+	padding-top: 30px;
+	&:before {
+		top: 44%;
+		content: '';
+		height: 1px;
+		width: 100%;
+		position: absolute;
+		background-color: #e5e5e5;
+	}
+	&:after {
+		top: 0;
+		left: -45px;
+		right: 0;
+		width: 1px;
+		content: '';
+		height: 85%;
+		margin: 0 auto;
+		position: absolute;
+		background-color: #e5e5e5;
+	}
+}
+.clinox-why-choose-img-3,
+.clinox-faq-img-3 {
+	z-index: 1;
+	.wc-shape1 {
+		left: 43px;
+		z-index: -1;
+		bottom: -35px;
+		animation: Move_animation_2 15s infinite linear alternate;
+	}
+	.wc-shape2 {
+		right: 0;
+		top: -40px;
+		z-index: -2;
+	}
+	.inner-img {
+		overflow: hidden;
+		border-radius: 15px;
+		display: inline-block;
+		border-top-left-radius: 80px;
+	}
+}

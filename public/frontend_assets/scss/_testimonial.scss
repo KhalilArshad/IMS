@@ -1,0 +1,113 @@
+.clinox-testimonial-section {
+	padding: 120px 0px;
+	overflow: hidden;
+}
+.clinox-testimonial-top-content {
+	.clinox-section-title {
+		max-width: 450px;
+	} 
+	.carousel_nav {
+		button {
+			width: 60px;
+			height: 60px;
+			font-size: 20px;
+			margin-left: 10px;
+			color: $base-color;
+			border-radius: 100%;
+			transition: 500ms all ease;
+			border: 2px solid $base-color;
+			background-color: transparent;
+			&:hover {
+				color: $black;
+				background-color: #ffcd05;
+				border: 2px solid #ffcd05;
+			}
+		}
+	}
+}
+.clinox-testimonial-content {
+	margin: 0px -15px;
+	padding-top: 45px;
+} 
+.clinox-testimonial-item {
+	background-color: #fff;
+	box-shadow: 0px 0px 59px 0px rgba(0, 0, 0, 0.07);
+	.inner-img-text-wrap {
+		padding: 50px 40px;
+	}
+	.inner-icon-text {
+		max-width: 290px;
+		.inner-icon {
+			padding-bottom: 45px;  
+		}
+		p {
+			line-height: 1.765;
+			padding-bottom: 45px;
+		}
+		h3 {
+			color: $black;
+			font-size: 20px;
+			font-weight: 600;
+			padding-bottom: 5px;
+		}
+	}
+	.inner-img {
+		bottom: 0;
+		right: 20px;
+		position: absolute;
+	}
+}
+.clinox-testimonial-slider {
+	.slick-list {
+		overflow: visible;
+	}
+	.slick-slide {
+		-webkit-transition: .3s cubic-bezier(.24,.74,.58,1);
+		-khtml-transition: .3s cubic-bezier(.24,.74,.58,1);
+		-moz-transition: .3s cubic-bezier(.24,.74,.58,1);
+		-ms-transition: .3s cubic-bezier(.24,.74,.58,1);
+		-o-transition: .3s cubic-bezier(.24,.74,.58,1);
+		transition: .3s cubic-bezier(.24,.74,.58,1);
+		opacity: 0;
+	}
+	.slick-slide.slick-active {
+		opacity: 1;
+	}
+}
+.clinox-testimonial-section-2 {
+	overflow: hidden;
+	padding: 120px 0px;
+	.clinox-section-title-2 {
+		max-width: 540px;
+	}
+}
+.clinox-testimonial-content-2 {
+	padding-top: 60px;
+}
+.testimonial-item-2 {
+	.clinox-testimonial-item {
+		box-shadow: none;
+		border-radius: 5px;
+		background-color: #f2fcfc;
+		border-top-right-radius: 60px;
+	}
+}
+.clinox-testimonial-slider-2 {
+	.slick-list {
+		overflow: visible;
+	}
+	.slick-slide {
+		opacity: .3;
+	}
+	.slick-slide.slick-active.slick-center {
+		opacity: 1;
+	}
+	.slick-dots {
+		@extend%slider-dot;	
+	}
+}
+.clinox-testimonial-feed-section {
+	.clinox-testimonial-item {
+		margin-bottom: 30px;
+	}
+}
