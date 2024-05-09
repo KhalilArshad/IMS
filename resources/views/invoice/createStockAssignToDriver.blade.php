@@ -50,7 +50,7 @@
                             </div> -->
                             <div class="card-body card-body-paddding">
 
-                                <form method="post" action="{{ url('saveInvoice') }}" autocomplete="off">
+                                <form method="post" action="{{ url('saveStockAssignToDriver') }}" autocomplete="off">
                                     @csrf
                                     <div class="border border-3 p-4 rounded borderRmv">
                                        <div class="row">
@@ -66,18 +66,6 @@
                                                     </select>
                                             </div>
                                         </div>
-                                        <!-- <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="name" class="form-label">Customer Name<span
-                                                    class="text-danger"> *</span></label>
-                                                    <select class="form-control selectric lang" name="customer_id" required>
-                                                        <option value="">{{ __('Select customer') }}</option>
-                                                        @foreach ($customers as $customer)
-                                                        <option value="{{ $customer->id }}"> {{ $customer->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                            </div>
-                                        </div> -->
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Date<span
@@ -94,13 +82,14 @@
                                             <th scope="col"></th>
                                             <th scope="col">Item</th>
                                             <th scope="col">Unit</th>
-                                            <th scope="col">Qty In Stock</th>
-                                            <th scope="col">Purchase Price</th>
-                                            <th scope="col">Selling Price</th>
+                                            <th scope="col">Driver Prev Stock</th>
+                                            <th scope="col">Current Purchase Stock</th>
+                                            <!-- <th scope="col">Purchase Price</th> -->
+                                            <!-- <th scope="col">Selling Price</th> -->
                                             <th scope="col">Quantity</th>
-                                            <th scope="col">Vat in %</th>
-                                            <th scope="col">Vat Total</th>
-                                            <th scope="col">Total Price</th>
+                                            <!-- <th scope="col">Vat in %</th> -->
+                                            <!-- <th scope="col">Vat Total</th> -->
+                                            <!-- <th scope="col">Total Price</th> -->
                                             <th scope="col">Remove</th>
                                             </tr>
                                         </thead> 
@@ -112,8 +101,12 @@
 
                                     </div>
                                     {{--/table row --}}
+                               
+                                    <div class="mt-4">
                                     <button type="button" class="btn btn-bordered btn-primary" style="float: right;" onclick="addItem()">Add New Item</button>
-                                    <div class="row mt-4">
+                                    </div>
+                                    <!-- <div class="mt-4"></div> -->
+                                    <!-- <div class="row mt-4">
                                        
                                         <div class="col-md-3">
                                             <div class="mb-3">
@@ -138,12 +131,12 @@
 
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="mb-3 mt-3">
-                                        <div class="d-grid">
-                                            <button  type="submit" class="btn btn-info">Save</button>
+                                        <div class="">
+                                            <button  type="submit" class="btn btn-info" style="width: 180px;">Save</button>
                                         </div>
-                                </div>
+                                   </div>
                                 </div>
 
 
@@ -226,23 +219,24 @@ function addItem()
             total_rows++;
             items++;
             var html = "<tr>" +items+ "</tr>";
-            html += '<td><select required name="itemid[]" style=" width:190px;" id="item_list_'+items+'"     onchange="select_Item(this.value,'+items+')"  class="form-control"> <option value="">Select Item</option>@foreach($items as $item)<option value="{{$item->id}}">{{$item->name}}</option>@endforeach</select></td>';
-                html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='unit_"+items+"' name='unit[]' placeholder='Unit' disabled class='form-control custom-input'></td>";
-                html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='qtyInStock"+items+"' name='qtyInStock[]' placeholder='quantity In Stock' disabled class='form-control custom-input'></td>";
-                html += "<td><input required type='number' min='0.00' step='0.01' autocomplete='off'  id='purchase_price_"+items+"' readonly name='purchase_price[]' placeholder='purchase Price' class='form-control custom-input'></td>";
-                html += "<td><input required type='number' min='0.00' step='0.01' autocomplete='off'  id='sale_price_"+items+"'    onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='selling_price[]' placeholder='selling Price'  class='form-control custom-input'></td>";
+            html += '<td><select required name="itemid[]" style=" width:200px;" id="item_list_'+items+'"     onchange="select_Item(this.value,'+items+')"  class="form-control"> <option value="">Select Item</option>@foreach($items as $item)<option value="{{$item->id}}">{{$item->name}}</option>@endforeach</select></td>';
+                html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='unit_"+items+"' name='unit[]' style='width:150px;' placeholder='Unit' disabled class='form-control custom-input'></td>";
+                html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='driverStock"+items+"' name='driverStock[]' style='width:150px;' placeholder='Driver Stock' disabled class='form-control custom-input'></td>";
+                html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='qtyInStock"+items+"' name='qtyInStock[]' style='width:150px;' placeholder='quantity In Stock' disabled class='form-control custom-input'></td>";
+                html += "<td style='display:none;><input required type='hidden' min='0.00' step='0.01' autocomplete='off'  id='purchase_price_"+items+"' readonly name='purchase_price[]' placeholder='purchase Price' class='form-control custom-input'></td>";
+                // html += "<td><input required type='number' min='0.00' step='0.01' autocomplete='off'  id='sale_price_"+items+"'    onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='selling_price[]' placeholder='selling Price'  class='form-control custom-input'></td>";
                 
                 html += "<td> <input required type='number' min='0' autocomplete='off' id='quantity_"+items+"' onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='quantity[]' placeholder='Quantity' class='form-control custom-input'></td>";
 
-                html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
-                html += '<option value="0">No VAT</option>';
-                html += '<option value="10">10%</option>';
-                html += '<option value="15" selected>15%</option>';
-                html += '<option value="20">20%</option>';
-                html += '</select></td>';
-                html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
+                // html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
+                // html += '<option value="0">No VAT</option>';
+                // html += '<option value="10">10%</option>';
+                // html += '<option value="15" selected>15%</option>';
+                // html += '<option value="20">20%</option>';
+                // html += '</select></td>';
+                // html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
 
-                html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_price form-control  custom-input' id='total_price_"+items+"' name='total[]' placeholder='Total' readonly '></td>";
+                // html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_price form-control  custom-input' id='total_price_"+items+"' name='total[]' placeholder='Total' readonly '></td>";
                 html += '<td> <button  style=" margin-left:10px;"  name="remove"  class="btn btn-danger btn-sm remove"> X </button></td></div>';
                 html += "</tr>";
                 
@@ -263,16 +257,18 @@ function addItem()
                 function select_Item(item_id,rowno)
                         {
                             var _token = $('input[name="_token"]').val();
+                            const driver_id = $('#driver_id').val();
                             $.ajax({
                             url: "{{ route('getItemUnit')}}",
                             method:'POST',
-                            data:{ _token:_token,item_id:item_id},
+                            data:{ _token:_token,item_id:item_id,driver_id:driver_id},
                             success:function(result)
                             {
                                 console.log(result)
                                 $('#unit_' + rowno).val(result.unit_name);
                                 $('#qtyInStock' + rowno).val(result.total_stock);
                                 $('#purchase_price_' + rowno).val(result.purchase_price);
+                                $('#driverStock' + rowno).val(result.driverCurrentStock);
                             // $('#unit_'+rowno+'').html(result);
                             // $('#item_list_'+rowno+'').html('');
                             // $('#quantity_'+rowno+'').val(0);

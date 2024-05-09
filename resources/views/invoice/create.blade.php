@@ -54,19 +54,32 @@
                                     @csrf
                                     <div class="border border-3 p-4 rounded borderRmv">
                                        <div class="row">
-                                        <div class="col-md-6">
+                                       <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="name" class="form-label">Driver Name<span
+                                                    class="text-danger"> *</span></label>
+                                                    <select class="form-control selectric lang" name="driver_id" id="driver_id" required  onchange="getDriverCustomer(this.value)">
+                                                        <option value="">{{ __('Select driver') }}</option>
+                                                        @foreach ($drivers as $driver)
+                                                        <option value="{{ $driver->id }}"> {{ $driver->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Customer Name<span
                                                     class="text-danger"> *</span></label>
-                                                    <select class="form-control selectric lang" name="customer_id" required>
+                                                    <select class="form-control selectric lang" name="customer_id" id="customer_id" required>
                                                         <option value="">{{ __('Select customer') }}</option>
                                                         @foreach ($customers as $customer)
                                                         <option value="{{ $customer->id }}"> {{ $customer->name }}</option>
                                                         @endforeach
                                                     </select>
+                                                   
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Date<span
                                                     class="text-danger"> *</span></label>
@@ -113,6 +126,21 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="mb-3">
+                                                <label for="discount" class="form-label">Discount</label>
+                                                <input type="number" value="0" class="form-control" name='discount' id="discount" placeholder="Discount" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="total_after_discount" class="form-label">Total After Discount<span
+                                                    class="text-danger"> *</span></label>
+                                                <input type="number" class="form-control" name='total_after_discount' id="total_after_discount" placeholder="Total After Discount" readonly required>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
                                                 <label for="paid_amount" class="form-label">Paid Amount<span
                                                     class="text-danger"> *</span></label>
                                                 <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="0" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
@@ -126,6 +154,7 @@
 
                                             </div>
                                         </div>
+                                    
                                     </div>
                                     <div class="mb-3 mt-3">
                                         <div class="d-grid">
@@ -223,9 +252,9 @@ function addItem()
                 html += "<td> <input required type='number' min='0' autocomplete='off' id='quantity_"+items+"' onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='quantity[]' placeholder='Quantity' class='form-control custom-input'></td>";
 
                 html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
-                html += '<option value="0">No VAT</option>';
+                html += '<option value="0" selected>No VAT</option>';
                 html += '<option value="10">10%</option>';
-                html += '<option value="15" selected>15%</option>';
+                html += '<option value="15">15%</option>';
                 html += '<option value="20">20%</option>';
                 html += '</select></td>';
                 html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
@@ -251,16 +280,23 @@ function addItem()
                 function select_Item(item_id,rowno)
                         {
                             var _token = $('input[name="_token"]').val();
+                            const driver_id = $('#driver_id').val();
+                            const customer_id = $('#customer_id').val();
                             $.ajax({
-                            url: "{{ route('getItemUnit')}}",
+                            url: "{{ route('getItemUnitForSale')}}",
                             method:'POST',
-                            data:{ _token:_token,item_id:item_id},
+                            data:{ _token:_token,
+                                item_id:item_id,
+                                driver_id:driver_id,
+                                customer_id:customer_id,
+                            },
                             success:function(result)
                             {
                                 console.log(result)
                                 $('#unit_' + rowno).val(result.unit_name);
-                                $('#qtyInStock' + rowno).val(result.total_stock);
+                                $('#qtyInStock' + rowno).val(result.driverCurrentStock);
                                 $('#purchase_price_' + rowno).val(result.purchase_price);
+                                $('#sale_price_' + rowno).val(result.selling_price);
                             // $('#unit_'+rowno+'').html(result);
                             // $('#item_list_'+rowno+'').html('');
                             // $('#quantity_'+rowno+'').val(0);
@@ -319,7 +355,17 @@ function addItem()
                     function calculateRemaining() {
                         var totalBill = parseFloat($('#total_bill').val());
                         var paidAmount = parseFloat($('#paid_amount').val());
-                        var remaining = totalBill - paidAmount;
+                        var discount = parseFloat($('#discount').val());
+                        var totalAfterDis = totalBill -discount;
+                        
+                        if (!isNaN(totalAfterDis)) {
+                            $('#total_after_discount').val(totalAfterDis.toFixed(2));
+                        } else {
+                            $('#total_after_discount').val('');
+                        }
+                        var totalAfterDiscount = parseFloat($('#total_after_discount').val());
+                        var remaining = totalAfterDiscount - paidAmount;
+
                         if (!isNaN(remaining)) {
                             $('#remaining').val(remaining.toFixed(2));
                         } else {
@@ -334,6 +380,30 @@ function addItem()
     
     // Set the value of the input field to today's date
     document.getElementById('date').value = formattedDate;
+
+
+    function getDriverCustomer(driver_id) {
+            if (driver_id) {
+                var _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{ route('getDriverCustomer') }}",
+                    method: 'POST',
+                    data: {
+                        _token: _token,
+                        driver_id: driver_id
+                    },
+                    success: function(result) {
+
+                        $('#customer_id').html(result);
+                    }
+
+                });
+            } else {
+                // alert('Select Category');
+                $('#customer_id').html('');
+            }
+
+        }
     </script>
 
 @endsection

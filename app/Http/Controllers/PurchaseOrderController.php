@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DriverStock;
 use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderChild;
@@ -326,14 +327,22 @@ class PurchaseOrderController extends Controller
     public function getItemUnit(Request $request)
     {
         $item_id=$request->get('item_id');
+        $driver_id=$request->get('driver_id');
         $item= Item::with('unit')->where('id',$item_id)->first();
         $stocks=Stock::select('quantity','unit_price')->where('item_id',$item_id)->first();
+        $driverStock=DriverStock::select('id','current_stock')->where('driver_id',$driver_id)->where('item_id',$item_id)->first();
+        if($driverStock){
+            $driverCurrentStock = $driverStock->current_stock;
+
+        }else{
+            $driverCurrentStock = 0;
+        }
         if($item)
         {            
             $unit_name = $item->unit->name??'';
             $purchase_price = $stocks->unit_price??0;
             $total_stock = $stocks->quantity??0;
-            return response()->json(['unit_name' => $unit_name, 'total_stock' => $total_stock,'purchase_price'=>$purchase_price]);
+            return response()->json(['unit_name' => $unit_name, 'total_stock' => $total_stock,'purchase_price'=>$purchase_price,'driverCurrentStock'=>$driverCurrentStock]);
         }
         else
         {

@@ -79,6 +79,8 @@
             <ul>
                 <li> <a href="{{url('stockAssignTo-driver')}}" ><i class="bx bx-list-plus"></i>Stock Assign To Drivers</a>
                 </li>
+                <li> <a href="{{url('driverStock-history')}}" ><i class="bx bx-list-plus"></i>Drivers Stock History</a>
+                </li>
                 <li> <a href="{{url('create-invoice')}}" ><i class="bx bx-list-plus"></i>Create Invoice</a>
                 </li>
                     <li> <a href="{{url('invoice-list')}}" ><i class="bx bx-list-ul"></i>Invoice List</a>

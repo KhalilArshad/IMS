@@ -11,8 +11,11 @@ class Invoice extends Model
 
     protected $fillable = [
         'customer_id', 
+        'driver_id', 
         'status', 
         'total_bill', 
+        'discount', 
+        'total_after_discount', 
         'paid_amount', 
         'remaining', 
         'date', 
@@ -21,5 +24,9 @@ class Invoice extends Model
     public function customer()
     {
         return $this->belongsTo('App\Models\Customer', 'customer_id');
+    }
+    public function driver()
+    {
+        return $this->belongsTo('App\Models\Driver', 'driver_id');
     }
 }

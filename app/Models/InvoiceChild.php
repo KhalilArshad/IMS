@@ -12,4 +12,8 @@ class InvoiceChild extends Model
     {
         return $this->belongsTo('App\Models\Item', 'item_id')->with('unit');
     }
+    public function invoice()
+    {
+        return $this->belongsTo('App\Models\Invoice', 'invoice_id');
+    }
 }

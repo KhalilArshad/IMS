@@ -3,17 +3,6 @@
     <link href="assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 @endsection
 @section("wrapper")
-<style>
-    .disabled-link {
-    pointer-events: none; /* Disables click events */
-    opacity: 0.5; /* Makes the links appear visually disabled */
-    cursor: not-allowed; /* Changes the cursor to indicate not allowed */
-}
-
-.disabled-icon {
-    pointer-events: none; /* Disables click events for the icon */
-}
-</style>
 <!--start page wrapper -->
 <div class="page-wrapper">
     <div class="page-content">
@@ -21,13 +10,13 @@
        
 
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">Sales</div>
+            <div class="breadcrumb-title pe-3">Sale</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Invoice List</li>
+                        <li class="breadcrumb-item active" aria-current="page">Driver Stock History</li>
                     </ol>
                 </nav>
             </div>
@@ -52,6 +41,9 @@
                 <div class="card">
                     <div class="card-body">
                     <div id="alertPlaceholder" class="container mt-3"></div>
+                           <div class="d-lg-flex align-items-center mb-4 gap-3">
+                                    
+                            </div>
                         <div class="row p-2">
                             <div class="col-12">
                                 <div class="table-responsive" >
@@ -59,72 +51,33 @@
                                         <thead>
                                             <tr>
                                                 <th>Sr #</th>
-                                                <th>Driver</th>
-                                                <th>Customer Name</th>
-                                                <th>Invoice No</th>
-                                                <th>Date</th>
-                                                <th>Total Bill</th>
-                                                <th>Discount</th>
-                                                <th>Total After Discount</th>
-                                                <th>Current Payment</th>
-                                                <th>Remaining</th>
-                                                <th>Status</th>
+                                                <th>Driver Name</th>
+                                                <th>Phone No</th>
+                                                <th>Current Stock</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         @php($i = 1)
-                                            @foreach ($invoices  as $invoice)
+                                            @foreach ($drivers  as $driver)
                                             <tr>
                                                 <td>{{ $i }}</td>
-                                                
-
-                                                <td>{{ $invoice->driver->name }}</td>
-                                                <td>{{ $invoice->customer->name }}</td>
+                                                <td>{{ $driver->name }}</td>
+                                                <td>{{ $driver->phone_no}}</td>
                                                 <td>
-                                              
-                                                   {{ $invoice->invoice_no}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $invoice->date}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $invoice->total_bill}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $invoice->discount}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $invoice->total_after_discount}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $invoice->paid_amount}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $invoice->remaining}}
-                                                  
-                                                  </td>
-                                                  <td>
-                                                    {{ $invoice->status }}
+                                                    <button onclick="window.location.href='{{ route('receivePo', $driver->id) }}'" class="btn btn-sm btn-primary">
+                                                        Current Stock
+                                                    </button>
                                                 </td>
                                                 <td>
-                                                
                                                  <div class="d-flex order-actions">
-                                                    <a href="view-invoice/{{ $invoice->id }}" class="ms-3"  target="_blank"><i class='bx bxs-show  text-info'></i></a>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addSupplierModal" onclick="getDriverData('{{$driver->id}}')" class="ms-3"><i class='bx bxs-edit text-info'></i></a>
+                                                    <a href="driver-delete/{{ $driver->id }}" class="ms-3" onclick="return confirm('Are you sure you want to delete this record?');"><i class='bx bxs-trash text-danger'></i></a>
+
                                                     </div>
                                                 </td>
+
+
                                             </tr>
                                             @php($i++)
                                             @endforeach

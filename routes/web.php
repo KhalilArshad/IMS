@@ -182,7 +182,10 @@ Route::get('invoice-list', [InvoiceController::class, 'list'])->name('invoice-li
 Route::get('view-invoice/{id}', [InvoiceController::class, 'viewInvoice'])->name('view-invoice');
 //stock Assign to driver and driver reports route
 Route::get('stockAssignTo-driver', [InvoiceController::class, 'createStockAssignToDriver'])->name('stockAssignTo-driver');
-
+Route::post('saveStockAssignToDriver', [InvoiceController::class, 'saveStockAssignToDriver'])->name('saveStockAssignToDriver');
+Route::get('driverStock-history', [InvoiceController::class, 'driverStockHistory'])->name('driverStock-history');
+Route::post('getDriverCustomer', [InvoiceController::class, 'getDriverCustomer'])->name('getDriverCustomer');
+Route::post('getItemUnitForSale', [InvoiceController::class, 'getItemUnitForSale'])->name('getItemUnitForSale');
 //vehicle and driver route
 Route::get('add-driver',[VehicleController::class,'addDriver'])->name('add-driver');
 Route::post('save-driver',[VehicleController::class,'saveDriver'])->name('save-driver');
