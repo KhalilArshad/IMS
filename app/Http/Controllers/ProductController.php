@@ -20,7 +20,7 @@ class ProductController extends Controller
     public function index()
     {
         $units = Unit::get();
-        return view('admin.products.index',compact('units'));
+        return view('admin.products.unitList',compact('units'));
     }
 
     /**
@@ -74,7 +74,7 @@ class ProductController extends Controller
     {
         $units = Unit::get();
         $items = Item::with('unit')->get();
-        return view('admin.item.list',compact('units','items'));
+        return view('admin.item.itemList',compact('units','items'));
     }
 
     /**

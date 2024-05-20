@@ -43,7 +43,7 @@
                 
                     <div class="card-body">
                         <form class="form-horizontal" action="{{ url('getCustomerLedger') }}" method="post">
-                    <div class="row  mb-4">
+                <div class="row  mb-4">
                         @csrf
                         <div class="col-sm-3">
                         <div class="form-group">

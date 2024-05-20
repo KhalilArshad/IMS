@@ -1,4 +1,3 @@
-
 @extends("layouts.app")
 @section("style")
     <link href="assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
@@ -8,6 +7,8 @@
 <div class="page-wrapper">
     <div class="page-content">
         <!--breadcrumb-->
+       
+
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
             <div class="breadcrumb-title pe-3">products</div>
             <div class="ps-3">
@@ -21,25 +22,24 @@
             </div>
         </div>
         <!--end breadcrumb-->
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <div class="row">
+                    <div class="col-12">
+                        @if (Session::has('status'))
+                        <div class="alert alert-{{ Session::get('status') }} border-0 bg-{{ Session::get('status') }} alert-dismissible fade show" id="dismiss">
+                            <div class="text-white">{{ Session::get('message')}}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                                {{ Session::forget('status') }}
+                                {{ Session::forget('message') }}
+                        </div>
+                        @endif
+                    </div>
+                </div>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-
-                    @if (Session::has('status'))
-                    <div class="alert alert-{{ Session::get('status') }} border-0 bg-{{ Session::get('status') }} alert-dismissible fade show" id="dismiss">
-                        <div class="text-white">{{ Session::get('message')}}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                            {{ Session::forget('status') }}
-                            {{ Session::forget('message') }}
-                    </div>
-                    @endif
-
-
-                    <div class="card-body">
-                        <div class="card">
-                            <div class="card-header input-title">
+                <div class="card-header input-title">
                                 <h4>{{__('Add New Item')}}</h4>
                             </div>
                             <div class="card-body card-body-paddding">
@@ -94,9 +94,9 @@
 
                             </div><!--end row-->
                             </form>
-                            <div class="row p-2">
+                        <div class="row p-2">
                             <div class="col-12">
-                                <div class="table-responsive" >
+                            <div class="table-responsive" >
                                       <table id="example2"  class="table table-striped table-bordered" style="width:99%">
                                         <thead>
                                             <tr>
@@ -130,13 +130,13 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
-                        
                     </div>
 
-                    </div>
+          
+
                 </div>
-
+            </div>
+        </div>
     </div>
 </div>
 <!--end page wrapper -->
@@ -146,60 +146,12 @@
     <script src="assets/plugins/smart-wizard/js/jquery.smartWizard.min.js"></script>
     <script src="assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
     <script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+
     <script>
-   $(document).ready(function () {
-    $('#example').DataTable();
-    console.log("jQuery is ready");
-
-    $('#productSave').click(function (event) {
-        event.preventDefault();
-        var form = $('#productForm');
-        var formData = form.serialize();
-        var route = form.data('route');
-        console.log(route);
-
-        $.ajax({
-            url: route,
-            method: 'POST',
-            data: formData,
-            success: function (response) {
-                console.log(response);
-
-                var status = response.status;
-                var message = response.message;
-
-                // Show dynamic alert based on the response
-                var alertClass = status === 'success' ? 'success' : 'danger';
-                var alertHTML = `
-                    <div class="alert alert-${alertClass} alert-dismissible fade show">
-                        <div class="text-white">${message}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-
-                // Append the alert to a container (adjust the selector as needed)
-                $('#alertContainer').html(alertHTML);
-                form.trigger('reset'); // Clear the form fields
-
-                // Automatically hide the alert after 1 second
-                setTimeout(function () {
-                    $('.alert').alert('close');
-                }, 4000);
-            },
-            error: function (xhr, status, error) {
-                // Handle error
-                console.error(error); // Log the error to the console for debugging
-            }
-        });
+    $(document).ready(function () {
+            $('#example').DataTable();
     });
-});
-
-
-    </script>
-<script src="assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
-<script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-<script>
     $(document).ready(function() {
         var table = $('#example2').DataTable({
             lengthChange: true,
@@ -224,5 +176,7 @@
             $('#alert_quantity').val(alert_quantity);
             $('#description').val(description);
         }
-</script>
+    </script>
+
+    
 @endsection

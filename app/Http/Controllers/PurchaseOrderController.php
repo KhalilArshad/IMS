@@ -14,7 +14,7 @@ use App\Models\SupplierLedger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use PDF;
+use Mpdf\Mpdf;
 class PurchaseOrderController extends Controller
 {
     /**
@@ -126,8 +126,25 @@ class PurchaseOrderController extends Controller
     
         $purchaseOrder=PurchaseOrder::with('supplier')->where('id',$id)->first();
          $purchaseOrderChild=PurchaseOrderChild::with('items')->where('purchase_order_id',$id)->get();
-        $pdf = PDF::loadView('purchaseOrder.purchaseOrderViewPdf', ['purchaseOrder' => $purchaseOrder, 'purchaseOrderChild' => $purchaseOrderChild]);
-        return $pdf->stream('PurchaseOrder-' . $purchaseOrder->po_no . '-Date' . $purchaseOrder->date . '.pdf');
+        // $pdf = PDF::loadView('purchaseOrder.purchaseOrderViewPdf', ['purchaseOrder' => $purchaseOrder, 'purchaseOrderChild' => $purchaseOrderChild]);
+        // return $pdf->stream('PurchaseOrder-' . $purchaseOrder->po_no . '-Date' . $purchaseOrder->date . '.pdf');
+        // Convert your view into HTML
+        $html = view('purchaseOrder.purchaseOrderViewPdf', [
+            'purchaseOrder' => $purchaseOrder, 
+            'purchaseOrderChild' => $purchaseOrderChild
+        ])->render();
+        // Create an instance of Mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8', 
+            'format' => 'A4', 
+            'autoScriptToLang' => true, 
+            'autoLangToFont' => true
+        ]);
+        // Write HTML to the PDF
+        $mpdf->WriteHTML($html);
+        // Output the generated PDF to browser
+        return response($mpdf->Output('PurchaseOrder-' . $purchaseOrder->po_no . '-Date' . $purchaseOrder->date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
     }
 
     /**

@@ -17,7 +17,7 @@ class VehicleController extends Controller
      */
     public function addDriver()
     {
-        $drivers= Driver::with('customer')->get();
+        $drivers= Driver::get();
         $customers= Customer::get();
         return view('driver.list',compact('drivers','customers'));
     }
@@ -31,14 +31,13 @@ class VehicleController extends Controller
     {
         if(!empty($request->update_driver_id)){
             Driver::where('id',$request->update_driver_id)
-            ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email,'customer_id'=>$request->customer_id]);
+            ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email]);
         }else{
 
             $driver = new Driver();
             $driver->name   = $request->name;
             $driver->phone_no         = $request->phone_no;
             $driver->email            = $request->email;
-            $driver->customer_id            = $request->customer_id;
             $driver->save();
             $driver_id=$driver->id;
         }
@@ -112,7 +111,7 @@ class VehicleController extends Controller
      */
     public function getDriverData(Request $request){
         $id=$request->id;
-        $driver=Driver::select('id','name','phone_no','email','customer_id')->where('id',$id)->first();
+        $driver=Driver::select('id','name','phone_no','email')->where('id',$id)->first();
         return $driver;
     }
     /**

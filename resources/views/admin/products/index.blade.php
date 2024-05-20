@@ -1,4 +1,3 @@
-
 @extends("layouts.app")
 @section("style")
     <link href="assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
@@ -9,13 +8,13 @@
     <div class="page-content">
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">products</div>
+            <div class="breadcrumb-title pe-3">List</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ url('add-unit') }}">Unit List</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Products List</li>
                     </ol>
                 </nav>
             </div>
@@ -25,57 +24,33 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-
                     @if (Session::has('status'))
-                    <div class="alert alert-{{ Session::get('status') }} border-0 bg-{{ Session::get('status') }} alert-dismissible fade show" id="dismiss">
-                        <div class="text-white">{{ Session::get('message')}}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                            {{ Session::forget('status') }}
-                            {{ Session::forget('message') }}
-                    </div>
-                    @endif
-
-
-                    <div class="card-body">
-                        <div class="card">
-                            <div class="card-header input-title">
-                                <h4>{{__('Add New Unit')}}</h4>
+                            <div class="alert alert-{{ Session::get('status') }} border-0 bg-{{ Session::get('status') }} alert-dismissible fade show" id="dismiss">
+                                <div class="text-white">{{ Session::get('message')}}</div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                                    {{ Session::forget('status') }}
+                                    {{ Session::forget('message') }}
                             </div>
-                            <div class="card-body card-body-paddding">
-                            <form method="post" action="{{ url('saveUnits') }}" >
-                                @csrf
-                                <div class="border border-3 p-4 rounded borderRmv">
+                            @endif
+                    <div class="card-body">
+                           <div class="d-lg-flex align-items-center mb-4 gap-3">
+                                            <div class="ms-auto">
 
-                                <div class="mb-3">
-                                        <label for="unit_name" class="form-label">Name<span
-                                                class="text-danger"> *</span></label>
-                                        <input type="text" name="unit_name" required class="form-control" id="unit_name" placeholder="Enter Unit Name">
-                                        <input type="hidden" name="update_unit_id"  class="form-control" id="update_unit_id">
-                                    </div>
+                                                <a href="{{ url('addProducts') }}" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Product</a>
 
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Description</label>
-                                        <input type="text" class="form-control" name='description' id="description" placeholder="Enter description" >
-
-                                    </div>
-
-                                    <br>
-
-
-
-                                    <div class="mb-3">
-                                            <div class="d-grid">
-                                                <button  type="submit" class="btn btn-info">Save</button>
                                             </div>
-                                    </div>
-                                </div>
-                                </div>
+                                        </div>
+                                        <div class="row  mb-4">
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label for="name" class="form-label">Product Name | Product Price</label>
+                                                    <input type="text" name="name" id="name" class="form-control" placeholder="Searh Product Name | Product Price">
+                                                </div>
+                                            </div>
 
-
-                            </div><!--end row-->
-                            </form>
-                            <div class="row p-2">
+                                        </div>
+                        <div class="row p-2">
                             <div class="col-12">
                                 <div class="table-responsive" >
                                       <table id="example2"  class="table table-striped table-bordered" style="width:99%">
@@ -83,40 +58,29 @@
                                             <tr>
                                                 <th>Sr #</th>
                                                 <th>Name</th>
-                                                <th>Description</th>
-                                                <th>Action</th>
+                                                <th>Price</th>
+                                                <th>Category Name</th>
+                                                <th>Date</th>
+
                                             </tr>
                                         </thead>
                                         <tbody id="ajaxData">
 
-                                        @foreach ($units as $unit)
-                                            <tr>
-                                                <td>{{ $loop->index + 1 }}</td>
-                                                <td>{{ $unit->name }}</td>
-                                                <td>{{ $unit->description }}</td>
-                                                <td>
-                                                    <div class="d-flex order-actions">
-                                                        <!-- <a href="" class="text-info">
-                                                            <i class="fadeIn animated bx bx-edit-alt"></i>
-                                                        </a> -->
-                                                        <a href="#"  onclick="getUnitData('{{ $unit->id }}', '{{ $unit->name }}', '{{ $unit->description }}')" class="ms-3"><i class='bx bxs-edit text-info'></i></a>
-                                                    </div>
-                                                </td>
+
+
+
+
                                             </tr>
-                                            @endforeach
                                         </tbody>
 
                                     </table>
                                 </div>
                             </div>
                         </div>
-                        </div>
-                        
-                    </div>
-
                     </div>
                 </div>
-
+            </div>
+        </div>
     </div>
 </div>
 <!--end page wrapper -->
@@ -126,39 +90,71 @@
     <script src="assets/plugins/smart-wizard/js/jquery.smartWizard.min.js"></script>
     <script src="assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
     <script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-   $(document).ready(function () {
-    $('#example').DataTable();
-    console.log("jQuery is ready");
-
-  
-});
+    <!-- Add this in your head section -->
 
 
-    </script>
-<script src="assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
-<script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+
+
+
+
+
+<!-- Add this at the end of your HTML, before the closing </body> tag -->
+<!-- Add this in your head section -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Add this at the end of your HTML, before the closing </body> tag -->
 <script>
-    $(document).ready(function() {
-        var table = $('#example2').DataTable({
-            lengthChange: true,
-            'searching': true,
-            'paging': true,
-            'sorting': false,
-            'info': false,
-            buttons: ['copy', 'excel', 'pdf', 'print']
+    $(document).ready(function () {
+        var delayTimer;
+      fetchAllProducts();
+        // Add an event listener to the search input
+        $('#name').on('input', function () {
+            clearTimeout(delayTimer);
+
+            var inputValue = $(this).val();
+
+            // Search only if the string is at least 3 characters long
+            if (inputValue.length >= 3) {
+                // Set a delay before triggering the search
+                delayTimer = setTimeout(function () {
+                    searchProducts(inputValue);
+                }, 500); // Adjust the delay as needed
+            }
+            else
+            {
+                fetchAllProducts()
+            }
         });
 
-        table.buttons().container()
-            .appendTo('#example2_wrapper .col-md-6:eq(0)');
-    });
+        // Function to search products and update the table
+        function searchProducts(searchValue) {
+            $.ajax({
+                url: '{{ route("searchProducts") }}', // Replace with your Laravel route
+                method: 'GET',
+                data: { search: searchValue },
+                success: function (data) {
+                    // Update the table with the filtered results
 
-    function getUnitData(id, name, description) {
-            
-            $('#unit_name').val(name);
-            $('#description').val(description);
-            $('#update_unit_id').val(id);
+                    $("#ajaxData").html(data);
+                }
+            });
         }
+
+        // Function to fetch all products
+        function fetchAllProducts() {
+            $.ajax({
+                url: '{{ route("searchProducts") }}', // Replace with your Laravel route
+                method: 'GET',
+                success: function (data) {
+                    // Update the table with all products
+                    $("#ajaxData").html(data);
+                }
+            });
+        }
+    });
 </script>
+
+
+
+
 @endsection

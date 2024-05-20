@@ -10,13 +10,13 @@
        
 
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">Vehicle</div>
+            <div class="breadcrumb-title pe-3">Employee</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Driver List</li>
+                        <li class="breadcrumb-item active" aria-current="page">Employees Advance List</li>
                     </ol>
                 </nav>
             </div>
@@ -45,7 +45,7 @@
                                     <div class="ms-auto">
 
                                      <!-- <a href="" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Supplier</a> -->
-                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal"><i class="bx bxs-plus-square"></i> Add New Driver</a>
+                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal" ><i class="bx bxs-plus-square"></i> Add Employee Advance</a>
 
                                     </div>
                             </div>
@@ -56,41 +56,40 @@
                                         <thead>
                                             <tr>
                                                 <th>Sr #</th>
-                                                <th>Driver Name</th>
-                                                <th>Phone No</th>
-                                                <th>Email</th>
-                                                <th>Action</th>
+                                                <th>Employee Name</th>
+                                                <th>Advance Amount</th>
+                                                <th>Paid Amount</th>
+                                                <th>Date</th>
+                                                <th>Description</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         @php($i = 1)
-                                            @foreach ($drivers  as $driver)
+                                            @foreach ($employeesAdvance  as $advance)
                                             <tr>
                                                 <td>{{ $i }}</td>
                                                 
 
-                                                <td>{{ $driver->name }}</td>
+                                                <td>{{ $advance->employee->name }}</td>
                                                 <td>
                                               
-                                                   {{ $driver->phone_no}}
+                                                   {{ $advance->advance_amount}}
                                                   
                                                   </td>
                                                 <td>
                                               
-                                                   {{ $driver->email}}
+                                                   {{ $advance->paid_amount}}
                                                   
                                                   </td>
-                                            
                                                 <td>
-                                                
-                                                 <div class="d-flex order-actions">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addSupplierModal" onclick="getDriverData('{{$driver->id}}')" class="ms-3"><i class='bx bxs-edit text-info'></i></a>
-                                                    <a href="driver-delete/{{ $driver->id }}" class="ms-3" onclick="return confirm('Are you sure you want to delete this record?');"><i class='bx bxs-trash text-danger'></i></a>
+                                              
+                                                   {{ $advance->date}}
+                                                  
+                                                  </td>
+                                                <td>
+                                                   {{ $advance->description}}
 
-                                                    </div>
                                                 </td>
-
-
                                             </tr>
                                             @php($i++)
                                             @endforeach
@@ -107,35 +106,39 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addSupplierModalLabel">Add New Driver</h5>
+                            <h5 class="modal-title" id="addSupplierModalLabel">Add Employee Advance</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="border border-3 p-4 rounded borderRmv">
                             <div id="alertPlaceholderReq"></div>
                                 <div class="mb-3">
-                                <label for="inputProductTitle" class="form-label">Name<span
+                                <label for="inputProductTitle" class="form-label">Select Employee<span
                                                     class="text-danger"> *</span></label>
-                                <input type="text" name="name" required class="form-control" id="name" placeholder="Enter Name">
-                                <input type="hidden" name="update_driver_id" required class="form-control" id="update_driver_id" placeholder="Enter Name">
+                               <select name="employee_id" id="employee_id" required class="form-control">
+                                   <option value="">Select employee</option>
+                                @foreach($employees as $employee)
+                                <option value="{{$employee->id}}">{{$employee->name}}</option>
+                                @endforeach
+                               </select>
                                 </div>
 
                                 <div class="mb-3">
-                                <label for="inputProductTitle" class="form-label">Phone Number</label>
-                                <input type="text" name="phone_no" class="form-control" id="phone_no" placeholder="Enter Phone No">
+                                <label for="inputProductTitle" class="form-label">Advance Amount<span
+                                                    class="text-danger"> *</span></label>
+                                <input type="number" name="advance_amount" required class="form-control" id="advance_amount" placeholder="Enter Advance Amount">
                                 </div>
 
                                 <div class="mb-3">
-                                <label for="inputProductTitle" class="form-label">Email</label>
-                                <input type="text" name="email" class="form-control" id="email" placeholder="Enter Email">
+                                <label for="description" class="form-label">Description</label>
+                               
+                                <textarea name="description" id="description" required class="form-control"></textarea>
                                 </div>
-                              
-
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-info" onclick="saveSupplier();">Save changes</button>
+                            <button type="button" class="btn btn-info" onclick="saveEmployeeAdvance();">Save changes</button>
                           
                         </div>
                     </div>
@@ -159,36 +162,34 @@
     $(document).ready(function () {
             $('#example').DataTable();
     });
-    function saveSupplier() {
-        const name = $('#name').val();
-        const phone_no = $('#phone_no').val();
-        const email = $('#email').val();
-        const update_driver_id = $('#update_driver_id').val();
+    function saveEmployeeAdvance() {
+        const employee_id = $('#employee_id').val();
+        const advance_amount = $('#advance_amount').val();
+        const description = $('#description').val();
         const csrf_token = '{{ csrf_token() }}';
-        if (!name) {
+        if (!employee_id || !advance_amount || !description) {
         // Display error message for required fields
         $('#alertPlaceholderReq').html('<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" role="alert">All required fields must be filled.</div>');
         return; // Stop further execution
         }
             $.ajax({
             type: "POST",
-            url: '{{ route("save-driver") }}',
+            url: '{{ route("save-employee-advance") }}',
             data: {
                 _token: csrf_token, 
-                name: name,
-                phone_no: phone_no,
-                email: email,
-                update_driver_id: update_driver_id,
+                employee_id: employee_id,
+                advance_amount: advance_amount,
+                description: description,
             },
             success: function(res) {
                 var myModal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
                 myModal.hide();
-                $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">Driver Saved Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">Employee Advance Saved Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
             // Clear form fields
-            $('#name').val('');
-            $('#phone_no').val('');
-            $('#email').val('');
+            $('#employee_id').val('');
+            $('#advance_amount').val('');
+            $('#description').val('');
             // Optionally, hide the message after a delay
             setTimeout(function() {
                 window.location.reload();
@@ -198,27 +199,6 @@
             });
         }
 
-        function getDriverData(id) {
-            document.getElementById('addSupplierModalLabel').textContent = 'Update Driver';
-            const csrf_token = '{{ csrf_token() }}';
-                $.ajax({
-                type: "POST",
-                url: '{{ route("get-driver-data") }}',
-                data: {
-                    _token: csrf_token, 
-                    id: id,
-                },
-                success: function(res) {
-                    console.log(res)
-                    $('#name').val(res.name);
-                    $('#phone_no').val(res.phone_no);
-                    $('#email').val(res.email);
-                    $('#update_driver_id').val(id);
-
-                },
-            
-                });
-        }
     </script>
 
     

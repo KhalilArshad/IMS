@@ -21,6 +21,7 @@
         }
       .bill-details {
             width: 700px;
+            height: 100px;
             /* margin: 0 auto; */
             margin-left: -20px;
             background-color: #a8adbf; 
@@ -31,8 +32,8 @@
             color: #753e30;
         }
         .section {
-            width: 180px;
-            height: 50px; /* Adjusted height for better spacing */
+            width: 160px;
+            height: 65px; 
             margin-left: -10px;
             margin-top: -10px;
             background-color: white;
@@ -43,11 +44,12 @@
             flex-direction: column;
             justify-content: center;
         }
+     
         .section2 {
-            width: 180px;
-            height: 50px; /* Adjusted height for better spacing */
-            margin-left: 190px;
-            margin-top: -60px;
+            width: 160px;
+            height: 65px; /* Adjusted height for better spacing */
+            margin-left: 163px;
+            margin-top: -63px;
             background-color: white;
             text-align: center;
             border-radius: 10px;
@@ -56,11 +58,51 @@
             flex-direction: column;
             justify-content: center;
         }
+   
         .section3 {
+            width: 160px;
+            height: 65px; /* Adjusted height for better spacing */
+            margin-left: 335px;
+            margin-top: -65px;
+            background-color: white;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .section4 {
             width: 180px;
-            height: 50px; /* Adjusted height for better spacing */
-            margin-left: 390px;
-            margin-top: -100px;
+            height: 65px; /* Adjusted height for better spacing */
+            margin-left: 505px;
+            margin-top: -65px;
+            background-color: white;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .section5 {
+            width: 505px;
+            height: 65px; 
+            margin-left: -10px;
+            margin-top: 10px;
+            background-color: white;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .section6 {
+            width: 180px;
+            height: 65px; /* Adjusted height for better spacing */
+            margin-left: 505px;
+            margin-top: -65px;
             background-color: white;
             text-align: center;
             border-radius: 10px;
@@ -70,20 +112,17 @@
             justify-content: center;
         }
 
-        .label, .value {
+        .label {
             margin: 0;
-            font-size: 15px;
+            font-size: 14px;
             padding: 2px 0;
             color: blue;
         }
-
-        /* .label {
-            font-weight: bold;
-        } */
-
         .value {
-            font-size: 20px; /* Larger font size for the number */
-            color: blue; /* Optional: Change color if needed */
+            margin: 0;
+            font-size: 16px;
+            padding: 2px 0;
+            color: blue;
         }
 
         .label-background {
@@ -105,13 +144,14 @@
             margin: 0 auto;
             width: 50px !important;
             height: 80px;
+            margin-top: 20;
         }
 
         .company-details-arabic {
             float: right;
             text-align: right;
             width: 40%;
-            margin-top: -10;
+            margin-top: -110;
         }
         strong {
         font-weight: bold;
@@ -123,13 +163,54 @@
         /*padding: 20px; /* Add some padding for aesthetics */
         font-size: 24px; /* Larger text for visibility */
         color: #000; /* Set text color */
-        margin-top: 5px;
+        margin-top: 3px;
+        margin-bottom: 3px;
         background-color: #a8adbf; 
         border-radius: 10px;
         border: 1px solid #333;
         width: 130px;
         height: 45px;
-        margin-left: 300px !important;
+        margin-left: 290px !important;
+    }
+
+       /* pdf-invoice-detail-right */
+       td {
+            border: 1px solid black;
+        }
+
+        /* bill details */
+        .pdf-bill-details {
+            margin: 10px 0px 10px 530px;
+        }
+
+        thead th {
+        background-color: #a8adbf; /* Matches the color used in .container and other sections */
+        color: #753e30; /* Keeping the text color consistent with other headers */
+        padding: 10px; /* Added padding for better spacing */
+    }
+
+    tbody td {
+        font-size: 14px; /* Increased from 11px to 14px for better readability */
+        padding: 10px;
+        font-weight: bold;
+    }
+    table {
+        width: 100%;
+        margin-top: 20px;
+        margin-left: -30px; 
+        border: 4px solid #a8adbf;
+    }
+
+    .footer {
+        position: fixed;
+        left: -20px;
+        bottom: -35px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+        background-color: #a8adbf;
+        color: #753e30;
+        border-top: 2px solid #333;
     }
     </style>
     {{-- /Custom Style --}}
@@ -153,63 +234,55 @@
         </div>
         <div class="company-details-arabic">
             <p dir="rtl">
-            شركة تشيد وإنجاز <br>
-            بيع بالجملة والتجزئة والمواد الغذائية <br>
-            س.ج: 102753733- ر.م: 365522 <br>
-            الضريبة: 3002262266
+            <strong> شركة تشیید وإنجاز </strong><br>
+            تجارة الجملة والتجزنة والمواد الغذالية <br>
+            س.ت:١٠١٠٣٢٤١١١ - عضوية رقم:٤٦٣٣<br>
+            الرقم الضريبي:٣٠٠٤٩١١٢٧٨٠٠٠٠٣
             </p>
         </div>
     </div>
     <div class="center-wrapper">
         <div class="middleDiv">اجل</div>
     </div>
-    <div class="container bill-details">
+    <div class="bill-details">
         <div>
             <div class="section">
-                <div class="label label-background">WAREHOUSE  مستودع</div>
+                <div class="label label-background">WAREHOUSE  المستودع</div>
                 
-                <div class="value">12</div>
+                <div class="value"></div>
             </div>
             <div class="section2">
-                <div class="label label-background">Invoice No  مستودع</div>
+                <div class="label label-background">INVOICE NO  رقم الفاتورة</div>
                 
-                <div class="value">12</div>
+                <div class="value">{{$invoice->invoice_no}}</div>
             </div>
             <div class="section3">
-                <div class="label label-background">Date  مستودع</div>
+                <div class="label label-background">DATE  &nbsp;&nbsp; التاريخ</div>
                 
-                <div class="value">12</div>
+                <div class="value">{{$invoice->date}}</div>
             </div>
-
-            
+            <div class="section4">
+                <div class="label label-background">BRANCH NO  رقم الضرع</div>
+                
+                <div class="value"></div>
+            </div>
+        </div>
+        <div>
+            <div class="section5">
+                <div class="value">{{$invoice->customer->name}}</div>
+                <div class="value">Phone No: {{$invoice->customer->phone_no}} Email: {{$invoice->customer->email}}</div>
+            </div>
+            <div class="section6">
+            <div class="value"> اسم العميل</div>
+                <div class="value">Customer Name</div>
+            </div>
         </div>
     </div>
 
-    <div class="pdf-header">
-        <h1><u>Khan's Traders</u></h1>
-        <p>Phone# &nbsp; 0515114010 &nbsp;Email testemail@gmail.com</p>
-        <p>Al-Balad Jeddah Saudi Arabia</p>
-    </div>
-    {{-- / header --}}
-    {{-- heading --}}
-    <div class="pdf-heading">
-        <h3>Invoice</h3>
-    </div>
-    {{-- / heading --}}
-    {{-- incoice Details --}}
-    <div class="pdf-invoice-detail">
-        <span><b style="margin-left:30px">Date</b> &nbsp; {{$invoice->date}}</span>
-        <span><b style="margin-left:270px">Status</b> &nbsp; {{$invoice->status}}</span>
-    </div>
-    <div class="pdf-invoice-detail">
-
-        <span><b style="margin-left:30px;">Customer Name</b> &nbsp;{{$invoice->customer->name}}</span>
-        <span><b style="margin-left:205px">Customer Contact</b> &nbsp; {{$invoice->customer->phone_no}}</span>
-        {{-- <span><b style="margin-left:205px">Supplier Address</b> &nbsp; {{$invoice->customer->email}}</span> --}}
-    </div>
     {{-- /incoice Details --}}
     {{-- items details --}}
-    <table style="width:100%; margin-top:20px;">
+    
+    <table>
         <thead style="font-size:15px; ">
             <tr style="border:2px solid black;">
                 <th style="width:5%;">Sr.No</th>
@@ -252,15 +325,15 @@
 
     </div>
     <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Discount: &nbsp; <small>0</small> </h5>
+        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Discount: &nbsp; <small>{{$invoice->discount}}</small> </h5>
 
     </div>
     <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Vat: 15%&nbsp; <small>{{$total_vat}}</small> </h5>
+        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Vat: 15%&nbsp; <small></small> </h5>
 
     </div>
     <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;">Net Total&nbsp; <small>{{$invoice->total_bill}}</small> </h5>
+        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;">Net Total&nbsp; <small>{{$invoice->total_after_discount}}</small> </h5>
 
     </div>
     <div class="pdf-bill-details">
@@ -272,7 +345,10 @@
 
     </div>
     {{-- /bill details --}}
-
+    
+    <div class="footer">
+        © 2024 TASHYED W ENGAZ CO. All rights reserved.
+    </div>
 </body>
 
 </html>

@@ -14,4 +14,12 @@ class DriverStock extends Model
         'current_stock', 
         'purchase_price'
     ];
+    public function driver()
+    {
+        return $this->belongsTo('App\Models\Driver', 'driver_id');
+    }
+    public function item()
+    {
+        return $this->belongsTo('App\Models\Item', 'item_id')->with('unit');
+    }
 }

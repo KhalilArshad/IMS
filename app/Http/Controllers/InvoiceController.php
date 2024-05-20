@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\CustomerLedger;
 use App\Models\Driver;
+use App\Models\DriverCustomer;
 use App\Models\DriverStock;
 use App\Models\DriverStockChild;
 use App\Models\Invoice;
@@ -13,12 +14,13 @@ use App\Models\Item;
 use App\Models\ShopLedger;
 use App\Models\Stock;
 use App\Models\StockTransaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 // use PDF;
 use Illuminate\Support\Facades\Validator;
-use Barryvdh\DomPDF\Facade\Pdf;
-
+// use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
 class InvoiceController extends Controller
 {
     /**
@@ -39,10 +41,39 @@ class InvoiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function getDriverCustomer(Request $request)
     {
-        
+        $driver_id = $request->get('driver_id');
+        $allCustomers = Customer::select('id', 'name')->get();
+        $driverCustomers = DriverCustomer::where('driver_id', $driver_id)
+                                        ->with('customer')
+                                        ->get();
+        // Extract customer IDs associated with the driver for deduplication
+        $driverCustomerIds = $driverCustomers->pluck('customer_id')->unique();
+        $customerData = [];
+        foreach ($driverCustomers as $dc) {
+            $customerData[] = [
+                'customer_id' => $dc->customer->id,
+                'customer_name' => $dc->customer->name
+            ];
+        }
+        $customerData[] = [
+            'customer_id' => '',
+            'customer_name' => 'Select New Customer Below'
+        ];
+        foreach ($allCustomers as $customer) {
+            if (!$driverCustomerIds->contains($customer->id)) {
+                $customerData[] = [
+                    'customer_id' => $customer->id,
+                    'customer_name' => $customer->name
+                ];
+            }
+        }
+
+        return response()->json(['customers' => $customerData]);
     }
+
+    
 
     /**
      * Store a newly created resource in storage.
@@ -67,6 +98,14 @@ class InvoiceController extends Controller
         }
         try {
             DB::transaction(function () use ($request) {
+
+            $checkCustomerAgainstDriver =DriverCustomer::where('driver_id',$request->driver_id)->where('customer_id',$request->customer_id)->first();
+            if(!$checkCustomerAgainstDriver){
+                $storeCustomerAgainstDriver =new DriverCustomer();
+                $storeCustomerAgainstDriver->driver_id= $request->driver_id;
+                $storeCustomerAgainstDriver->customer_id= $request->customer_id;
+                $storeCustomerAgainstDriver->save();
+            }
              $invoice = new Invoice();
              $invoice->customer_id= $request->customer_id;
              $invoice->driver_id= $request->driver_id;
@@ -131,7 +170,7 @@ class InvoiceController extends Controller
              $rows = count($request->itemid);
              for ($i = 0; $i < $rows; $i++) {
                 $purchasePriceExVAT = $request->purchase_price[$i];
-                $vatAmountPurchase = $purchasePriceExVAT * ($request->vat_in_per[$i] / 100);
+                $vatAmountPurchase = $purchasePriceExVAT * (15 / 100);
                 $totalPurchasePriceWithVAT = ($purchasePriceExVAT + $vatAmountPurchase) * $request->quantity[$i];
 
                 // Calculate the total selling price including VAT
@@ -214,12 +253,31 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function viewInvoice($id)
-    {
-    
-        $invoice=Invoice::with('customer')->where('id',$id)->first();
-         $invoiceChild=InvoiceChild::with('items')->where('invoice_id',$id)->get();
-        $pdf = PDF::loadView('invoice.invoiceViewPdf', ['invoice' => $invoice, 'invoiceChild' => $invoiceChild]);
-        return $pdf->stream('Invoice-' . $invoice->invoice_no . '-Date' . $invoice->date . '.pdf');
+    {   
+        // $invoice=Invoice::with('customer')->where('id',$id)->first();
+        //  $invoiceChild=InvoiceChild::with('items')->where('invoice_id',$id)->get();
+        // $pdf = PDF::loadView('invoice.invoiceViewPdf', ['invoice' => $invoice, 'invoiceChild' => $invoiceChild]);
+        // return $pdf->stream('Invoice-' . $invoice->invoice_no . '-Date' . $invoice->date . '.pdf');
+
+        $invoice = Invoice::with('customer')->where('id', $id)->first();
+        $invoiceChild = InvoiceChild::with('items')->where('invoice_id', $id)->get();
+        // Convert your view into HTML
+        $html = view('invoice.invoiceViewPdf', [
+            'invoice' => $invoice, 
+            'invoiceChild' => $invoiceChild
+        ])->render();
+        // Create an instance of Mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8', 
+            'format' => 'A4', 
+            'autoScriptToLang' => true, 
+            'autoLangToFont' => true
+        ]);
+        // Write HTML to the PDF
+        $mpdf->WriteHTML($html);
+        // Output the generated PDF to browser
+        return response($mpdf->Output('Invoice-' . $invoice->invoice_no . '-Date' . $invoice->date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
     }
     /**
      * Display the specified resource.
@@ -280,64 +338,67 @@ class InvoiceController extends Controller
         'itemid.*' => 'required|numeric|exists:items,id',
         'quantity.*' => 'required',
       
-    );
-    $validator = Validator::make($request->all(), $rules);
-    if ($validator->fails()) {
-        return redirect('stockAssignTo-driver')->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
-    }
-    try {
-        DB::transaction(function () use ($request) {
+       );
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return redirect('stockAssignTo-driver')->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
+        }
+        try {
+            DB::transaction(function () use ($request) {
 
-         $rows = count($request->itemid);
-         for ($i = 0; $i < $rows; $i++) {
+            $rows = count($request->itemid);
+            for ($i = 0; $i < $rows; $i++) {
 
-               //first get the item that already in drive stock
-               $getQuantity =DriverStock::where('item_id',$request->itemid[$i])
-               ->where('driver_id',$request->driver_id)
-               ->select('id','current_stock')->first();
-           
-               if($getQuantity){
-                   $lastDriverStockId = $getQuantity->id;
-                   $DriverCurrentStock =$getQuantity->current_stock;
-                   $updatedDriverStock = $DriverCurrentStock + $request->quantity[$i];
+                //first get the item that already in drive stock
+                $getQuantity =Stock::where('item_id',$request->itemid[$i])->select('id','quantity','unit_price')->first();
+                $quantityInStock =$getQuantity->quantity;
+                $purchase_price =$getQuantity->unit_price;
 
-                   DB::table("driver_stocks")
-                   ->where('id', $lastDriverStockId)
-                   ->update(['current_stock' => $updatedDriverStock,'purchase_price'=>$request->purchase_price[$i]]);
-               }else{
-                $driverStock = new DriverStock();
-                $driverStock->driver_id= $request->driver_id;
-                $driverStock->item_id= $request->itemid[$i];
-                $driverStock->purchase_price= $request->purchase_price[$i];
-                $driverStock->current_stock=  $request->quantity[$i];
-                $driverStock->save();
-               }
-               $getQuantity =Stock::where('item_id',$request->itemid[$i])->select('id','quantity')->first();
-               $quantityInStock =$getQuantity->quantity;
-           
-               if ($quantityInStock == $request->quantity[$i]) {
-                   Stock::where('item_id',$request->itemid[$i])->update(['quantity'=>0]);
-               } elseif ($request->quantity[$i] < $quantityInStock) {
-                   $remainingQuantity = $quantityInStock -  $request->quantity[$i];
-                   Stock::where('item_id',$request->itemid[$i])->update(['quantity'=>$remainingQuantity]);
-               }
-
-            $driverStockChild = new DriverStockChild();
-            $driverStockChild->driver_id= $request->driver_id;
-            $driverStockChild->item_id      = $request->itemid[$i];
-            $driverStockChild->date= $request->date;
-            $driverStockChild->current_stock= $request->quantity[$i];
-            $driverStockChild->sold_stock= 0;
-            $driverStockChild->remarks= "Received";
-            $driverStockChild->save();
+                $getQuantity =DriverStock::where('item_id',$request->itemid[$i])
+                ->where('driver_id',$request->driver_id)
+                ->select('id','current_stock')->first();
             
-         }
+                if($getQuantity){
+                    $lastDriverStockId = $getQuantity->id;
+                    $DriverCurrentStock =$getQuantity->current_stock;
+                    $updatedDriverStock = $DriverCurrentStock + $request->quantity[$i];
 
-        });
-        return redirect()->back()->with(['status' => 'success', 'message' => 'Stock Assign To Driver successfully']);
-    } catch (Exception $e) {
-        return redirect('stockAssignTo-driver')->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
-    }
+                    DB::table("driver_stocks")
+                    ->where('id', $lastDriverStockId)
+                    ->update(['current_stock' => $updatedDriverStock,'purchase_price'=>$purchase_price]);
+                }else{
+                    $driverStock = new DriverStock();
+                    $driverStock->driver_id= $request->driver_id;
+                    $driverStock->item_id= $request->itemid[$i];
+                    $driverStock->purchase_price= $purchase_price;
+                    $driverStock->current_stock=  $request->quantity[$i];
+                    $driverStock->save();
+                }
+              
+            
+                if ($quantityInStock == $request->quantity[$i]) {
+                    Stock::where('item_id',$request->itemid[$i])->update(['quantity'=>0]);
+                } elseif ($request->quantity[$i] < $quantityInStock) {
+                    $remainingQuantity = $quantityInStock -  $request->quantity[$i];
+                    Stock::where('item_id',$request->itemid[$i])->update(['quantity'=>$remainingQuantity]);
+                }
+
+                $driverStockChild = new DriverStockChild();
+                $driverStockChild->driver_id= $request->driver_id;
+                $driverStockChild->item_id      = $request->itemid[$i];
+                $driverStockChild->date= $request->date;
+                $driverStockChild->current_stock= $request->quantity[$i];
+                $driverStockChild->sold_stock= 0;
+                $driverStockChild->remarks= "Received";
+                $driverStockChild->save();
+                
+            }
+
+            });
+            return redirect()->back()->with(['status' => 'success', 'message' => 'Stock Assign To Driver successfully']);
+        } catch (Exception $e) {
+            return redirect('stockAssignTo-driver')->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
+        }
     }
 
     public function getItemUnitForSale(Request $request){
@@ -364,6 +425,7 @@ class InvoiceController extends Controller
             $purchase_price = $driverStock->purchase_price??0;
         }else{
             $driverCurrentStock = 0;
+            $purchase_price = 0;
         }
         if($item)
         {            
@@ -381,5 +443,38 @@ class InvoiceController extends Controller
     
         $drivers= Driver::get();
         return view('driver.driverStockHistory',compact('drivers'));
+    }
+
+    public function currentDriverStock(Request $request){
+       $driverStocks = DriverStock::with('driver','item')->where('driver_id',$request->id)->get();
+      return view('driver.driversCurrentStock',compact('driverStocks'));
+
+    }
+
+    public function driverStockFlow(Request $request){
+       
+        $driver_id =$request->id;
+       $driver=Driver::where('id',$driver_id)->select('id','name')->first();
+       $driverName =$driver->name;
+       if ($request->from && $request->to) {
+        $from = $request->from;
+        $to = $request->to;
+    } else {
+        // $from = Carbon::now()->subDay()->toDateString();
+        $from = date('Y-m-d');
+        $to = date('Y-m-d');
+    }
+    // return [$from, $to];    
+        //  return $from;
+       $driverReceiveStock=DriverStockChild::with('item')->where('driver_id',$driver_id)->where('remarks','Received')->whereBetween('date', [$from, $to])->get();
+       $driverSoldStock = InvoiceChild::with('invoice','items')
+       ->whereHas('invoice', function ($query) use ($driver_id) {
+           $query->where('driver_id', $driver_id);
+       })
+       ->whereBetween('created_at', [$from, $to])
+       ->get();
+       $driveTotalInvoices =Invoice::with('customer')->where('driver_id',$driver_id)->whereBetween('date', [$from, $to])->get();
+      return view('driver.driverStockFlow',compact('driverName','driver_id','driverReceiveStock','driverSoldStock','driveTotalInvoices', 'from', 'to'));
+
     }
 }

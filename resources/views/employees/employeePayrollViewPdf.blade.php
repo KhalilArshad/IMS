@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Purchase Order</title>
+    <title>Invoice</title>
     {{-- Custom Style --}}
     <style>
       .container {
@@ -156,62 +156,39 @@
         strong {
         font-weight: bold;
         font-size: 140%; /* Makes the text larger */
+    }
+        /* bill details */
+        .pdf-bill-details {
+            margin: 10px 0px 10px 530px;
         }
 
-        .middleDiv {
-            text-align: center; /* Center the text inside middleDiv */
-            /*padding: 20px; /* Add some padding for aesthetics */
-            font-size: 24px; /* Larger text for visibility */
-            color: #000; /* Set text color */
-            margin-top: 3px;
-            margin-bottom: 3px;
-            background-color: #a8adbf; 
-            border-radius: 10px;
-            border: 1px solid #333;
-            width: 130px;
-            height: 45px;
-            margin-left: 290px !important;
-        }
-
-        /* pdf-invoice-detail-right */
-        td {
-                border: 1px solid black;
-            }
-
-            /* bill details */
-            .pdf-bill-details {
-                margin: 10px 0px 10px 530px;
-            }
-
-            thead th {
-            background-color: #a8adbf; /* Matches the color used in .container and other sections */
-            color: #753e30; /* Keeping the text color consistent with other headers */
-            padding: 10px; /* Added padding for better spacing */
-        }
-
-        tbody td {
-            font-size: 14px; /* Increased from 11px to 14px for better readability */
-            padding: 10px;
-            font-weight: bold;
-        }
         table {
             width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
-            margin-left: -30px; 
-            border: 4px solid #a8adbf;
+            margin-left: -15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #a8adbf;
+            color: white;
         }
 
-        .footer {
-            position: fixed;
-            left: -20px;
-            bottom: -35px;
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-            background-color: #a8adbf;
-            color: #753e30;
-            border-top: 2px solid #333;
-        }
+    .footer {
+        position: fixed;
+        left: -20px;
+        bottom: -35px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+        background-color: #a8adbf;
+        color: #753e30;
+        border-top: 2px solid #333;
+    }
     </style>
     {{-- /Custom Style --}}
 </head>
@@ -241,111 +218,57 @@
             </p>
         </div>
     </div>
-    <div class="center-wrapper">
-        <div class="middleDiv">شراء</div>
-    </div>
-    <div class="bill-details">
-        <div>
-            <div class="section">
-                <div class="label label-background">WAREHOUSE  المستودع</div>
-                
-                <div class="value"></div>
-            </div>
-            <div class="section2">
-                <div class="label label-background">PO NO  رقم شراء</div>
-                
-                <div class="value">{{$purchaseOrder->po_no}}</div>
-            </div>
-            <div class="section3">
-                <div class="label label-background">DATE  &nbsp;&nbsp; التاريخ</div>
-                
-                <div class="value">{{$purchaseOrder->date}}</div>
-            </div>
-            <div class="section4">
-                <div class="label label-background">BRANCH NO  رقم الضرع</div>
-                
-                <div class="value"></div>
-            </div>
-        </div>
-        <div>
-            <div class="section5">
-                <div class="value">{{$purchaseOrder->supplier->name}}</div>
-                <div class="value">Phone No: {{$purchaseOrder->supplier->phone_no}} Email: {{$purchaseOrder->supplier->email}}</div>
-            </div>
-            <div class="section6">
-            <div class="value"> اسم المورد</div>
-                <div class="value">Supplier Name</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- /incoice Details --}}
-    {{-- items details --}}
-    
-    <table>
-        <thead style="font-size:15px; ">
-            <tr style="border:2px solid black;">
-                <th style="width:5%;">Sr.No</th>
-                <th style="width:65%;">Item</th>
-                <th style="width:20%;">Unit</th>
-                <th style="width:20%;">Quantity</th>
-                <th style="width:20%;">Purchase Price</th>
-                <th style="width:20%;">Total Vat</th>
-                <th style="width:20%;">Total Price</th>
+    <table class="mt-2">
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Department</th>
+                <th>Date Of Joining</th>
             </tr>
         </thead>
-        <tbody style="font-size:11px; text-align:center; padding:0px; margin:0px; ">
-            @php
-                $count = 0;
-                $total_vat = 0;
-            @endphp
-            @foreach($purchaseOrderChild as $data)
-            @php
-                $count++;
-                $total_vat += $data->total_vat;
-            @endphp
+        <tbody>
             <tr>
-                <td>
-                    <b>{{$count}}</b>
-                </td>
-                <td>{{$data->items->name}}</td>
-                <td>{{$data->items->unit->name}}</td>
-                <td>{{$data->quantity}}</td>
-                <td>{{$data->unit_price}}</td>
-                <td>{{$data->total_vat}}</td>
-                <td>{{$data->total}}</td>
+                <td>{{ $payroll->employee->name }}</td>
+                <td>{{ $payroll->employee->designation }}</td>
+                <td>{{ $payroll->employee->date }}</td>
             </tr>
-            @endforeach
+            <tr>
+                <th>Salary Slip Of Month</th>
+                <th>Designation</th>
+                <th>Employee No:</th>
+            </tr>
+            <tr>
+                @php
+                $date = new DateTime($payroll->date);
+                $salary_month = $date->format('M Y');
+                @endphp
+                <td>{{ $salary_month }}</td>
+                <td>{{ $payroll->employee->designation }}</td>
+                <td>{{ $payroll->employee->id }}</td>
+            </tr>
+            <tr>
+                <th>Salary</th>
+                <th>Advance</th>
+                <th>Paid In Advance</th>
+            </tr>
+            <tr>
+                <td>{{ $payroll->salary }}</td>
+                <td>{{ $payroll->advance }}</td>
+                <td>{{ $payroll->paid_in_advance }}</td>
+            </tr>
+            <tr>
+                <th>Over Time</th>
+                <th></th>
+                <th>Total Salary To be Paid</th>
+            </tr>
+            <tr>
+                <td>{{ $payroll->overtime }}</td>
+                <td></td>
+                <td>{{ $payroll->total_salary_to_be_paid}}</td>
+            </tr>
         </tbody>
     </table>
-    {{-- /items details --}}
-    {{-- bill details --}}
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Total: &nbsp; <small>{{$purchaseOrder->total_bill - $total_vat}}</small> </h5>
 
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Discount: &nbsp; <small>0</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Vat: 15%&nbsp; <small>{{$total_vat}}</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;">Net Total&nbsp; <small>{{$purchaseOrder->total_bill}}</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Paid Amount: &nbsp; <small>{{$purchaseOrder->current_payment}}</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Remaining: &nbsp; <small>{{$purchaseOrder->remaining}}</small> </h5>
-
-    </div>
-    {{-- /bill details --}}
-    
     <div class="footer">
         © 2024 TASHYED W ENGAZ CO. All rights reserved.
     </div>

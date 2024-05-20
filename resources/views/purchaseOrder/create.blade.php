@@ -200,9 +200,7 @@ function addItem()
 
                 html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
                 html += '<option value="0">No VAT</option>';
-                html += '<option value="10">10%</option>';
                 html += '<option value="15" selected>15%</option>';
-                html += '<option value="20">20%</option>';
                 html += '</select></td>';
                 html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
 

@@ -10,13 +10,13 @@
        
 
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">Sale</div>
+            <div class="breadcrumb-title pe-3">Employee</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Driver Stock History</li>
+                        <li class="breadcrumb-item active" aria-current="page">Payroll List</li>
                     </ol>
                 </nav>
             </div>
@@ -40,42 +40,42 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                    <div id="alertPlaceholder" class="container mt-3"></div>
-                           <div class="d-lg-flex align-items-center mb-4 gap-3">
-                                    
-                            </div>
                         <div class="row p-2">
                             <div class="col-12">
                                 <div class="table-responsive" >
                                       <table id="example"  class="table table-striped table-bordered" style="width:99%">
                                         <thead>
                                             <tr>
-                                                <th>Sr #</th>
-                                                <th>Driver Name</th>
-                                                <th>Phone No</th>
-                                                <th>Current Stock</th>
-                                                <th>Driver Stock Flow</th>
+                                            <th>Sr #</th>
+                                                                <th>Employee Name</th>
+                                                                 <th>Salary</th>
+                                                                <th>Advance</th>
+                                                                <th>Paid in Advance</th>
+                                                                <th>Over time</th>
+                                                                <th>Current Month Salary</th>
+                                                                <th>Date</th>
+                                                                <th>Description</th>
+                                                                <th>View</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         @php($i = 1)
-                                            @foreach ($drivers  as $driver)
+                                            @foreach ($payrolls  as $payroll)
                                             <tr>
-                                                <td>{{ $i }}</td>
-                                                <td>{{ $driver->name }}</td>
-                                                <td>{{ $driver->phone_no}}</td>
-                                                <td>
-                                                    <button onclick="window.location.href='{{ route('currentDriverStock', ['id' => $driver->id]) }}'" class="btn btn-sm btn-primary">
-                                                        Current Stock 
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button onclick="window.location.href='{{ route('driverStockFlow', ['id' => $driver->id]) }}'" class="btn btn-sm btn-primary">
-                                                    Driver Stock Flow
-                                                    </button>
-                                                </td>
-
-
+                                            <td>{{ $i }}</td>
+                                                                <td>{{ $payroll->employee->name }}</td>
+                                                                <td>{{ $payroll->salary }}</td>
+                                                                <td>{{ $payroll->advance }}</td>
+                                                                <td>{{ $payroll->paid_in_advance }}</td>
+                                                                <td>{{ $payroll->overtime }}</td>
+                                                                <td>{{ $payroll->total_salary_to_be_paid }}</td>
+                                                                <td>{{ $payroll->date }}</td>
+                                                                <td>{{ $payroll->description}}</td>
+                                                                <td>
+                                                                <div class="d-flex order-actions">
+                                                                <a href="view-payroll/{{ $payroll->id }}" class="ms-3"  target="_blank"><i class='bx bxs-show  text-info'></i></a>
+                                                                </div>
+                                                            </td>
                                             </tr>
                                             @php($i++)
                                             @endforeach
@@ -86,7 +86,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -104,7 +103,7 @@
     $(document).ready(function () {
             $('#example').DataTable();
     });
-   
+    
     </script>
 
     

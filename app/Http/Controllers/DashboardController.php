@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Gallery;
 use App\Models\Invoice;
 use App\Models\InvoiceChild;
+use App\Models\Payroll;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Models\VehicleExpense;
@@ -52,11 +53,11 @@ class DashboardController extends Controller
         $totalPurchase = PurchaseOrder::whereBetween('date', [$startDate, $endDate])->sum('total_bill');
         $vehicleExpense = VehicleExpense::whereBetween('date', [$startDate, $endDate])->sum('amount');
         $totalProfit = InvoiceChild::whereBetween('created_at', [$startDate, $endDate])->sum('profit');
+        $totalEmployeePayroll = Payroll::whereBetween('date', [$startDate, $endDate])->sum('total_salary_to_be_paid');
         $supplierRemaining = Supplier::sum('previous_balance');
         $customerPayable = Customer::sum('previous_balance');
 
-        return view('index', compact('totalSales', 'totalPurchase', 'vehicleExpense', 'totalProfit','supplierRemaining','customerPayable', 'date'));
-
+        return view('index', compact('totalSales', 'totalPurchase', 'vehicleExpense', 'totalProfit','supplierRemaining','customerPayable', 'date','totalEmployeePayroll'));
 
     }
     public function create()

@@ -134,7 +134,6 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('list-contact', [DashboardController::class, 'contactList'])->name('list-contact');
 
 
-});
 
 // supplier routs
 Route::get('supplier-list', [SupplierController::class, 'index'])->name('supplier-list');
@@ -184,6 +183,9 @@ Route::get('view-invoice/{id}', [InvoiceController::class, 'viewInvoice'])->name
 Route::get('stockAssignTo-driver', [InvoiceController::class, 'createStockAssignToDriver'])->name('stockAssignTo-driver');
 Route::post('saveStockAssignToDriver', [InvoiceController::class, 'saveStockAssignToDriver'])->name('saveStockAssignToDriver');
 Route::get('driverStock-history', [InvoiceController::class, 'driverStockHistory'])->name('driverStock-history');
+Route::get('currentDriverStock', [InvoiceController::class, 'currentDriverStock'])->name('currentDriverStock');
+Route::get('driverStockFlow', [InvoiceController::class, 'driverStockFlow'])->name('driverStockFlow');
+
 Route::post('getDriverCustomer', [InvoiceController::class, 'getDriverCustomer'])->name('getDriverCustomer');
 Route::post('getItemUnitForSale', [InvoiceController::class, 'getItemUnitForSale'])->name('getItemUnitForSale');
 //vehicle and driver route
@@ -204,21 +206,20 @@ Route::post('get-vehicleExpense-data',[VehicleController::class,'getVehicleExpen
 Route::post('get-dashboard-data',[DashboardController::class,'index'])->name('get-dashboard-data');
 
 //Employee route
-Route::get('create-employee-form', [DashboardController::class, 'add'])->name('create-employee-form');
-Route::get('create-employee-form', [DashboardController::class, 'add'])->name('create-employee-form');
-Route::post('insert-employee',[DashboardController::class,'insertemployee'])->name('insert-employee');
-Route::get('list-employee', [DashboardController::class, 'employeeList'])->name('list-employee');
-Route::get('employee-edit', [DashboardController::class, 'employeeEdit'])->name('employee-edit');
-Route::post('/update-employee/{id}',[DashboardController::class,'employeeupdate'])->name('update-employee');
-Route::get('/employee-delete/{id}',[DashboardController::class,'employeedelete'])->name('employee-delete');
+Route::get('add-labour', [EmployeeController::class, 'addEmployee'])->name('add-labour');
+Route::get('labour-list', [EmployeeController::class, 'getEmployees'])->name('labour-list');
 
-// 
 Route::get('addEmployee', [EmployeeController::class, 'addEmployee'])->name('addEmployee');
 Route::post('saveEmployee', [EmployeeController::class, 'saveEmployee'])->name('saveEmployee');
-Route::get('getEmployees', [EmployeeController::class, 'getEmployees'])->name('getEmployees');
+Route::get('employees-list', [EmployeeController::class, 'getEmployees'])->name('employees-list');
 Route::get('viewEmployees', [EmployeeController::class, 'viewEmployees'])->name('viewEmployees');
 Route::post('updateEmployee', [EmployeeController::class, 'updateEmployee'])->name('updateEmployee');
 Route::get('deleteEmployee', [EmployeeController::class, 'deleteEmployee'])->name('deleteEmployee');
-Route::post('employeeStatusChange', [EmployeeController::class, 'employeeStatusChange']);
-Route::get('searchEmployee', [EmployeeController::class, 'searchEmployeeByajax'])->name('search-employee-ajax');
+Route::post('save-employee-advance', [EmployeeController::class, 'saveEmployeeAdvance'])->name('save-employee-advance');
+Route::get('AddEmployee-advance', [EmployeeController::class, 'AddEmployeeAdvance'])->name('AddEmployee-advance');
+Route::get('createPayroll', [EmployeeController::class, 'createPayroll'])->name('createPayroll');
+Route::post('savePayroll', [EmployeeController::class, 'savePayroll'])->name('savePayroll');
+Route::get('get-payroll', [EmployeeController::class, 'getPayroll'])->name('get-payroll');
+Route::get('view-payroll/{id}', [EmployeeController::class, 'viewPayroll'])->name('view-payroll');
 
+});

@@ -59,26 +59,27 @@
                                             <div class="mb-3">
                                                 <label for="email" class="form-label">Email<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="email" class="form-control" name='email' id="email" placeholder="Enter Email" required>
+                                                <input type="email" class="form-control" name='email' id="email" placeholder="Enter Email">
 
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="password" class="form-label">Password<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="password" name="password" required class="form-control" id="password" autocomplete="new-password" placeholder="Enter Password">
-                                            </div>
-                                        </div>
+                                       
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="cnic_no" class="form-label">Cnic No<span
                                                     class="text-danger"> *</span></label>
                                                 <input type="number" class="form-control" name='cnic_no' id="cnic_no" placeholder="Enter Cnic No" required>
 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="phone_no" class="form-label">Phone No<span
+                                                    class="text-danger"> *</span></label>
+                                                <input type="number" name="phone_no" class="form-control" id="phone_no" placeholder="Enter Phone No">
                                             </div>
                                         </div>
                                     </div>
@@ -88,18 +89,18 @@
                                             <div class="mb-3">
                                                 <label for="designation" class="form-label">Designation<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="text" class="form-control" name='designation' id="designation" placeholder="Enter designation" required>
+                                                <input type="text" class="form-control" required name='designation' id="designation" placeholder="Enter designation">
 
                                             </div>
                                         </div>
+                                      
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="phone_no" class="form-label">Phone No<span
+                                                <label for="salary" class="form-label">Salary<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="number" name="phone_no" required class="form-control" id="phone_no" placeholder="Enter Phone No">
+                                                <input type="number" name="salary" required class="form-control" id="salary" placeholder="Enter Hourly Salary">
                                             </div>
                                         </div>
-
                                     </div>
 
                                     <div class="row">
@@ -107,16 +108,10 @@
                                             <div class="mb-3">
                                                 <label for="date_of_joining" class="form-label">Date Of Joining<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="date" name="date_of_joining" required class="form-control" id="date_of_joining" placeholder="Enter Date Of Joining">
+                                                <input type="date" name="date_of_joining" class="form-control" id="date_of_joining" placeholder="Enter Date Of Joining">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="hourly_salary" class="form-label">Salary<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="number" name="hourly_salary" required class="form-control" id="hourly_salary" placeholder="Enter Hourly Salary">
-                                            </div>
-                                        </div>
+                                        
                                     </div>
 
                                     <div class="row">
@@ -167,48 +162,6 @@
    $(document).ready(function () {
     $('#example').DataTable();
     console.log("jQuery is ready");
-
-    $('#productSave').click(function (event) {
-        event.preventDefault();
-        var form = $('#productForm');
-        var formData = form.serialize();
-        var route = form.data('route');
-        console.log(route);
-
-        $.ajax({
-            url: route,
-            method: 'POST',
-            data: formData,
-            success: function (response) {
-                console.log(response);
-
-                var status = response.status;
-                var message = response.message;
-
-                // Show dynamic alert based on the response
-                var alertClass = status === 'success' ? 'success' : 'danger';
-                var alertHTML = `
-                    <div class="alert alert-${alertClass} alert-dismissible fade show">
-                        <div class="text-white">${message}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-
-                // Append the alert to a container (adjust the selector as needed)
-                $('#alertContainer').html(alertHTML);
-                form.trigger('reset'); // Clear the form fields
-
-                // Automatically hide the alert after 1 second
-                setTimeout(function () {
-                    $('.alert').alert('close');
-                }, 4000);
-            },
-            error: function (xhr, status, error) {
-                // Handle error
-                console.error(error); // Log the error to the console for debugging
-            }
-        });
-    });
 });
 
 

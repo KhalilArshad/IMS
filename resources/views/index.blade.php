@@ -69,7 +69,7 @@
                                             <h5 class="my-1 text-info"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                            <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalSales}} AED</span></strong></p>
+                                            <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalSales}} SAR</span></strong></p>
                                             <h5 class="my-1 text-info"></h5>
                                         </div>
                                     </div>
@@ -93,7 +93,7 @@
                                             <h5 class="my-1 text-danger"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalPurchase}} AED</span></strong></p>
+                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalPurchase}} SAR</span></strong></p>
                                             <h5 class="my-1 text-danger"></h5>
                                         </div>
                                     </div>
@@ -117,7 +117,7 @@
                                             <h5 class="my-1 text-success"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$vehicleExpense}} AED</span></strong></p>
+                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$vehicleExpense}} SAR</span></strong></p>
                                             <h5 class="my-1 text-success"></h5>
                                         </div>
                                     </div>
@@ -145,7 +145,7 @@
                                             <h5 class="my-1 text-primary"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                            <p class="mb-0 text-white badge bg-primary rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalProfit - $vehicleExpense}} AED</span></strong></p>
+                                            <p class="mb-0 text-white badge bg-primary rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalProfit - $vehicleExpense}} SAR</span></strong></p>
                                             <h5 class="my-1 text-primary"></h5>
                                         </div>
                                     </div>
@@ -169,7 +169,7 @@
                                             <h5 class="my-1 text-danger"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$supplierRemaining}} AED</span></strong></p>
+                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$supplierRemaining}} SAR</span></strong></p>
                                             <h5 class="my-1 text-danger"></h5>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@
                                             <h5 class="my-1 text-success"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$customerPayable}} AED</span></strong></p>
+                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$customerPayable}} SAR</span></strong></p>
                                             <h5 class="my-1 text-success"></h5>
                                         </div>
                                     </div>
@@ -205,7 +205,33 @@
                 </div>
             </div>
           
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3">
+                
+            <div class="col">
+                    <div class="card radius-10 border-start border-0 border-3 border-primary">
+                        <div class="card-body">
 
+                            <a href="#">
+                                <div class="p-3 border radius-10">
+                                    <h4 class="text-primary text-center"><strong>Employee Salary</strong></h4>
+                                    <hr>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <p class="mb-0 text-secondary">Total </p>
+                                            <h5 class="my-1 text-primary"></h5>
+                                        </div>
+                                        <div class=" ms-auto">
+                                        <p class="mb-0 text-white badge bg-info rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalEmployeePayroll}} SAR</span></strong></p>
+                                            <h5 class="my-1 text-primary"></h5>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
                 </div><!--end row-->

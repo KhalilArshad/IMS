@@ -96,9 +96,9 @@
             </a>
             <ul>
                 <li> <a href="{{ url('stock-list') }}" ><i class="bx bx-list-plus"></i>Stock List</a>
-                </li>
+                <!-- </li>
                     <li> <a href="#" ><i class="bx bx-list-ul"></i>Stock transections</a>
-                </li>
+                </li> -->
             </ul>
         </li>
         <li>
@@ -135,22 +135,26 @@
             </ul>
         </li>
 
+
+
         <li>
             <a class="has-arrow" href="javascript:;">
-                <div class="parent-icon"><i class="lni lni-layers"></i>
+                <div class="parent-icon"><i class="lni lni-users"></i>
                 </div>
                 <div class="menu-title">Employee</div>
             </a>
             <ul>
-        <!-- </li> -->
-                <li> <a href="{{ url('addEmployee') }}" ><i class="bx bx-list-ul"></i>Add Employee</a>
+                <li> <a href="{{url('addEmployee')}}" ><i class="bx bx-list-plus"></i>Add Employee</a>
                 </li>
-                <li> <a href="{{ url('add-vehicle') }}" ><i class="bx bx-list-plus"></i>Employee List</a>
+                <li> <a href="{{url('employees-list')}}" ><i class="bx bx-list-ul"></i>Employee List</a>
                 </li>
-                    <li> <a href="{{ url('add-vehicle-expense') }}" ><i class="bx bx-list-ul"></i>Vehicle Expense</a>
+                <li> <a href="{{url('AddEmployee-advance')}}" ><i class="bx bx-list-ul"></i>Add Employee Advance</a>
+                </li>
+                <li> <a href="{{url('get-payroll')}}" ><i class="bx bx-list-ul"></i>Payroll</a>
                 </li>
             </ul>
         </li>
+
         <li>
             <a class="has-arrow" href="javascript:;">
                 <div class="parent-icon"><i class="lni lni-layers"></i>
@@ -159,11 +163,11 @@
             </a>
             <ul>
         <!-- </li> -->
-                <li> <a href="{{ url('add-driver') }}" ><i class="bx bx-list-ul"></i>Daily Sale Report</a>
+                <li> <a href="#" ><i class="bx bx-list-ul"></i>Daily Sale Report</a>
                 </li>
-                <li> <a href="{{ url('add-vehicle') }}" ><i class="bx bx-list-plus"></i>Cash Flow</a>
+                <li> <a href="#" ><i class="bx bx-list-plus"></i>Cash Flow</a>
                 </li>
-                    <li> <a href="{{ url('add-vehicle-expense') }}" ><i class="bx bx-list-ul"></i>Vehicle Expense</a>
+                    <li> <a href="#" ><i class="bx bx-list-ul"></i>Vehicle Expense</a>
                 </li>
             </ul>
         </li>

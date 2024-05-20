@@ -253,9 +253,7 @@ function addItem()
 
                 html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
                 html += '<option value="0" selected>No VAT</option>';
-                html += '<option value="10">10%</option>';
                 html += '<option value="15">15%</option>';
-                html += '<option value="20">20%</option>';
                 html += '</select></td>';
                 html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
 
@@ -393,8 +391,21 @@ function addItem()
                         driver_id: driver_id
                     },
                     success: function(result) {
-
-                        $('#customer_id').html(result);
+              
+                        var existingOptions = $('#customer_id').children().clone();
+                        // Clear current options and add the default
+                        $('#customer_id').empty().append('<option value="">{{ __("Select Prev customer") }}</option>');
+                        // Append new options from the AJAX response at the top (after the default option)
+                        result.customers.forEach(function(customer) {
+                            $('#customer_id').append('<option value="' + customer.customer_id + '">' + customer.customer_name + '</option>');
+                        });
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.log("Error fetching customer data: " + error);
+                        alert('Failed to retrieve customer data. Please try again.');
+                        $('#customer_id').empty().append('<option value="">{{ __("Failed to load customers") }}</option>');
                     }
 
                 });
