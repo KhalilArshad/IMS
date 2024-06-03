@@ -44,30 +44,17 @@ class InvoiceController extends Controller
     public function getDriverCustomer(Request $request)
     {
         $driver_id = $request->get('driver_id');
-        $allCustomers = Customer::select('id', 'name')->get();
+       
         $driverCustomers = DriverCustomer::where('driver_id', $driver_id)
                                         ->with('customer')
                                         ->get();
-        // Extract customer IDs associated with the driver for deduplication
-        $driverCustomerIds = $driverCustomers->pluck('customer_id')->unique();
+      
         $customerData = [];
         foreach ($driverCustomers as $dc) {
             $customerData[] = [
                 'customer_id' => $dc->customer->id,
                 'customer_name' => $dc->customer->name
             ];
-        }
-        $customerData[] = [
-            'customer_id' => '',
-            'customer_name' => 'Select New Customer Below'
-        ];
-        foreach ($allCustomers as $customer) {
-            if (!$driverCustomerIds->contains($customer->id)) {
-                $customerData[] = [
-                    'customer_id' => $customer->id,
-                    'customer_name' => $customer->name
-                ];
-            }
         }
 
         return response()->json(['customers' => $customerData]);
@@ -99,13 +86,13 @@ class InvoiceController extends Controller
         try {
             DB::transaction(function () use ($request) {
 
-            $checkCustomerAgainstDriver =DriverCustomer::where('driver_id',$request->driver_id)->where('customer_id',$request->customer_id)->first();
-            if(!$checkCustomerAgainstDriver){
-                $storeCustomerAgainstDriver =new DriverCustomer();
-                $storeCustomerAgainstDriver->driver_id= $request->driver_id;
-                $storeCustomerAgainstDriver->customer_id= $request->customer_id;
-                $storeCustomerAgainstDriver->save();
-            }
+            // $checkCustomerAgainstDriver =DriverCustomer::where('driver_id',$request->driver_id)->where('customer_id',$request->customer_id)->first();
+            // if(!$checkCustomerAgainstDriver){
+            //     $storeCustomerAgainstDriver =new DriverCustomer();
+            //     $storeCustomerAgainstDriver->driver_id= $request->driver_id;
+            //     $storeCustomerAgainstDriver->customer_id= $request->customer_id;
+            //     $storeCustomerAgainstDriver->save();
+            // }
              $invoice = new Invoice();
              $invoice->customer_id= $request->customer_id;
              $invoice->driver_id= $request->driver_id;
@@ -168,6 +155,7 @@ class InvoiceController extends Controller
                 
                 }
              $rows = count($request->itemid);
+             $total_profit = 0;
              for ($i = 0; $i < $rows; $i++) {
                 $purchasePriceExVAT = $request->purchase_price[$i];
                 $vatAmountPurchase = $purchasePriceExVAT * (15 / 100);
@@ -230,8 +218,9 @@ class InvoiceController extends Controller
                 $stockTransaction->inventory_type= 'inventory sale with invoice'.' '.$invoice_no;
                 $stockTransaction->save();
                 
+                $total_profit = $total_profit + $profit;
              }
-
+             $update_invoice_no=Invoice::find($invoice_id)->update(['profit'=> $total_profit]);
             });
             return redirect()->back()->with(['status' => 'success', 'message' => 'Invoice stored successfully']);
         } catch (Exception $e) {
@@ -254,11 +243,6 @@ class InvoiceController extends Controller
      */
     public function viewInvoice($id)
     {   
-        // $invoice=Invoice::with('customer')->where('id',$id)->first();
-        //  $invoiceChild=InvoiceChild::with('items')->where('invoice_id',$id)->get();
-        // $pdf = PDF::loadView('invoice.invoiceViewPdf', ['invoice' => $invoice, 'invoiceChild' => $invoiceChild]);
-        // return $pdf->stream('Invoice-' . $invoice->invoice_no . '-Date' . $invoice->date . '.pdf');
-
         $invoice = Invoice::with('customer')->where('id', $id)->first();
         $invoiceChild = InvoiceChild::with('items')->where('invoice_id', $id)->get();
         // Convert your view into HTML
@@ -417,8 +401,10 @@ class InvoiceController extends Controller
         ->first();
         if($invoice){
             $selling_price = $invoice->selling_price??'';
+            $last_selling_date = $invoice->created_at->format('Y-m-d');
         }else{
             $selling_price = '';
+            $last_selling_date = '';
         }
         if($driverStock){
             $driverCurrentStock = $driverStock->current_stock??0;
@@ -431,7 +417,7 @@ class InvoiceController extends Controller
         {            
             $unit_name = $item->unit->name??'';
             
-            return response()->json(['unit_name' => $unit_name,'purchase_price'=>$purchase_price,'driverCurrentStock'=>$driverCurrentStock,'selling_price'=>$selling_price]);
+            return response()->json(['unit_name' => $unit_name,'purchase_price'=>$purchase_price,'driverCurrentStock'=>$driverCurrentStock,'selling_price'=>$selling_price,'last_selling_date'=>$last_selling_date]);
         }
         else
         {

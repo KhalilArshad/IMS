@@ -10,13 +10,13 @@
        
 
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">Employee</div>
+            <div class="breadcrumb-title pe-3">Supplier</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Payroll List</li>
+                        <li class="breadcrumb-item active" aria-current="page">Payment Voucher</li>
                     </ol>
                 </nav>
             </div>
@@ -40,6 +40,34 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
+                    <div class="row mb-4">
+                        <form method="GET" action="{{ url('payment-voucher') }}" class="d-flex flex-wrap gap-2">
+                            @csrf
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="supplier">Supplier</label>
+                                    <select name="supplier_id" id="supplier_id" class="form-control">
+                                        <option value="">Select supplier</option>
+                                        @foreach($suppliers as $supplier)
+                                            <option value="{{ $supplier->id }}" {{ $supplier->id == $oldSupplierId ? 'selected' : '' }}>{{ $supplier->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="date_from">Date</label>
+                                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ $oldDateFrom }}">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="date_to"></label>
+                                <div class="form-group align-self-end">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                         <div class="row p-2">
                             <div class="col-12">
                                 <div class="table-responsive" >
@@ -47,35 +75,27 @@
                                         <thead>
                                             <tr>
                                             <th>Sr #</th>
-                                                                <th>Employee Name</th>
-                                                                 <th>Salary</th>
-                                                                <th>Advance</th>
-                                                                <th>Paid in Advance</th>
-                                                                <th>Add in Remaining</th>
-                                                                <th>Over time</th>
-                                                                <th>Current Month Salary</th>
+                                                                <th>Supplier Name</th>
                                                                 <th>Date</th>
-                                                                <th>Description</th>
+                                                                 <th>Previous Total</th>
+                                                                <th>Paid Amount</th>
+                                                                <th>Remaining</th>
                                                                 <th>View</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         @php($i = 1)
-                                            @foreach ($payrolls  as $payroll)
+                                            @foreach ($paymentVouchers  as $vouchers)
                                             <tr>
                                             <td>{{ $i }}</td>
-                                                                <td>{{ $payroll->employee->name }}</td>
-                                                                <td>{{ $payroll->salary }}</td>
-                                                                <td>{{ $payroll->advance }}</td>
-                                                                <td>{{ $payroll->paid_in_advance }}</td>
-                                                                <td>{{ $payroll->add_in_remaining }}</td>
-                                                                <td>{{ $payroll->overtime }}</td>
-                                                                <td>{{ $payroll->total_salary_to_be_paid }}</td>
-                                                                <td>{{ $payroll->date }}</td>
-                                                                <td>{{ $payroll->description}}</td>
+                                                                <td>{{ $vouchers->supplier->name }}</td>
+                                                                <td>{{ $vouchers->date }}</td>
+                                                                <td>{{ $vouchers->previous_balance }}</td>
+                                                                <td>{{ $vouchers->paid_amount }}</td>
+                                                                <td>{{ $vouchers->remaining }}</td>
                                                                 <td>
                                                                 <div class="d-flex order-actions">
-                                                                <a href="view-payroll/{{ $payroll->id }}" class="ms-3"  target="_blank"><i class='bx bxs-show  text-info'></i></a>
+                                                                <a href="view-voucher/{{ $vouchers->id }}" class="ms-3"  target="_blank"><i class='bx bxs-show  text-info'></i></a>
                                                                 </div>
                                                             </td>
                                             </tr>

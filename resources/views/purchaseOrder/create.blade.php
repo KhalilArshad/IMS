@@ -44,6 +44,7 @@
 
 
                     <div class="card-body">
+                    <div id="alertPlaceholder" class="container mt-3"></div>
                         <div class="card">
                             <!-- <div class="card-header input-title">
                                 <h4>{{__('Add New Employee')}}</h4>
@@ -54,7 +55,7 @@
                                     @csrf
                                     <div class="border border-3 p-4 rounded borderRmv">
                                        <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-5">
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Supplier Name<span
                                                     class="text-danger"> *</span></label>
@@ -64,6 +65,14 @@
                                                         <option value="{{ $supplier->id }}"> {{ $supplier->name }}</option>
                                                         @endforeach
                                                     </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1 d-flex align-items-center mt-4">
+                                            <div class="mb-3">
+                                                <label for="name" class="form-label"></label>
+                                                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+                                                        <i class="lni lni-plus"></i>
+                                                    </button>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -84,7 +93,7 @@
                                             <th scope="col">Item</th>
                                             <th scope="col">Unit</th>
                                             <th scope="col">Purchase Price</th>
-                                            <th scope="col">Selling Price</th>
+                                            <!-- <th scope="col">Selling Price</th> -->
                                             <th scope="col">Quantity</th>
                                             <th scope="col">Vat in %</th>
                                             <th scope="col">Vat Total</th>
@@ -102,11 +111,14 @@
                                     {{--/table row --}}
                                     <button type="button" class="btn btn-bordered btn-primary" style="float: right;" onclick="addItem()">Add New Item</button>
                                     <div class="row mt-4">
+                                           <?php
+                                            $currentDate = date('Y-m-d');
+                                            ?>
                                         <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Order Date<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="date" name="date" required class="form-control" id="date" placeholder="Enter date">
+                                                <input type="date" name="date" required class="form-control" value="{{$currentDate}}" placeholder="Enter date">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -148,12 +160,53 @@
 
                                 </div><!--end row-->
                             </form>
+                              <!-- Modal for adding a new supplier -->
+                <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addSupplierModalLabel">Add New Supplier</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="border border-3 p-4 rounded borderRmv">
+
+                                    <div class="mb-3">
+                                    <label for="inputProductTitle" class="form-label">Name</label>
+                                    <input type="text" name="name" required class="form-control" id="name" placeholder="Enter Name">
+                                    <input type="hidden" name="update_supplier_id" required class="form-control" id="update_supplier_id" placeholder="Enter Name">
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <label for="inputProductTitle" class="form-label">Phone Number</label>
+                                    <input type="text" name="phone_no" class="form-control" id="phone_no" placeholder="Enter Phone No">
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <label for="inputProductTitle" class="form-label">Email</label>
+                                    <input type="text" name="email" class="form-control" id="email" placeholder="Enter Email">
+                                    </div>
+                                    <div class="mb-3" id="hide_field">
+                                    <label for="inputProductTitle" class="form-label">Opening Balance</label>
+                                    <input type="number" name="opening_balance" class="form-control" id="opening_balance" placeholder="Enter Opening Balance">
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-info" onclick="saveSupplier();">Save changes</button>
+                            
+                            </div>
                         </div>
                     </div>
-
+                </div>
+                        </div>
+                    </div>
+              
                     </div>
                 </div>
-
+           
     </div>
 </div>
 <!--end page wrapper -->
@@ -195,7 +248,7 @@ function addItem()
             html += '<td><select required name="itemid[]" style=" width:190px;" id="item_list_'+items+'"     onchange="select_Item(this.value,'+items+')"  class="form-control"> <option value="">Select Item</option>@foreach($items as $item)<option value="{{$item->id}}">{{$item->name}}</option>@endforeach</select></td>';
                 html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='unit_"+items+"' name='unit[]' placeholder='Unit' disabled class='form-control custom-input'></td>";
                 html += "<td><input required type='number' min='0.00' step='0.01' autocomplete='off'  id='unitprice_"+items+"'    onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='unit_price[]' placeholder='Unit Price' class='form-control custom-input'></td>";
-                html += "<td><input required type='number' min='0.00' step='0.01' autocomplete='off'  id='selling_price_"+items+"'  name='selling_price[]' placeholder='Selling Price' class='form-control custom-input'></td>";
+              
                 html += "<td> <input required type='number' min='0' autocomplete='off' id='quantity_"+items+"' onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='quantity[]' placeholder='Quantity' class='form-control custom-input'></td>";
 
                 html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
@@ -301,6 +354,43 @@ function addItem()
     
     // Set the value of the input field to today's date
     document.getElementById('date').value = formattedDate;
+
+    function saveSupplier() {
+        const name = $('#name').val();
+        const phone_no = $('#phone_no').val();
+        const email = $('#email').val();
+        const opening_balance = $('#opening_balance').val();
+        const update_supplier_id = $('#update_supplier_id').val();
+        const csrf_token = '{{ csrf_token() }}';
+            $.ajax({
+            type: "POST",
+            url: '{{ route("supplier-save") }}',
+            data: {
+                _token: csrf_token, 
+                name: name,
+                phone_no: phone_no,
+                email: email,
+                opening_balance: opening_balance,
+                update_supplier_id: update_supplier_id,
+            },
+            success: function(res) {
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
+                myModal.hide();
+                $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">Supplier Saved Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+            // Clear form fields
+            $('#name').val('');
+            $('#phone_no').val('');
+            $('#email').val('');
+            $('#opening_balance').val('');
+            // Optionally, hide the message after a delay
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000); // Adjust time as needed
+            },
+        
+            });
+        }
     </script>
 
 @endsection

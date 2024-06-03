@@ -21,7 +21,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ url('create-invoice') }}">Create Invoice</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ url('create-invoice') }}">Stock Assign To Driver</a></li>
                     </ol>
                 </nav>
             </div>
@@ -66,11 +66,14 @@
                                                     </select>
                                             </div>
                                         </div>
+                                        <?php
+                                            $currentDate = date('Y-m-d');
+                                            ?>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Date<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="date" name="date" required class="form-control" id="date" placeholder="Enter date">
+                                                <input type="date" name="date" required class="form-control"  value="{{$currentDate}}" placeholder="Enter date">
                                             </div>
                                         </div>
                                     </div>
@@ -335,13 +338,13 @@ function addItem()
                         }
                     }
 
-                    var today = new Date();
+                    // var today = new Date();
     
     // Format the date as YYYY-MM-DD for input type date
-    var formattedDate = today.toISOString().substr(0, 10);
+    // var formattedDate = today.toISOString().substr(0, 10);
     
     // Set the value of the input field to today's date
-    document.getElementById('date').value = formattedDate;
+    // document.getElementById('date').value = formattedDate;
     </script>
 
 @endsection

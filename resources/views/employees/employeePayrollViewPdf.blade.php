@@ -151,12 +151,12 @@
             float: right;
             text-align: right;
             width: 40%;
-            margin-top: -110;
+            margin-top: -100;
         }
         strong {
         font-weight: bold;
-        font-size: 140%; /* Makes the text larger */
-    }
+        font-size: 100%; /* Makes the text larger */
+        }
         /* bill details */
         .pdf-bill-details {
             margin: 10px 0px 10px 530px;
@@ -198,10 +198,10 @@
     <div class="container">
         <div class="company-details">
             <p>
-            <strong>TASHYED W ENGAZ CO </strong> <br>
-            &nbsp;&nbsp;&nbsp; Wholesale, retail and food items <br>
-            &nbsp;  C.R.: 1010324111 - C.C.NO.:4633 <br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;    VAT:300491127800003
+            <strong>Taghreed Mohammed Ibrahim Al </strong> <br>
+            <strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maqil Trading Est</strong> <br>
+            &nbsp;  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; الدمام،الدمام  32416<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; VAT No:311360273200003
             </p>
         </div>
 
@@ -211,10 +211,9 @@
         </div>
         <div class="company-details-arabic">
             <p dir="rtl">
-            <strong> شركة تشیید وإنجاز </strong><br>
-            تجارة الجملة والتجزنة والمواد الغذالية <br>
-            س.ت:١٠١٠٣٢٤١١١ - عضوية رقم:٤٦٣٣<br>
-            الرقم الضريبي:٣٠٠٤٩١١٢٧٨٠٠٠٠٣
+            <strong> امؤسسة تغريد محمد ابراهيم المعقل التجارية</strong><br>
+            32416  الدمام،الدمام <br>
+            الرقم الضريبي :311360273200003
             </p>
         </div>
     </div>
@@ -222,20 +221,20 @@
         <thead>
             <tr>
                 <th>Employee Name</th>
-                <th>Department</th>
+                <th>Phone No</th>
                 <th>Date Of Joining</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>{{ $payroll->employee->name }}</td>
-                <td>{{ $payroll->employee->designation }}</td>
-                <td>{{ $payroll->employee->date }}</td>
+                <td>{{ $payroll->employee->phone_no }}</td>
+                <td>{{ $payroll->employee->date_of_joining }}</td>
             </tr>
             <tr>
                 <th>Salary Slip Of Month</th>
                 <th>Designation</th>
-                <th>Employee No:</th>
+                <th>Salary</th>
             </tr>
             <tr>
                 @php
@@ -244,17 +243,37 @@
                 @endphp
                 <td>{{ $salary_month }}</td>
                 <td>{{ $payroll->employee->designation }}</td>
-                <td>{{ $payroll->employee->id }}</td>
+                <td>{{ $payroll->employee->salary}}</td>
             </tr>
             <tr>
-                <th>Salary</th>
                 <th>Advance</th>
                 <th>Paid In Advance</th>
+                <th>Remaining Advance</th>
             </tr>
             <tr>
-                <td>{{ $payroll->salary }}</td>
+                @php
+                $advance = $payroll->advance;
+                $paid_in_advance = $payroll->paid_in_advance;
+                $remainingAdvance =  $advance - $paid_in_advance;
+                @endphp
                 <td>{{ $payroll->advance }}</td>
                 <td>{{ $payroll->paid_in_advance }}</td>
+                <td>{{ $remainingAdvance }}</td>
+            </tr>
+            <tr>
+                <th>Remaining Amount</th>
+                <th>Add in Remaining</th>
+                <th>Total Remaining</th>
+            </tr>
+            <tr>
+                @php
+                $remaining = $payroll->remaining;
+                $add_in_remaining = $payroll->add_in_remaining;
+                $TotalRemaining =  $remaining + $add_in_remaining;
+                @endphp
+                <td>{{ $payroll->remaining }}</td>
+                <td>{{ $payroll->add_in_remaining }}</td>
+                <td>{{ $TotalRemaining }}</td>
             </tr>
             <tr>
                 <th>Over Time</th>
@@ -270,7 +289,7 @@
     </table>
 
     <div class="footer">
-        © 2024 TASHYED W ENGAZ CO. All rights reserved.
+        © 2024 Taghreed Mohammed Ibrahim Al Maqil Trading Est All rights reserved.
     </div>
 </body>
 

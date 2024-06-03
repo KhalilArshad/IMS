@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\ShopLedger;
 use App\Models\Supplier;
 use App\Models\SupplierLedger;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Mpdf\Mpdf;
 
 class SupplierController extends Controller
 {
@@ -97,9 +99,15 @@ class SupplierController extends Controller
      */
     public function destroy($id)
     {
-        Supplier::find($id)->delete();
-        return redirect()->back()->with(['status' => 'success', 'message' => 'Supplier deleted successfully.']);
+     
+        try {
+            Supplier::find($id)->delete();
+            return redirect()->back()->with(['status' => 'success', 'message' => 'Supplier deleted successfully.']);
+        } catch (\Exception $e) {
+            return redirect()->back()->with(['status' => 'danger', 'message' => 'Error deleting driver: ' . $e->getMessage()]);
+        }
     }
+    
 
     public function supplierLedger(){
         $suppliers= Supplier::select('id','name')->get();
@@ -191,6 +199,14 @@ class SupplierController extends Controller
          $supplierLedger->date= $date;
          $supplierLedger->description= $description;
          $supplierLedger->save();
+         $voucher = new Voucher();
+         $voucher->supplier_id= $request->supplier_id;
+         $voucher->previous_balance= $supplierPreviousBalance;
+         $voucher->type= 'Payment';
+         $voucher->paid_amount=  $request->paid_amount;
+         $voucher->remaining= $updatedSupplierBalance;
+         $voucher->date= $date;
+         $voucher->save();
 
              if ($request->paid_amount > 0) {
                  $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
@@ -218,5 +234,46 @@ class SupplierController extends Controller
         } catch (Exception $e) {
             return redirect('supplier-payable')->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
         }
+    }
+
+    public function paymentVoucher(Request $request){
+
+        $oldDateFrom = $request->input('date_from', '');
+        $oldSupplierId = $request->input('supplier_id', '');
+    
+        $query = Voucher::with('supplier')->where('type', '=', 'Payment')->orderBy('id', 'desc');
+    
+        if ($request->has('supplier_id') && !empty($request->input('supplier_id'))) {
+            $query->where('supplier_id', $request->input('supplier_id'));
+        }
+    
+        if ($request->has('date_from') && !empty($request->input('date_from'))) {
+            $query->whereDate('date', '=', $request->input('date_from'));
+        }
+        $paymentVouchers = $query->get();
+        $suppliers = Supplier::all();
+     
+        return view('supplier.VoucherList',compact('paymentVouchers','suppliers','oldSupplierId','oldDateFrom'));
+    }
+
+    public function viewVoucher($id)
+    {   
+        $voucher = Voucher::with('supplier')->where('id', $id)->first();
+        // Convert your view into HTML
+        $html = view('supplier.voucherViewPdf', [
+            'voucher' => $voucher, 
+        ])->render();
+        // Create an instance of Mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8', 
+            'format' => 'A4', 
+            'autoScriptToLang' => true, 
+            'autoLangToFont' => true
+        ]);
+        // Write HTML to the PDF
+        $mpdf->WriteHTML($html);
+        // Output the generated PDF to browser
+        return response($mpdf->Output('voucher-' . $voucher->id . '-Date' . $voucher->date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
     }
 }

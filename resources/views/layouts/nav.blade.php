@@ -37,8 +37,8 @@
                 <li> <a href="{{ url('supplier-list') }}" ><i class="bx bx-list-plus"></i>List</a>
                 </li>
                     <li> <a href="{{ url('supplier-ledger') }}" ><i class="bx bx-list-ul"></i>Supplier Ledger</a>
-
-
+                </li>
+                    <li> <a href="{{ url('payment-voucher') }}" ><i class="bx bx-list-ul"></i>Payment Voucher</a>
                 </li>
             </ul>
         </li>
@@ -52,8 +52,8 @@
                 <li> <a href="{{ url('customer-list') }}" ><i class="bx bx-list-plus"></i>List</a>
                 </li>
                     <li> <a href="{{url('customer-ledger')}}" ><i class="bx bx-list-ul"></i>Customer Ledger</a>
-
-
+                </li>
+                <li> <a href="{{ url('Receipt-voucher') }}" ><i class="bx bx-list-ul"></i>Receipt  Voucher</a>
                 </li>
             </ul>
         </li>
@@ -105,7 +105,7 @@
             <a class="has-arrow" href="javascript:;">
                 <div class="parent-icon"><i class="lni lni-caravan"></i>
                 </div>
-                <div class="menu-title">Vehicle</div>
+                <div class="menu-title">Vehicle/Driver</div>
             </a>
             <ul>
         <!-- </li> -->
@@ -114,6 +114,8 @@
                 <li> <a href="{{ url('add-vehicle') }}" ><i class="bx bx-list-plus"></i>Add Vehicle</a>
                 </li>
                     <li> <a href="{{ url('add-vehicle-expense') }}" ><i class="bx bx-list-ul"></i>Vehicle Expense</a>
+                </li>
+                    <li> <a href="{{ url('add-vehicle-installment') }}" ><i class="bx bx-list-ul"></i>Vehicle Installment</a>
                 </li>
             </ul>
         </li>
@@ -148,7 +150,7 @@
                 </li>
                 <li> <a href="{{url('employees-list')}}" ><i class="bx bx-list-ul"></i>Employee List</a>
                 </li>
-                <li> <a href="{{url('AddEmployee-advance')}}" ><i class="bx bx-list-ul"></i>Add Employee Advance</a>
+                <li> <a href="{{url('AddEmployee-advance')}}" ><i class="bx bx-list-ul"></i>Employee Advance</a>
                 </li>
                 <li> <a href="{{url('get-payroll')}}" ><i class="bx bx-list-ul"></i>Payroll</a>
                 </li>
@@ -163,11 +165,13 @@
             </a>
             <ul>
         <!-- </li> -->
-                <li> <a href="#" ><i class="bx bx-list-ul"></i>Daily Sale Report</a>
+                <li> <a href="{{url('driverDaily-saleReport')}}" ><i class="bx bx-list-ul"></i>Daily Driver Sale Report</a>
                 </li>
-                <li> <a href="#" ><i class="bx bx-list-plus"></i>Cash Flow</a>
+                <li> <a href="{{url('driverDailyReport')}}" ><i class="bx bx-list-ul"></i>Driver Daily Report</a>
                 </li>
-                    <li> <a href="#" ><i class="bx bx-list-ul"></i>Vehicle Expense</a>
+                <li> <a href="{{url('driverReport')}}" ><i class="bx bx-list-ul"></i>Driver Sale Purchase & Profit</a>
+                </li>
+                <li> <a href="{{url('cash-flow')}}" ><i class="bx bx-list-plus"></i>Cash Flow</a>
                 </li>
             </ul>
         </li>

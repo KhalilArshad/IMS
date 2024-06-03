@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -144,6 +145,9 @@ Route::get('supplier-ledger', [SupplierController::class, 'supplierLedger'])->na
 Route::post('getSupplierLedger', [SupplierController::class, 'getSupplierLedger'])->name('getSupplierLedger');
 Route::get('supplier-payable', [SupplierController::class, 'supplierPayAbleCreate'])->name('supplier-payable');
 Route::post('SaveSupplierPayable', [SupplierController::class, 'SaveSupplierPayable'])->name('SaveSupplierPayable');
+Route::get('payment-voucher', [SupplierController::class, 'paymentVoucher'])->name('payment-voucher');
+Route::get('view-voucher/{id}', [SupplierController::class, 'viewVoucher'])->name('view-voucher');
+
 // customers route
 Route::get('customer-list', [CustomerController::class, 'index'])->name('customer-list');
 Route::post('customer-save', [CustomerController::class, 'store'])->name('customer-save');
@@ -153,6 +157,8 @@ Route::get('customer-ledger', [CustomerController::class, 'customerLedger'])->na
 Route::post('getCustomerLedger', [CustomerController::class, 'getCustomerLedger'])->name('getCustomerLedger');
 Route::get('customer-receivable', [CustomerController::class, 'customerReceivableCreate'])->name('customer-receivable');
 Route::post('SaveCustomerReceivable', [CustomerController::class, 'SaveCustomerReceivable'])->name('SaveCustomerReceivable');
+Route::get('Receipt-voucher', [CustomerController::class, 'receiptVoucher'])->name('Receipt-voucher');
+Route::get('view-receiptVoucher/{id}', [CustomerController::class, 'viewVoucher'])->name('view-receiptVoucher');
 
 //Units and Item routes
 Route::get('add-unit', [ProductController::class, 'index'])->name('add-unit');
@@ -198,9 +204,16 @@ Route::post('vehicle-save',[VehicleController::class,'saveVehicle'])->name('vehi
 Route::get('vehicle-delete/{id}', [VehicleController::class, 'vehicleDelete'])->name('vehicle-delete');
 Route::post('get-vehicle-data',[VehicleController::class,'getVehicleData'])->name('get-vehicle-data');
 Route::get('add-vehicle-expense',[VehicleController::class,'addVehicleExpense'])->name('add-vehicle-expense');
+Route::get('add-vehicle-installment',[VehicleController::class,'addVehicleInstallment'])->name('add-vehicle-installment');
+Route::post('get-vehicle-remaining', [VehicleController::class, 'getRemaining'])->name('get-vehicle-remaining');
+
+Route::post('save-vehicle-installment',[VehicleController::class,'saveVehicleInstallment'])->name('save-vehicle-installment');
 Route::post('save-vehicle-expense',[VehicleController::class,'saveVehicleExpense'])->name('save-vehicle-expense');
 Route::get('vehicle-expense-delete/{id}', [VehicleController::class, 'vehicleExpenseDelete'])->name('vehicle-expense-delete');
 Route::post('get-vehicleExpense-data',[VehicleController::class,'getVehicleExpenseData'])->name('get-vehicleExpense-data');
+Route::post('saveAssignCustomerToDriver',[VehicleController::class,'saveAssignCustomerToDriver'])->name('saveAssignCustomerToDriver');
+
+Route::post('getDriverCustomers',[VehicleController::class,'getDriverCustomers'])->name('getDriverCustomers');
 
 //report route
 Route::post('get-dashboard-data',[DashboardController::class,'index'])->name('get-dashboard-data');
@@ -217,9 +230,23 @@ Route::post('updateEmployee', [EmployeeController::class, 'updateEmployee'])->na
 Route::get('deleteEmployee', [EmployeeController::class, 'deleteEmployee'])->name('deleteEmployee');
 Route::post('save-employee-advance', [EmployeeController::class, 'saveEmployeeAdvance'])->name('save-employee-advance');
 Route::get('AddEmployee-advance', [EmployeeController::class, 'AddEmployeeAdvance'])->name('AddEmployee-advance');
+Route::get('getEmployeeAdvanceFilter', [EmployeeController::class, 'AddEmployeeAdvance'])->name('getEmployeeAdvanceFilter');
 Route::get('createPayroll', [EmployeeController::class, 'createPayroll'])->name('createPayroll');
 Route::post('savePayroll', [EmployeeController::class, 'savePayroll'])->name('savePayroll');
 Route::get('get-payroll', [EmployeeController::class, 'getPayroll'])->name('get-payroll');
 Route::get('view-payroll/{id}', [EmployeeController::class, 'viewPayroll'])->name('view-payroll');
+
+//reports
+
+Route::get('driverDaily-saleReport', [ReportController::class, 'dailyDriverSaleReport'])->name('driverDaily-saleReport');
+Route::get('getDriverDailySaleReport', [ReportController::class, 'dailyDriverSaleReport'])->name('getDriverDailySaleReport');
+Route::get('cash-flow', [ReportController::class, 'cashFlow'])->name('cash-flow');
+Route::get('driverDailyReport', [ReportController::class, 'driverDailyReport'])->name('driverDailyReport');
+Route::get('getDriverDailyReport', [ReportController::class, 'driverDailyReport'])->name('getDriverDailyReport');
+Route::get('driverDailyReportPrint', [ReportController::class, 'driverDailyReportPrint'])->name('driverDailyReportPrint');
+Route::get('driverReport', [ReportController::class, 'driverReport'])->name('driverReport');
+Route::get('getDriverReport', [ReportController::class, 'driverReport'])->name('getDriverReport');
+Route::get('allDriverReportPrint', [ReportController::class, 'allDriverReportPrint'])->name('allDriverReportPrint');
+Route::get('singleDriverReportPrint', [ReportController::class, 'singleDriverReportPrint'])->name('singleDriverReportPrint');
 
 });

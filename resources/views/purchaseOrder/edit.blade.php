@@ -81,8 +81,7 @@
                                             <!-- <th scope="col"></th> -->
                                             <th scope="col">Item</th>
                                             <th scope="col">Unit</th>
-                                            <th scope="col">Unit Price</th>
-                                            <th scope="col">Selling Price</th>
+                                            <th scope="col">Purchase Price</th>
                                             <th scope="col">Quantity</th>
                                             <th scope="col">Total Price</th>
                                             <th scope="col">Remove</th>
@@ -112,11 +111,6 @@
                                                                     oninput="calculatetotal({{ $rowno }})"
                                                                     style="width:100px; margin-left:10px;"
                                                                     value="{{ $record->unit_price }}"
-                                                                    class="form-control unitprice" /></td>
-                                                            <td><input type="text" name="selling_price[]"
-                                                                    id="selling_price_{{ $rowno }}"
-                                                                    style="width:100px; margin-left:10px;"
-                                                                    value="{{ $record->sale_price }}"
                                                                     class="form-control unitprice" /></td>
                                                             <td><input type="text" name="quantity[]"
                                                                     id="quantity_{{ $rowno }}"
@@ -169,7 +163,7 @@
                                             <div class="mb-3">
                                                 <label for="paid_amount" class="form-label">Paid Amount<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="0" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
+                                                <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="{{ $purchaseOrder->current_payment??0 }}" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
                                             </div>
                                         </div>
                                         <div class="col-md-3">

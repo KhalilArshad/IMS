@@ -181,6 +181,29 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-sm-4">
+                                            <div class="card radius-10 border-start border-0 border-3 border-success">
+                                                <div class="card-body">
+
+                                                    <a href="#">
+                                                        <div class="p-3 border radius-10">
+                                                            <h4 class="text-success text-center">Remaining</h4>
+                                                            <hr>
+                                                            <div class="d-flex align-items-center">
+                                                                <div>
+                                                                    <p class="mb-0 text-secondary">Total Remaining</p>
+                                                                    <h5 class="my-1 text-success"></h5>
+                                                                </div>
+                                                                <div class=" ms-auto">
+                                                                    <p class="mb-0 text-white badge bg-success rounded-pill"> {{ $employee->remaining }}</p>
+                                                                    <h5 class="my-1 text-success"></h5>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>

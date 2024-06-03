@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\CustomerLedger;
 use App\Models\ShopLedger;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Mpdf\Mpdf;
+
 class CustomerController extends Controller
 {
     /**
@@ -97,8 +100,12 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
-        Customer::find($id)->delete();
-        return redirect()->back()->with(['status' => 'success', 'message' => 'Customer deleted successfully.']);
+        try {
+            Customer::find($id)->delete();
+            return redirect()->back()->with(['status' => 'success', 'message' => 'Customer deleted successfully.']);
+        } catch (\Exception $e) {
+            return redirect()->back()->with(['status' => 'danger', 'message' => 'Error deleting driver: ' . $e->getMessage()]);
+        }
     }
 
     
@@ -192,6 +199,15 @@ class CustomerController extends Controller
          $customerLedger->description= $description;
          $customerLedger->save();
 
+         $voucher = new Voucher();
+         $voucher->customer_id= $request->customer_id;
+         $voucher->previous_balance= $customerPreviousBalance;
+         $voucher->type= 'Receipt';
+         $voucher->paid_amount=  $request->paid_amount;
+         $voucher->remaining= $updatedCustomerBalance;
+         $voucher->date= $date;
+         $voucher->save();
+
              if ($request->paid_amount > 0) {
                  $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
                  if (!$shopLedgerBalance) {
@@ -218,5 +234,47 @@ class CustomerController extends Controller
         } catch (Exception $e) {
             return redirect('customer-receivable')->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
         }
+    }
+    public function receiptVoucher(Request $request)
+    {
+        $oldDateFrom = $request->input('date_from', '');
+        $oldCustomerId = $request->input('customer_id', '');
+    
+        $query = Voucher::with('customer')->where('type', '=', 'Receipt')->orderBy('id', 'desc');
+    
+        if ($request->has('customer_id') && !empty($request->input('customer_id'))) {
+            $query->where('customer_id', $request->input('customer_id'));
+        }
+    
+        if ($request->has('date_from') && !empty($request->input('date_from'))) {
+            $query->whereDate('date', '=', $request->input('date_from'));
+        }
+    
+        $paymentVouchers = $query->get();
+        $customers = Customer::all();
+    
+        return view('customer.VoucherList', compact('paymentVouchers', 'customers', 'oldCustomerId', 'oldDateFrom'));
+    }
+    
+
+    public function viewVoucher($id)
+    {   
+        $voucher = Voucher::with('customer')->where('id', $id)->first();
+        // Convert your view into HTML
+        $html = view('customer.voucherViewPdf', [
+            'voucher' => $voucher, 
+        ])->render();
+        // Create an instance of Mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8', 
+            'format' => 'A4', 
+            'autoScriptToLang' => true, 
+            'autoLangToFont' => true
+        ]);
+        // Write HTML to the PDF
+        $mpdf->WriteHTML($html);
+        // Output the generated PDF to browser
+        return response($mpdf->Output('voucher-' . $voucher->id . '-Date' . $voucher->date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
     }
 }

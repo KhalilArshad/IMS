@@ -16,7 +16,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Vehicle Expense List</li>
+                        <li class="breadcrumb-item active" aria-current="page">Vehicle Installment List</li>
                     </ol>
                 </nav>
             </div>
@@ -45,10 +45,36 @@
                                     <div class="ms-auto">
 
                                      <!-- <a href="" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Supplier</a> -->
-                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal"><i class="bx bxs-plus-square"></i> Add Vehicle Expense</a>
+                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal"><i class="bx bxs-plus-square"></i> Add Vehicle Installment</a>
 
                                     </div>
                             </div>
+
+                            <div class="row  mb-4">
+                          <?php
+                            $currentDate = date('Y-m-d');
+                            ?>
+                            <form method="GET"  action="{{ url('add-vehicle-installment') }}" class="d-flex flex-wrap gap-2">
+                            @csrf
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="vehicle">Vehicle</label>
+                                    <select name="vehicle_id" id="vehicle_id" class="form-control">
+                                        <option value="">Select vehicle</option>
+                                         @foreach($vehicles as $vehicle)
+                                         <option value="{{ $vehicle->id }}" {{ old('vehicle', $oldVehicleId) == $vehicle->id ? 'selected' : '' }}>{{ $vehicle->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label for="date_to"></label>
+                                <div class="form-group align-self-end">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                                </div>
+                            </form>
+                        </div>
                         <div class="row p-2">
                             <div class="col-12">
                                 <div class="table-responsive" >
@@ -58,50 +84,40 @@
                                                 <th>Sr #</th>
                                                 <th>Vehicle</th>
                                                 <th>Date</th>
-                                                <th>Expense Type</th>
-                                                <th>Amount</th>
+                                                <th>Installment Amount</th>
+                                                <th>Remaining</th>
                                                 <th>Description</th>
-                                                <th>Action</th>
+                                                <!-- <th>Action</th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
                                         @php($i = 1)
-                                            @foreach ($vehicleExpenses  as $expense)
+                                            @foreach ($vehicleInstallments  as $vehicleInstallment)
                                             <tr>
                                                 <td>{{ $i }}</td>
                                                 
 
-                                                <td>{{ $expense->vehicle->name }}-{{ $expense->vehicle->registration_no }}- {{$expense->vehicle->driver->name}}</td>
+                                                <td>{{ $vehicleInstallment->vehicle->name }}</td>
                                                 <td>
                                               
-                                                   {{ $expense->date}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $expense->expense_type}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $expense->amount}}
-                                                  
-                                                  </td>
-                                                <td>
-                                              
-                                                   {{ $expense->description}}
-                                                  
-                                                  </td>
-                                            
-                                                <td>
-                                                
-                                                 <div class="d-flex order-actions">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addSupplierModal" onclick="getVehicleData('{{$expense->id}}')" class="ms-3"><i class='bx bxs-edit text-info'></i></a>
-                                                    <a href="vehicle-expense-delete/{{ $expense->id }}" class="ms-3"><i class='bx bxs-trash text-danger'></i></a>
-
-                                                    </div>
+                                                    {{ $vehicleInstallment->date}}
+                                                    
                                                 </td>
-
+                                                <td>
+                                                    
+                                                    {{ $vehicleInstallment->amount}}
+                                                    
+                                                </td>
+                                                <td>
+                                                    {{ $vehicleInstallment->remaining}}
+                                              
+                                                  
+                                                  </td>
+                                                <td>
+                                              
+                                                   {{ $vehicleInstallment->description}}
+                                                  
+                                                  </td>
 
                                             </tr>
                                             @php($i++)
@@ -119,7 +135,7 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addSupplierModalLabel">Add Vehicle Expense</h5>
+                            <h5 class="modal-title" id="addSupplierModalLabel">Add Vehicle Installment</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -129,34 +145,26 @@
                                  <div class="mb-3 col-6">
                                     <label for="inputProductTitle" class="form-label">Vehicle<span
                                                     class="text-danger"> *</span></label>
-                                      <select class="form-control selectric lang" name="vehicle_id" id="vehicle_id" required>
+                                      <select class="form-control selectric lang" name="vehicle_id_save" id="vehicle_id_save" required>
                                         <option value="">{{ __('Select Vehicle') }}</option>
                                                         @foreach ($vehicles as $vehicle)
-                                        <option value="{{ $vehicle->id }}"> {{ $vehicle->name }} - {{    $vehicle->registration_no }} - {{ $vehicle->driver->name}}</option>
+                                        <option value="{{ $vehicle->id }}"> {{ $vehicle->name }} - {{    $vehicle->registration_no }}</option>
                                                         @endforeach
                                       </select>
                                     </div>
                                     
                                     <div class="mb-3 col-6">
-                                    <label for="inputProductTitle" class="form-label">Expense Type<span
+                                    <label for="inputProductTitle" class="form-label">Total Remaining<span
                                                     class="text-danger"> *</span></label>
-                                        <select class="form-control selectric lang" name="expense_type" id="expense_type" required>
-                                        <option value="">{{ __('Select Expense Type') }}</option>
-                                        <option value="Driver Daily Expense">Driver Daily Expense</option>
-                                        <option value="Rent">Rent</option>
-                                        <option value="Fuel">Fuel</option>
-                                        <option value="Repairing">Repairing</option>
-                                        <option value="Other Expense">Other Expense</option>
-                                                  
-                                      </select>
+                                    <input type="number" name="remaining"  class="form-control" id="remaining" placeholder="Total Remaining" readonly>
                                     </div>
                                  </div>
                                  <div class="row">
                                     <div class="mb-3 col-6">
-                                    <label for="inputProductTitle" class="form-label">Amount<span
+                                    <label for="inputProductTitle" class="form-label">Installment Amount<span
                                                     class="text-danger"> *</span></label>
-                                    <input type="text" name="amount"  class="form-control" id="amount" placeholder="Enter amount" required>
-                                    <input type="hidden" name="update_vehicleExpense_id"  class="form-control" id="update_vehicleExpense_id" placeholder="Enter amount" required>
+                                    <input type="text" name="amount"  class="form-control" id="amount" placeholder="Enter amount" required oninput="validateInstallmentAmount()">
+                                    <!-- <input type="hidden" name="update_vehicleExpense_id"  class="form-control" id="update_vehicleExpense_id" placeholder="Enter amount" required > -->
                                     </div>
                                     <?php
                                             $currentDate = date('Y-m-d');
@@ -181,7 +189,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-info" onclick="saveVehicleExpense();">Save changes</button>
+                            <button type="button" class="btn btn-info"  id="saveButton"  onclick="saveVehicleInstallment();">Save changes</button>
                           
                         </div>
                     </div>
@@ -203,16 +211,27 @@
 
     <script>
     $(document).ready(function () {
-            $('#example').DataTable();
+            // $('#example').DataTable();
+            var table = $('#example').DataTable({
+            lengthChange: true,
+            'searching': true,
+            'paging': true,
+            'sorting': false,
+            'info': false,
+            buttons: ['pdf', 'print']
+        });
+
+        table.buttons().container()
+            .appendTo('#example_wrapper .col-md-6:eq(0)');
     });
-    function saveVehicleExpense() {
-        const vehicle_id = $('#vehicle_id').val();
-        const expense_type = $('#expense_type').val();
+    function saveVehicleInstallment() {
+        const vehicle_id = $('#vehicle_id_save').val();
+        const remaining = $('#remaining').val();
         const amount = $('#amount').val();
         const date = $('#date').val();
         const description = $('#description').val();
-        const update_vehicleExpense_id = $('#update_vehicleExpense_id').val();
-        if (!vehicle_id || !vehicle_id || !expense_type || !description) {
+        // const update_vehicleExpense_id = $('#update_vehicleExpense_id').val();
+        if (!vehicle_id || !vehicle_id || !amount) {
         // Display error message for required fields
         $('#alertPlaceholderReq').html('<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" role="alert">All required fields must be filled.</div>');
         return; // Stop further execution
@@ -220,25 +239,26 @@
         const csrf_token = '{{ csrf_token() }}';
             $.ajax({
             type: "POST",
-            url: '{{ route("save-vehicle-expense") }}',
+            url: '{{ route("save-vehicle-installment") }}',
             data: {
                 _token: csrf_token, 
                 vehicle_id: vehicle_id,
-                expense_type: expense_type,
+                remaining: remaining,
                 amount: amount,
                 date: date,
                 description: description,
-                update_vehicleExpense_id: update_vehicleExpense_id,
+                // update_vehicleExpense_id: update_vehicleExpense_id,
             },
             success: function(res) {
                 var myModal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
                 myModal.hide();
-                $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">Vehicle Expense Saved Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">Vehicle Installment Saved Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
             // Clear form fields
-            $('#name').val('');
-            $('#phone_no').val('');
-            $('#email').val('');
+            $('#vehicle_id_save').val('');
+            $('#remaining').val('');
+            $('#amount').val('');
+            $('#description').val('');
             // Optionally, hide the message after a delay
             setTimeout(function() {
                 window.location.reload();
@@ -249,41 +269,46 @@
         }
 
 
-        function getVehicleData(id) {
-            document.getElementById('addSupplierModalLabel').textContent = 'Update Vehicle Expense';
-            const csrf_token = '{{ csrf_token() }}';
-                $.ajax({
-                type: "POST",
-                url: '{{ route("get-vehicleExpense-data") }}',
-                data: {
-                    _token: csrf_token, 
-                    id: id,
-                },
-                success: function(res) {
-                    console.log(res)
-                    $('#amount').val(res.amount);
-                    $('#date').val(res.date);
-                    $('#description').val(res.description);
-                    $('#vehicle_id option').each(function() {
-                        if ($(this).val() == res.vehicle_id) {
-                            $(this).prop('selected', true);
-                        } else {
-                            $(this).prop('selected', false);
-                        }
-                    });
-                    $('#expense_type option').each(function() {
-                        if ($(this).val() == res.expense_type) {
-                            $(this).prop('selected', true);
-                        } else {
-                            $(this).prop('selected', false);
-                        }
-                    });
-                    $('#update_vehicleExpense_id').val(id);
+        $(document).ready(function() {
+            $('#vehicle_id_save').change(function() {
+                var vehicleId = $(this).val();
+                console.log(vehicleId)
+                if (vehicleId) {
+                    const csrf_token = '{{ csrf_token() }}';
+                    $.ajax({
+                    type: "POST",
+                    url: '{{ route("get-vehicle-remaining") }}',
+                    data: {
+                        _token: csrf_token, 
+                        id: vehicleId,
+                    },
+                    success: function(res) {
+                        console.log(res)
+                        $('#remaining').val(res.remaining);
 
-                },
-            
-                });
+                    },
+                
+                    });
+                } else {
+                    $('#remaining').val('');
+                }
+            });
+        });
+
+        function validateInstallmentAmount() {
+        var remaining = parseFloat($('#remaining').val());
+        var amount = parseFloat($('#amount').val());
+
+        if (isNaN(amount) || amount <= remaining) {
+            $('#alertPlaceholderReq').html('');
+            $('#amount').removeClass('is-invalid');
+            $('#saveButton').prop('disabled', false);
+        } else {
+            $('#alertPlaceholderReq').html('<div class="alert alert-danger" role="alert">Installment amount cannot be greater than the remaining amount.</div>');
+            $('#amount').addClass('is-invalid');
+            $('#saveButton').prop('disabled', true);
         }
+    }
     </script>
 
     

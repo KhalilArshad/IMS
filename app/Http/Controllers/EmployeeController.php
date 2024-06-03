@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\EmployeeAdvance;
+use App\Models\ShopLedger;
 use Mpdf\Mpdf;
 
 class EmployeeController extends Controller
@@ -169,18 +170,55 @@ class EmployeeController extends Controller
         }
     }
 
-    public function AddEmployeeAdvance(){
-        $employeesAdvance= EmployeeAdvance::with('employee')->get();
+    public function AddEmployeeAdvance(Request $request){
+
+        $query = EmployeeAdvance::query();
+        if ($request->has('employee_id') && !empty($request->employee_id)) {
+            $query->where('employee_id', $request->employee_id);
+        }
+    
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+    
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+        $query->orderBy('id', 'desc');
+        $employeesAdvance = $query->get();
+        // $employeesAdvance= EmployeeAdvance::with('employee')->orderBy('id','desc')->get();
         $employees= Employee::get();
-        return view('employees.addEmployeeAdvance',compact('employeesAdvance','employees'));
+        return view('employees.addEmployeeAdvance',compact('employeesAdvance','employees'))->with('oldEmployeeId', $request->employee_id)
+        ->with('oldDateFrom', $request->date_from)
+        ->with('oldDateTo', $request->date_to);
     }
     public function saveEmployeeAdvance(Request $request){
 
-                $employee= Employee::where('id',$request->employee_id)->select('id','advance')->first();
+                $employee= Employee::where('id',$request->employee_id)->select('id','advance','remaining')->first();
                 $employeeAdvance =$employee->advance;
-                $updateAdvance =  $employeeAdvance + $request->advance_amount;
-                Employee::where('id',$request->employee_id)
-               ->update(['advance'=>$updateAdvance]);
+                $employeeRemaining =$employee->remaining;
+                if($employeeRemaining > 0){
+                    if($request->advance_amount == $employeeRemaining ){
+                        $updateAdvance =  0;
+                        $updateRemaining=  0;
+                        Employee::where('id',$request->employee_id)
+                        ->update(['advance'=>$updateAdvance,'remaining'=>$updateRemaining]);
+                    }elseif($request->advance_amount < $employeeRemaining){
+                        $updateAdvance =  0;
+                        $updateRemaining=  $employeeRemaining - $request->advance_amount;
+                        Employee::where('id',$request->employee_id)
+                        ->update(['advance'=>$updateAdvance,'remaining'=>$updateRemaining]);
+                    }elseif($request->advance_amount > $employeeRemaining){
+                        $updateAdvance =  $request->advance_amount -$employeeRemaining;
+                        $updateRemaining= 0;
+                        Employee::where('id',$request->employee_id)
+                        ->update(['advance'=>$updateAdvance,'remaining'=>$updateRemaining]);
+                    }
+                }else{
+                    $updateAdvance =  $employeeAdvance + $request->advance_amount;
+                    Employee::where('id',$request->employee_id)
+                    ->update(['advance'=>$updateAdvance]);
+                }
 
                 $employee = new EmployeeAdvance();
                 $employee->employee_id   = $request->employee_id;
@@ -189,7 +227,7 @@ class EmployeeController extends Controller
                 $employee->description  = $request->description;
                 $employee->date  = date('Y-m-d');
                 $employee->save();
-        return response()->json(['success' => 'employee saved successfully']);
+        return response()->json(['success' => 'employee advance saved successfully']);
     }
     public function searchEmployeeByajax(Request $req)
     {
@@ -240,7 +278,6 @@ class EmployeeController extends Controller
     }
 
     public function savePayroll(Request $request){
-       
         $rules = array(
             'employee_id' => 'required',
             'current_salary' => 'required',
@@ -252,11 +289,13 @@ class EmployeeController extends Controller
         // return $request;
         try {
             DB::transaction(function () use ($request) {
-                $employee= Employee::where('id',$request->employee_id)->select('id','advance')->first();
+                $employee= Employee::where('id',$request->employee_id)->select('id','advance','remaining')->first();
                 $employeeAdvance =$employee->advance;
+                $employeeRemaining =$employee->remaining;
+                $updatedRemaining = $employeeRemaining + $request->add_in_remaining;
                 $updateAdvance =  $employeeAdvance - $request->paid_in_advance;
                 Employee::where('id',$request->employee_id)
-               ->update(['advance'=>$updateAdvance]);
+               ->update(['advance'=>$updateAdvance,'remaining'=>$updatedRemaining]);
               
                 $date = date('Y-m-d');
                 list($year, $month, $day) = explode('-', $date); 
@@ -268,12 +307,57 @@ class EmployeeController extends Controller
                 $payroll->salary= $request->salary;
                 $payroll->advance= $request->advance;
                 $payroll->paid_in_advance= $request->paid_in_advance;
+                $payroll->remaining= $request->remaining_amount;
+                $payroll->add_in_remaining= $request->add_in_remaining;
                 $payroll->overtime=  $request->overtime;
                 $payroll->total_salary_to_be_paid= $request->current_salary;
                 $payroll->description= $description;
                 $payroll->save();
 
+
+                if($request->paid_in_advance > 0){
+                    $description = 'Amount Paid in Advance in the month of: '.$monthName;
+                    $employee = new EmployeeAdvance();
+                    $employee->employee_id   = $request->employee_id;
+                    $employee->advance_amount         = 0;
+                    $employee->paid_amount         = $request->paid_in_advance;
+                    $employee->description  = $description;
+                    $employee->date  = date('Y-m-d');
+                    $employee->save();
+                }
+                if($request->add_in_remaining > 0){
+                    $description = 'Amount Remaining in the month of: '.$monthName;
+                    $employee = new EmployeeAdvance();
+                    $employee->employee_id   = $request->employee_id;
+                    $employee->advance_amount         = 0;
+                    $employee->paid_amount         = 0;
+                    $employee->remaining         = $request->add_in_remaining;
+                    $employee->description  = $description;
+                    $employee->date  = date('Y-m-d');
+                    $employee->save();
+                }
+                if ($request->current_salary > 0) {
+                    $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
+                    if (!$shopLedgerBalance) {
+                        $lastShopLedgerBalance = 0;
+                    } else {
+                        $lastShopLedgerBalance = $shopLedgerBalance->balance;
+                    }
+                    $date = date('Y-m-d');
+                    $description = 'Paid Employee Salary in the month of: '.$monthName;
+                    $debit = 0;
+                    $credit = $request->current_salary; 
+                    $shopBalance = $debit - $credit + $lastShopLedgerBalance;
+                    $shopLedger = new ShopLedger();
+                    $shopLedger->employee_id= $request->employee_id;
+                    $shopLedger->credit= $credit;
+                    $shopLedger->debit= $debit;
+                    $shopLedger->balance= $shopBalance;
+                    $shopLedger->date= $date;
+                    $shopLedger->description= $description;
+                    $shopLedger->save();
                 
+                }
 
             });
             return redirect('employees-list')->with(['status' => 'success', 'message' => 'Payroll Generated successfully']);

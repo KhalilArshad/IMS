@@ -64,6 +64,7 @@
                                                                 <th>Date Of Joining</th>
                                                                 <th>Salary</th>
                                                                 <th>Advance</th>
+                                                                <th>Remaining</th>
                                                                 <th>Generate Payroll</th>
                                                                 <th>Action</th>
                                             </tr>
@@ -81,6 +82,7 @@
                                                                 <td>{{ $getEmployee->date_of_joining }}</td>
                                                                 <td>{{ $getEmployee->salary }}</td>
                                                                 <td>{{ $getEmployee->advance??0 }}</td>
+                                                                <td>{{ $getEmployee->remaining??0 }}</td>
                                                                 <td>
                                                                     <button onclick="window.location.href='{{ route('createPayroll', ['id' => $getEmployee->id]) }}'" class="btn btn-sm btn-primary">
                                                                     Generate Payroll

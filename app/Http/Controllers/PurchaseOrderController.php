@@ -87,7 +87,7 @@ class PurchaseOrderController extends Controller
                 $purchaseOrderChild->purchase_order_id= $purchase_order_id;
                 $purchaseOrderChild->item_id      = $request->itemid[$i];
                 $purchaseOrderChild->unit_price= $request->unit_price[$i];
-                $purchaseOrderChild->sale_price= $request->selling_price[$i];
+                // $purchaseOrderChild->sale_price= $request->selling_price[$i];
                 $purchaseOrderChild->quantity= $request->quantity[$i];
                 $purchaseOrderChild->vat_in_per= $request->vat_in_per[$i];
                 $purchaseOrderChild->total_vat= $request->total_vat[$i];
@@ -235,13 +235,12 @@ class PurchaseOrderController extends Controller
                     if ($stocks) {
                         DB::table("stocks")
                             ->where('id', $lastStock_id)
-                            ->update(['quantity' => $updatedQuantity,'unit_price' =>$row->unit_price,'sale_price'=>$row->sale_price]);
+                            ->update(['quantity' => $updatedQuantity,'unit_price' =>$row->unit_price]);
                     } else {
                         $newStock = new Stock();
                         $newStock->item_id= $row->item_id;
                         $newStock->quantity= $row->quantity;
                         $newStock->unit_price= $row->unit_price;
-                        $newStock->sale_price= $row->sale_price;
                         $newStock->save();
                     }
                     $date = date("Y-m-d");
@@ -251,7 +250,6 @@ class PurchaseOrderController extends Controller
                     $stockTransaction->item_id= $row->item_id;
                     $stockTransaction->unit_price= $row->unit_price;
                     $stockTransaction->quantity= $row->quantity;
-                    $stockTransaction->sale_price= $row->sale_price;
                     $stockTransaction->total= $row->total;
                     $stockTransaction->date= $date;
                     $stockTransaction->inventory_type= 'inventory_With_Po';
@@ -333,7 +331,7 @@ class PurchaseOrderController extends Controller
                 for ($i = 0; $i < $rows; $i++) {
                    $purchaseOrderChild = PurchaseOrderChild::find($request->purchase_order_child_id[$i]);
                    $purchaseOrderChild->unit_price= $request->unit_price[$i];
-                   $purchaseOrderChild->sale_price= $request->selling_price[$i];
+                 //$purchaseOrderChild->sale_price= $request->selling_price[$i];
                    $purchaseOrderChild->quantity= $request->quantity[$i];
                    $purchaseOrderChild->total= $request->total[$i];
                    $purchaseOrderChild->save();

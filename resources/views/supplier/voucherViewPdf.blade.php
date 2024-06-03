@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Invoice</title>
+    <title>Payment Voucher</title>
     {{-- Custom Style --}}
     <style>
       .container {
@@ -157,49 +157,26 @@
         font-weight: bold;
         font-size: 100%; /* Makes the text larger */
         }
-
-    .middleDiv {
-        text-align: center; /* Center the text inside middleDiv */
-        /*padding: 20px; /* Add some padding for aesthetics */
-        font-size: 24px; /* Larger text for visibility */
-        color: #000; /* Set text color */
-        margin-top: 3px;
-        margin-bottom: 3px;
-        background-color: #a8adbf; 
-        border-radius: 10px;
-        border: 1px solid #333;
-        width: 130px;
-        height: 45px;
-        margin-left: 290px !important;
-    }
-
-       /* pdf-invoice-detail-right */
-       td {
-            border: 1px solid black;
-        }
-
         /* bill details */
         .pdf-bill-details {
             margin: 10px 0px 10px 530px;
         }
 
-        thead th {
-        background-color: #a8adbf; /* Matches the color used in .container and other sections */
-        color: #753e30; /* Keeping the text color consistent with other headers */
-        padding: 10px; /* Added padding for better spacing */
-    }
-
-    tbody td {
-        font-size: 14px; /* Increased from 11px to 14px for better readability */
-        padding: 10px;
-        font-weight: bold;
-    }
-    table {
-        width: 100%;
-        margin-top: 20px;
-        margin-left: -30px; 
-        border: 4px solid #a8adbf;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-left: -15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #a8adbf;
+            color: white;
+        }
 
     .footer {
         position: fixed;
@@ -212,6 +189,45 @@
         color: #753e30;
         border-top: 2px solid #333;
     }
+
+    
+    .middleDiv {
+    display: flex; /* Enable flexbox */
+    align-items: center; /* Vertically center the content */
+    justify-content: center; /* Horizontally center the content */
+    text-align: center; /* Center the text inside middleDiv */
+    padding: 0px; /* Add some padding for aesthetics */
+    font-size: 20px; /* Larger text for visibility */
+    line-height: 45px; /* Match the height of the div to center text vertically */
+    color: #000; /* Set text color */
+    margin-top: 8px;
+    margin-bottom: -10px;
+    background-color: #a8adbf; 
+    border-radius: 10px;
+    border: 1px solid #333;
+    width: 200px;
+    height: 45px;
+    margin-left: 220px !important;
+}
+
+.center-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto; /* Ensure the wrapper takes the height of its content */
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    page-break-inside: avoid; /* Prevent page break inside the table */
+}
+
+thead, tbody, tr, td, th {
+    page-break-inside: avoid; /* Prevent page break inside table elements */
+    page-break-after: auto; /* Ensure no page break after each table row */
+}
+
     </style>
     {{-- /Custom Style --}}
 </head>
@@ -241,112 +257,39 @@
         </div>
     </div>
     <div class="center-wrapper">
-        <div class="middleDiv">اجل</div>
+        <div class="middleDiv">Payment Voucher</div>
     </div>
-    <div class="bill-details">
-        <div>
-            <div class="section">
-                <div class="label label-background">WAREHOUSE  المستودع</div>
-                
-                <div class="value"></div>
-            </div>
-            <div class="section2">
-                <div class="label label-background">INVOICE NO  رقم الفاتورة</div>
-                
-                <div class="value">{{$invoice->invoice_no}}</div>
-            </div>
-            <div class="section3">
-                <div class="label label-background">DATE  &nbsp;&nbsp; التاريخ</div>
-                
-                <div class="value">{{$invoice->date}}</div>
-            </div>
-            <div class="section4">
-                <div class="label label-background">BRANCH NO  رقم الضرع</div>
-                
-                <div class="value"></div>
-            </div>
-        </div>
-        <div>
-            <div class="section5">
-                <div class="value">{{$invoice->customer->name}}</div>
-                <div class="value">Phone No: {{$invoice->customer->phone_no}} Email: {{$invoice->customer->email}}</div>
-            </div>
-            <div class="section6">
-            <div class="value"> اسم العميل</div>
-                <div class="value">Customer Name</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- /incoice Details --}}
-    {{-- items details --}}
-    
-    <table>
-        <thead style="font-size:15px; ">
-            <tr style="border:2px solid black;">
-                <th style="width:5%;">Sr.No</th>
-                <th style="width:65%;">Item</th>
-                <th style="width:20%;">Unit</th>
-                <th style="width:20%;">Quantity</th>
-                <th style="width:20%;">Price</th>
-                <th style="width:20%;">Vat</th>
-                <th style="width:20%;">Total Price</th>
+    <table class="mt-4">
+        <thead>
+            <tr>
+                <th>Supplier Name</th>
+                <th>Phone No</th>
+                <th>Date</th>
             </tr>
         </thead>
-        <tbody style="font-size:11px; text-align:center; padding:0px; margin:0px; ">
-            @php
-                $count = 0;
-                $total_vat = 0;
-            @endphp
-            @foreach($invoiceChild as $data)
-            @php
-                $count++;
-                $total_vat += $data->total_vat;
-            @endphp
+        <tbody>
             <tr>
-                <td>
-                    <b>{{$count}}</b>
-                </td>
-                <td>{{$data->items->name}}</td>
-                <td>{{$data->items->unit->name}}</td>
-                <td>{{$data->quantity}}</td>
-                <td>{{$data->selling_price}}</td>
-                <td>{{$data->total_vat}}</td>
-                <td>{{$data->total}}</td>
+                <td>{{ $voucher->supplier->name }}</td>
+                <td>{{ $voucher->supplier->phone_no }}</td>
+                <td>{{ $voucher->date }}</td>
             </tr>
-            @endforeach
+            <tr>
+                <th>Previous Total</th>
+                <th>Paid Amount</th>
+                <th>Total Remaining</th>
+            </tr>
+            <tr>
+                <td>{{ $voucher->previous_balance }}</td>
+                <td>{{ $voucher->paid_amount }}</td>
+                <td>{{ $voucher->remaining}}</td>
+            </tr>
+            
+           
         </tbody>
     </table>
-    {{-- /items details --}}
-    {{-- bill details --}}
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Total: &nbsp; <small>{{$invoice->total_bill - $total_vat}}</small> </h5>
 
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Discount: &nbsp; <small>{{$invoice->discount}}</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Vat: 15%&nbsp; <small></small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;">Net Total&nbsp; <small>{{$invoice->total_after_discount}}</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Paid Amount: &nbsp; <small>{{$invoice->paid_amount}}</small> </h5>
-
-    </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Remaining: &nbsp; <small>{{$invoice->remaining}}</small> </h5>
-
-    </div>
-    {{-- /bill details --}}
-    
     <div class="footer">
-    © 2024 Taghreed Mohammed Ibrahim Al Maqil Trading Est All rights reserved.
+        © 2024 Taghreed Mohammed Ibrahim Al Maqil Trading Est All rights reserved.
     </div>
 </body>
 

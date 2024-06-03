@@ -45,7 +45,7 @@
                                     <div class="ms-auto">
 
                                      <!-- <a href="" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Supplier</a> -->
-                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal"><i class="bx bxs-plus-square"></i> Add New Vehicle</a>
+                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal"  onclick="prepareAddNewSupplier();"><i class="bx bxs-plus-square"></i> Add New Vehicle</a>
 
                                     </div>
                             </div>
@@ -60,6 +60,8 @@
                                                 <th>Registration No</th>
                                                 <th>Modal</th>
                                                 <th>Driver</th>
+                                                <th>Price</th>
+                                                <th>Remaining</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -84,6 +86,16 @@
                                                 <td>
                                               
                                                    {{ $vehicle->driver->name??''}}
+                                                  
+                                                  </td>
+                                                <td>
+                                              
+                                                   {{ $vehicle->price??''}}
+                                                  
+                                                  </td>
+                                                <td>
+                                              
+                                                   {{ $vehicle->remaining??''}}
                                                   
                                                   </td>
                                             
@@ -150,6 +162,10 @@
                                         </select>
                                     </div>
                                  </div>
+                                 <div class="mb-3 col-6">
+                                    <label for="inputProductTitle" class="form-label">Price</label>
+                                    <input type="number" name="price"  class="form-control" id="price" placeholder="Enter total vehicle price">
+                                    </div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -183,6 +199,8 @@
         const reg_no = $('#reg_no').val();
         const driver_id = $('#driver_id').val();
         const modal = $('#modal').val();
+        const price = $('#price').val();
+        const update_vehicle_id = $('#update_vehicle_id').val();
         if (!name || !reg_no || !driver_id) {
         // Display error message for required fields
         $('#alertPlaceholderReq').html('<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" role="alert">All required fields must be filled.</div>');
@@ -198,6 +216,8 @@
                 reg_no: reg_no,
                 driver_id: driver_id,
                 modal: modal,
+                price: price,
+                update_vehicle_id: update_vehicle_id,
             },
             success: function(res) {
                 var myModal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
@@ -208,6 +228,8 @@
             $('#name').val('');
             $('#phone_no').val('');
             $('#email').val('');
+            $('#price').val('');
+            $('#update_vehicle_id').val('');
             // Optionally, hide the message after a delay
             setTimeout(function() {
                 window.location.reload();
@@ -231,6 +253,7 @@
                     $('#name').val(res.name);
                     $('#reg_no').val(res.registration_no);
                     $('#modal').val(res.modal);
+                    $('#price').val(res.price);
                     $('#driver_id option').each(function() {
                         if ($(this).val() == res.driver_id) {
                             $(this).prop('selected', true);
@@ -243,6 +266,15 @@
                 },
             
                 });
+        }
+        function prepareAddNewSupplier() {
+            document.getElementById('addSupplierModalLabel').textContent = 'Add New Vehicle'; // Set the modal title 
+            $('#name').val('');
+            $('#reg_no').val('');
+            $('#modal').val('');
+            $('#driver_id').val('');
+            $('#price').val('');
+            $('#update_vehicle_id').val(''); // Clear any stored ID because it's an add operation
         }
     </script>
 

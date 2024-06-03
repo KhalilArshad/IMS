@@ -41,24 +41,45 @@
                 <div class="card">
                     <div class="card-body">
                     <div id="alertPlaceholder" class="container mt-3"></div>
-                           <div class="d-lg-flex align-items-center mb-4 gap-3">
-                                    <div class="ms-auto">
-
-                                     <!-- <a href="" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Supplier</a> -->
-                                     <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal" ><i class="bx bxs-plus-square"></i> Add Employee Advance</a>
-
-                                    </div>
+                        <div class="d-lg-flex align-items-center mb-4 gap-3">
+                            <form method="GET"  action="{{ url('getEmployeeAdvanceFilter') }}" class="d-flex flex-wrap gap-2">
+                            @csrf
+                                <div class="form-group">
+                                    <label for="employee_id">Employee</label>
+                                    <select name="employee_id" id="employee_id" class="form-control">
+                                        <option value="">Select employee</option>
+                                         @foreach($employees as $employee)
+                                         <option value="{{ $employee->id }}" {{ old('employee_id', $oldEmployeeId) == $employee->id ? 'selected' : '' }}>{{ $employee->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="date_from">Date From</label>
+                                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ old('date_from', $oldDateFrom) }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="date_to">Date To</label>
+                                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ old('date_to', $oldDateTo) }}">
+                                </div>
+                                <div class="form-group align-self-end">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </form>
+                            <div class="ms-auto">
+                                <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal"><i class="bx bxs-plus-square"></i> Add Employee Advance</a>
                             </div>
+                        </div>
                         <div class="row p-2">
                             <div class="col-12">
                                 <div class="table-responsive" >
-                                      <table id="example"  class="table table-striped table-bordered" style="width:99%">
+                                      <table id="example2"  class="table table-striped table-bordered" style="width:99%">
                                         <thead>
                                             <tr>
                                                 <th>Sr #</th>
                                                 <th>Employee Name</th>
                                                 <th>Advance Amount</th>
                                                 <th>Paid Amount</th>
+                                                <th>Remaining Amount</th>
                                                 <th>Date</th>
                                                 <th>Description</th>
                                             </tr>
@@ -79,6 +100,11 @@
                                                 <td>
                                               
                                                    {{ $advance->paid_amount}}
+                                                  
+                                                  </td>
+                                                <td>
+                                              
+                                                   {{ $advance->remaining}}
                                                   
                                                   </td>
                                                 <td>
@@ -159,8 +185,18 @@
     <script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-    $(document).ready(function () {
-            $('#example').DataTable();
+  $(document).ready(function() {
+        var table = $('#example2').DataTable({
+            lengthChange: true,
+            'searching': true,
+            'paging': true,
+            'sorting': false,
+            'info': false,
+            buttons: ['pdf', 'print']
+        });
+
+        table.buttons().container()
+            .appendTo('#example2_wrapper .col-md-6:eq(0)');
     });
     function saveEmployeeAdvance() {
         const employee_id = $('#employee_id').val();

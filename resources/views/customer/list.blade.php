@@ -240,7 +240,6 @@
         function prepareAddNewSupplier() {
             document.getElementById('addSupplierModalLabel').textContent = 'Add New Customer'; // Set the modal title for adding
             document.getElementById('hide_field').style.display = "block"; // Ensure all fields are visible
-
             // Clear all input fields
             $('#name').val('');
             $('#phone_no').val('');

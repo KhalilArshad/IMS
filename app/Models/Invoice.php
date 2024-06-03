@@ -19,7 +19,8 @@ class Invoice extends Model
         'paid_amount', 
         'remaining', 
         'date', 
-        'invoice_no'
+        'invoice_no',
+        'profit'
     ];
     public function customer()
     {
@@ -28,5 +29,9 @@ class Invoice extends Model
     public function driver()
     {
         return $this->belongsTo('App\Models\Driver', 'driver_id');
+    }
+    public function invoiceChildren()
+    {
+        return $this->hasMany(InvoiceChild::class, 'invoice_id');
     }
 }

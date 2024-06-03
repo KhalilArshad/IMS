@@ -145,7 +145,7 @@
                                             <h5 class="my-1 text-primary"></h5>
                                         </div>
                                         <div class=" ms-auto">
-                                            <p class="mb-0 text-white badge bg-primary rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalProfit - $vehicleExpense}} SAR</span></strong></p>
+                                            <p class="mb-0 text-white badge bg-primary rounded-pill"><strong><span style="font-weight: bold; font-size: 15px;">{{$totalProfit}} SAR</span></strong></p>
                                             <h5 class="my-1 text-primary"></h5>
                                         </div>
                                     </div>

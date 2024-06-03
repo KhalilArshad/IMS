@@ -75,21 +75,18 @@
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Customer Name<span
                                                     class="text-danger"> *</span></label>
-                                                    <select class="form-control selectric lang" name="customer_id" id="customer_id" required onchange="getItemRecord(this.value)">
+                                                    <select class="form-control selectric lang" name="customer_id" id="customer_id" required>
                                                         <option value="">{{ __('Select customer') }}</option>
                                                         
                                                     </select>
                                                    
                                             </div>
                                         </div>
-                                        <?php
-                                            $currentDate = date('Y-m-d');
-                                            ?>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Date<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="date" name="date" required class="form-control" value="{{$currentDate}}"placeholder="Enter date">
+                                                <input type="date" name="date" required class="form-control" id="date" placeholder="Enter date">
                                             </div>
                                         </div>
                                     </div>
@@ -244,20 +241,13 @@
 var items=0 ;
 
 var total_rows = 0;
-var defaultItems = [1, 2, 3, 4];
-function addItem(defaultItemId)
+function addItem()
         {
 
             total_rows++;
             items++;
-           
             var html = "<tr>" +items+ "</tr>";
-            html += '<td><select required name="itemid[]" style="width:190px;" id="item_list_' + items + '" onchange="select_Item(this.value,' + items + ')" class="form-control">';
-            html += '<option value="">Select Item</option>';
-            @foreach($items as $item)
-            html += '<option value="{{$item->id}}" ' + (defaultItemId && defaultItemId == {{$item->id}} ? 'selected' : '') + '>{{$item->name}}</option>';
-            @endforeach
-            html += '</select></td>';
+            html += '<td><select required name="itemid[]" style=" width:190px;" id="item_list_'+items+'"     onchange="select_Item(this.value,'+items+')"  class="form-control"> <option value="">Select Item</option>@foreach($items as $item)<option value="{{$item->id}}">{{$item->name}}</option>@endforeach</select></td>';
                 html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='unit_"+items+"' name='unit[]' placeholder='Unit' disabled class='form-control custom-input1'></td>";
                 html += "<td><input required type='text'  min='0.00' step='0.01' autocomplete='off'  id='qtyInStock"+items+"' name='qtyInStock[]' placeholder='quantity In Stock' disabled class='form-control custom-input1'></td>";
                 html += "<td><input required type='number' min='0.00' step='0.01' autocomplete='off'  id='purchase_price_"+items+"' readonly name='purchase_price[]' placeholder='purchase Price' class='form-control custom-input1'></td>";
@@ -282,16 +272,7 @@ function addItem(defaultItemId)
              
            
         }
-        document.addEventListener('DOMContentLoaded', function () {
-            defaultItems.forEach(function(itemId) {
-                addItem(itemId);
-            });
-        });
-        function getItemRecord(value) {
-            defaultItems.forEach(function(itemId, index) {
-                select_Item(itemId, index + 1);
-            });
-        }
+
         $(document).on('click','.remove',function(){
                     $(this).closest('tr').remove();
                     total_rows=total_rows-1;
@@ -320,6 +301,10 @@ function addItem(defaultItemId)
                                 $('#purchase_price_' + rowno).val(result.purchase_price);
                                 $('#sale_price_' + rowno).val(result.selling_price);
                                 $('#last_selling_date_' + rowno).val(result.last_selling_date);
+                            // $('#unit_'+rowno+'').html(result);
+                            // $('#item_list_'+rowno+'').html('');
+                            // $('#quantity_'+rowno+'').val(0);
+                            // $('#total_price_'+items+'').val(0);
                             }
                             
                             }); 

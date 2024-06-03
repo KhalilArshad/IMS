@@ -48,7 +48,7 @@
                                     @csrf
                                     <div class="border border-3 p-4 rounded borderRmv">
                                        <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Employee Name<span
                                                     class="text-danger"> *</span></label>
@@ -57,14 +57,14 @@
                                                
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="salary" class="form-label">Salary<span
                                                     class="text-danger"> *</span></label>
                                                 <input type="number" readonly name="salary" value="{{$employee->salary}}" required class="form-control" id="salary" placeholder="Enter Hourly Salary">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="advance" class="form-label">Advance Amount<span
                                                     class="text-danger"> *</span></label>
@@ -72,21 +72,35 @@
 
                                             </div>
                                         </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="remaining_amount" class="form-label">Remaining Amount<span
+                                                    class="text-danger"> *</span></label>
+                                                <input type="number" class="form-control" readonly name='remaining_amount' value="{{$employee->remaining??0}}"  id="remaining_amount" placeholder="Enter Email">
+
+                                            </div>
+                                        </div>
                                        </div>
                                        <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-3">
-                                                <label for="paid_in_advance" class="form-label">Paid In Advance</label>
+                                                <label for="paid_in_advance" class="form-label" style="color: red;">Paid In Advance</label>
                                                 <input type="number"  name="paid_in_advance"  class="form-control" id="paid_in_advance" value="0"  placeholder="Enter amount" required onchange="calculateRemaining()" onkeyup="calculateRemaining()">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="add_in_remaining" class="form-label" style="color: red;">Add In Remaining</label>
+                                                <input type="number"  name="add_in_remaining"  class="form-control" id="add_in_remaining" value="0"  placeholder="Enter amount" required onchange="calculateRemaining()" onkeyup="calculateRemaining()">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="overtime" class="form-label">OverTime</label>
                                                 <input type="number"  name="overtime" value="0" class="form-control" id="overtime" placeholder="Enter overtime" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="current_salary" class="form-label">Remaining Current Salary<span
                                                     class="text-danger"> *</span></label>
@@ -139,11 +153,26 @@
                         var salary = parseFloat($('#salary').val());
                         var paid_in_advance = parseFloat($('#paid_in_advance').val());
                         var advance = parseFloat($('#advance').val());
-                        var current_salary = salary -paid_in_advance;
+                        var add_in_remaining = parseFloat($('#add_in_remaining').val());
+                        var current_salary = salary -paid_in_advance - add_in_remaining;
+                       
+                        if (add_in_remaining > salary) {
+                            alert("Add in Remaining cannot be greater than the Salary.");
+                            $('#add_in_remaining').val(0);
+                            // paid_in_advance = advance;
+                            current_salary= salary; 
+                        }
                         if (paid_in_advance > advance) {
                             alert("Paid in advance cannot be greater than the advance amount.");
                             $('#paid_in_advance').val(advance);
                             paid_in_advance = advance;
+                            current_salary= salary; 
+                        }
+                        var checkPaidInAdvance_and_addInRemaining =add_in_remaining+paid_in_advance;
+                        if (checkPaidInAdvance_and_addInRemaining > salary) {
+                            alert("Paid in advance And Add in Remaining cannot be greater than the Salary.");
+                            $('#paid_in_advance').val(0);
+                            $('#add_in_remaining').val(0);
                             current_salary= salary; 
                         }
                         var overtime = parseFloat($('#overtime').val());
