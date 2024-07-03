@@ -215,7 +215,7 @@
 
         function getCustomerData(id) {
             console.log(id)
-            document.getElementById("hide_field").style.display = "none";
+            // document.getElementById("hide_field").style.display = "none";
             document.getElementById('addSupplierModalLabel').textContent = 'Update Customer';
             const csrf_token = '{{ csrf_token() }}';
                 $.ajax({
@@ -230,6 +230,7 @@
                     $('#name').val(res.name);
                     $('#phone_no').val(res.phone_no);
                     $('#email').val(res.email);
+                    $('#opening_balance').val(res.previous_balance);
                     $('#update_customer_id').val(id);
 
                 },

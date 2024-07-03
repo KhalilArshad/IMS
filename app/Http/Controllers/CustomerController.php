@@ -46,7 +46,7 @@ class CustomerController extends Controller
         
         if(!empty($request->update_customer_id)){
             Customer::where('id',$request->update_customer_id)
-            ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email]);
+            ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email,'previous_balance'=>$request->opening_balance]);
             }else{
                 $customer = new Customer();
                 $customer->name   = $request->name;
@@ -151,7 +151,7 @@ class CustomerController extends Controller
 
     public function getCustomerData(Request $request){
         $id=$request->id;
-        $customer=Customer::select('id','name','phone_no','email')->where('id',$id)->first();
+        $customer=Customer::select('id','name','phone_no','email','previous_balance')->where('id',$id)->first();
         return $customer;
     }
 
