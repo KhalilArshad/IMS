@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerLedger;
+use App\Models\CustomerTransactionSummary;
 use App\Models\ShopLedger;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers= Customer::get();
+        $customers = Customer::orderBy('name', 'asc')->get();
         return view('customer.list',compact('customers'));
     }
 
@@ -47,6 +48,23 @@ class CustomerController extends Controller
         if(!empty($request->update_customer_id)){
             Customer::where('id',$request->update_customer_id)
             ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email,'previous_balance'=>$request->opening_balance]);
+
+            $customer_check=CustomerTransactionSummary::where('customer_id',$request->update_customer_id)
+             ->orderBy('id','DESC')->first();
+            $customer_already_exist= $customer_check->customer_id;
+            if(empty($customer_already_exist)){
+                $customerTran = new CustomerTransactionSummary();
+                $customerTran->customer_id        = $request->update_customer_id;
+                $customerTran->today_bill         = 0;
+                $customerTran->today_remaining    = 0;
+                $customerTran->old_remaining      = $request->opening_balance;
+                $customerTran->old_received       = 0;
+                $customerTran->net_remaining      = $request->opening_balance;
+                $customerTran->description        = 'Customer Opening Balance';
+                $customerTran->date  = date('Y-m-d');
+                $customerTran->save();
+            }
+
             }else{
                 $customer = new Customer();
                 $customer->name   = $request->name;
@@ -54,6 +72,20 @@ class CustomerController extends Controller
                 $customer->email            = $request->email;
                 $customer->previous_balance  = $request->opening_balance;
                 $customer->save();
+                $customer_id =$customer->id;
+
+                if(!empty($request->opening_balance)){
+                    $customerTran = new CustomerTransactionSummary();
+                    $customerTran->customer_id        = $customer_id;
+                    $customerTran->today_bill         = 0;
+                    $customerTran->today_remaining    = 0;
+                    $customerTran->old_remaining      = $request->opening_balance;
+                    $customerTran->old_received       = 0;
+                    $customerTran->net_remaining      = $request->opening_balance;
+                    $customerTran->description        = 'Customer Opening Balance';
+                    $customerTran->date  = date('Y-m-d');
+                    $customerTran->save();
+                }
             }
         return response()->json(['success' => 'Customer saved successfully']);
     }
@@ -207,8 +239,18 @@ class CustomerController extends Controller
          $voucher->remaining= $updatedCustomerBalance;
          $voucher->date= $date;
          $voucher->save();
-
-             if ($request->paid_amount > 0) {
+            if($request->paid_amount > 0){
+                $customerTran = new CustomerTransactionSummary();
+                $customerTran->customer_id        = $request->customer_id;
+                $customerTran->today_bill         = 0;
+                $customerTran->today_remaining    = 0;
+                $customerTran->old_remaining      = $customerPreviousBalance;
+                $customerTran->old_received       = $request->paid_amount;
+                $customerTran->net_remaining      = $updatedCustomerBalance;
+                $customerTran->description        = $description;
+                $customerTran->date  = $date;
+                $customerTran->save();
+       
                  $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
                  if (!$shopLedgerBalance) {
                      $lastShopLedgerBalance = 0;

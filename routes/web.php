@@ -244,6 +244,13 @@ Route::get('cash-flow', [ReportController::class, 'cashFlow'])->name('cash-flow'
 Route::get('driverDailyReport', [ReportController::class, 'driverDailyReport'])->name('driverDailyReport');
 Route::get('getDriverDailyReport', [ReportController::class, 'driverDailyReport'])->name('getDriverDailyReport');
 Route::get('driverDailyReportPrint', [ReportController::class, 'driverDailyReportPrint'])->name('driverDailyReportPrint');
+Route::get('customerDetailsReport', [ReportController::class, 'customerDetailsReport'])->name('customerDetailsReport');
+Route::get('getCustomerDetailsReport', [ReportController::class, 'customerDetailsReport'])->name('getCustomerDetailsReport');
+Route::get('customerDetailsReportPrint', [ReportController::class, 'customerDetailsReportPrint'])->name('customerDetailsReportPrint');
+
+Route::get('allCustomerRemainingReport', [ReportController::class, 'allCustomerRemainingReport'])->name('allCustomerRemainingReport');
+Route::get('getAllCustomerRemainingReport', [ReportController::class, 'allCustomerRemainingReport'])->name('getAllCustomerRemainingReport');
+Route::get('allCustomerRemainingReportPrint', [ReportController::class, 'allCustomerRemainingReportPrint'])->name('allCustomerRemainingReportPrint');
 Route::get('driverReport', [ReportController::class, 'driverReport'])->name('driverReport');
 Route::get('getDriverReport', [ReportController::class, 'driverReport'])->name('getDriverReport');
 Route::get('allDriverReportPrint', [ReportController::class, 'allDriverReportPrint'])->name('allDriverReportPrint');

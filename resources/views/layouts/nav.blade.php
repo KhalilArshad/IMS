@@ -167,6 +167,10 @@
         <!-- </li> -->
                 <li> <a href="{{url('driverDaily-saleReport')}}" ><i class="bx bx-list-ul"></i>Daily Driver Sale Report</a>
                 </li>
+                <li> <a href="{{url('customerDetailsReport')}}" ><i class="bx bx-list-ul"></i>Customer Details Report</a>
+                </li>
+                <li> <a href="{{url('allCustomerRemainingReport')}}" ><i class="bx bx-list-ul"></i>All Customer Remaining Report</a>
+                </li>
                 <li> <a href="{{url('driverDailyReport')}}" ><i class="bx bx-list-ul"></i>Driver Daily Report</a>
                 </li>
                 <li> <a href="{{url('driverReport')}}" ><i class="bx bx-list-ul"></i>Driver Sale Purchase & Profit</a>

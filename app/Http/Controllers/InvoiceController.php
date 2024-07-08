@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerLedger;
+use App\Models\CustomerTransactionSummary;
 use App\Models\Driver;
 use App\Models\DriverCustomer;
 use App\Models\DriverStock;
@@ -132,6 +133,18 @@ class InvoiceController extends Controller
                 $customerLedger->date= $date;
                 $customerLedger->description= $description;
                 $customerLedger->save();
+
+                $customerTran = new CustomerTransactionSummary();
+                $customerTran->customer_id        = $request->customer_id;
+                $customerTran->today_bill         = $request->total_after_discount;
+                $customerTran->today_remaining    = $request->remaining;
+                $customerTran->old_remaining      = $customerPreviousBalance;
+                $customerTran->old_received       = 0;
+                $customerTran->net_remaining      = $updatedCustomerBalance;
+                $customerTran->description        = $description;
+                $customerTran->date  = $date;
+                $customerTran->save();
+
                 if ($request->paid_amount > 0) {
                     $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
                     if (!$shopLedgerBalance) {

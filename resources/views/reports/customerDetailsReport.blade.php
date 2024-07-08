@@ -16,7 +16,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Driver Daily Sale Report</li>
+                        <li class="breadcrumb-item active" aria-current="page">Customer Details Report</li>
                     </ol>
                 </nav>
             </div>
@@ -45,30 +45,30 @@
                           <?php
                             $currentDate = date('Y-m-d');
                             ?>
-                            <form method="GET"  action="{{ url('getDriverDailySaleReport') }}" class="d-flex flex-wrap gap-2">
+                            <form method="GET"  action="{{ url('getCustomerDetailsReport') }}" class="d-flex flex-wrap gap-2">
                             @csrf
-                              <div class="col-sm-3">
+                            <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="driver">Driver</label>
-                                    <select name="driver_id" id="driver_id" class="form-control">
+                                    <select name="driver_id" id="driver_id" class="form-control" onchange="getDriverCustomer(this.value)">
                                         <option value="">Select driver</option>
                                          @foreach($drivers as $driver)
                                          <option value="{{ $driver->id }}" {{ old('driver', $oldDriverId) == $driver->id ? 'selected' : '' }}>{{ $driver->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                              </div>
-                              <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="item_id">Items</label>
-                                    <select name="item_id" id="item_id" class="form-control">
-                                        <option value="">Select item</option>
-                                         @foreach($items as $item)
-                                         <option value="{{ $item->id }}" {{ old('item', $oldItem_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
                                 </div>
+                            <div class="col-sm-2">
+                                   <div class="form-group">
+                                        <label for="name">Customer Name</label>
+                                             <select class="form-control selectric lang" name="customer_id" id="customer_id">
+                                            <option value="">{{ __('Select customer') }}</option>
+                                                        
+                                              </select>
+                                                   
+                                    </div>
                                 </div>
+                              
                                 <div class="col-sm-2">
                                 <div class="form-group">
                                     <label for="date_from">Date From</label>
@@ -98,48 +98,40 @@
                                                 <tr>
                                                 <th>Sr #</th>
                                                 <th>Customer</th>
-                                                <th>Invoice No</th>
-                                                <th>Item</th>
-                                                <th>Purchase Price</th>
-                                                <th>Selling Price</th>
-                                                <th>Quantity</th>
-                                                <th>total</th>
-                                                <th>Profit</th>
+                                                <th>Today Bill</th>
+                                                <th>Today Remaining</th>
+                                                <th>Old Remaining</th>
+                                                <th>Old Received</th>
+                                                <th>Net Remaining</th>
                                                 <th>Date</th>
+                                                <!-- <th>Description</th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @php($i = 1)
-                                        @php($totalProfit = 0)
-                                            @foreach ($invoiceChildren  as $child)
+                            
+                                            @foreach ($invoices  as $child)
                                             <tr>
                                                 <td>{{ $i }}</td>
-                                                <td>{{ $child->invoice->customer->name }}</td>
-                                                <td>{{ $child->invoice->invoice_no }}</td>
-                                                <td> {{ $child->items->name }}</td>
-                                                <td>{{ $child->purchase_price }}</td>
-                                                <td>{{ $child->selling_price}}</td>
-                                                <td>{{ $child->quantity}}</td>
-                                                <td>{{ $child->total}}</td>
-                                                <td>{{ $child->profit}}</td>
-                                                <td>{{ date('Y-m-d', strtotime($child->created_at)) }}</td>
+                                                <td>{{ $child->customer->name }}</td>
+                                                <td>{{ $child->today_bill}}</td>
+                                                <td>{{ $child->today_remaining}}</td>
+                                                <td>{{ $child->old_remaining}}</td>
+                                                <td>{{ $child->old_received}}</td>
+                                                <td>{{ $child->net_remaining}}</td>
+                                                <td>{{ $child->date}}</td>
+                                                <!-- <td>{{ $child->description}}</td> -->
                                             </tr>
-                                            @php($totalProfit += $child->profit)
                                             @php($i++)
                                             @endforeach
                                             </tbody>
                                         </table>
                                         </div>
-                             <div class="text-center mt-4">
-                                <strong>Total Bills: <u>{{$total_bills}}</u></strong> | &nbsp;&nbsp;
-                                <strong>Total Discount: <u>{{$total_discounts}}</u></strong> | &nbsp;&nbsp;
-                                <strong>Total After Discount: <u>{{$total_after_discount}}</u></strong> | &nbsp;&nbsp;
-                                <strong>Total Paid Amount: <u>{{$total_paid_amount}}</u></strong> | &nbsp;&nbsp;
-                                <strong>Total Remaining to Customer: <u>{{$total_remaining}}</u></strong>
-                                <strong>Total Profit: <u>{{$totalProfit}}</u></strong>
                             </div>
-                                </div>
-                            </div>
+                         </div>
+                         
+                        <button id="printReportBtn" class="btn btn-primary mt-2" style="float: right;">Print</button>
+
                         </div>
                     </div>
 
@@ -169,8 +161,65 @@
 
         table.buttons().container()
             .appendTo('#example2_wrapper .col-md-6:eq(0)');
-    });
+   
 
+        $('#printReportBtn').click(function() {
+            var driverId = $('#driver_id').val();
+            var customerId = $('#customer_id').val();
+            var dateFrom = $('#date_from').val();
+            var dateTo = $('#date_to').val();
+            var baseUrl = "{{ url('/') }}";
+
+            // Construct the URL for the print route
+            var printUrl = `${baseUrl}/customerDetailsReportPrint?driver_id=${driverId}&customer_id=${customerId}&date_from=${dateFrom}&date_to=${dateTo}`;
+
+            // Open the print route URL in a new tab
+            window.open(printUrl, '_blank');
+        });
+
+        if ($('#driver_id').val()) {
+        getDriverCustomer($('#driver_id').val());
+        }
+    
+  });
+  var oldCustomerId = '{{ old('customer_id', $oldCustomerId) }}';
+ 
+  function getDriverCustomer(driver_id) {
+            if (driver_id) {
+                var _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{ route('getDriverCustomer') }}",
+                    method: 'POST',
+                    data: {
+                        _token: _token,
+                        driver_id: driver_id
+                    },
+                    success: function(result) {
+              
+                        var existingOptions = $('#customer_id').children().clone();
+                        // Clear current options and add the default
+                        $('#customer_id').empty().append('<option value="">{{ __("Select customer") }}</option>');
+                        // Append new options from the AJAX response at the top (after the default option)
+                        result.customers.forEach(function(customer) {
+                            var selected = (customer.customer_id.toString() === oldCustomerId) ? 'selected' : '';
+                            $('#customer_id').append(`<option value="${customer.customer_id}" ${selected}>${customer.customer_name}</option>`);
+                        });
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.log("Error fetching customer data: " + error);
+                        alert('Failed to retrieve customer data. Please try again.');
+                        $('#customer_id').empty().append('<option value="">{{ __("Failed to load customers") }}</option>');
+                    }
+
+                });
+            } else {
+                // alert('Select Category');
+                $('#customer_id').html('');
+            }
+
+        }
     </script>
 
     

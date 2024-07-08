@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerLedger;
+use App\Models\CustomerTransactionSummary;
 use App\Models\Driver;
+use App\Models\DriverCustomer;
 use App\Models\DriverStock;
 use App\Models\DriverStockChild;
 use App\Models\Employee;
 use App\Models\EmployeeAdvance;
 use App\Models\Invoice;
 use App\Models\InvoiceChild;
+use App\Models\Item;
 use App\Models\Payroll;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderChild;
@@ -37,7 +41,9 @@ class ReportController extends Controller
                 if ($request->has('driver_id') && !empty($request->driver_id)) {
                     $query->where('driver_id', $request->driver_id);
                 }
-
+                if ($request->has('item_id') && !empty($request->item_id)) {
+                    $query->where('item_id', $request->item_id);
+                }
                 if ($request->has('date_from') && !empty($request->date_from)) {
                     $query->whereDate('date', '>=', $request->date_from);
                 }
@@ -83,8 +89,10 @@ class ReportController extends Controller
             $total_remaining = '';
         }
         $drivers= Driver::get();
-        return view('reports.driverDailySaleReport',compact('invoiceChildren','drivers','total_bills','total_discounts','total_after_discount','total_paid_amount','total_remaining'))->with('oldDriverId', $request->driver_id)
+        $items= Item::get();
+        return view('reports.driverDailySaleReport',compact('invoiceChildren','drivers','items','total_bills','total_discounts','total_after_discount','total_paid_amount','total_remaining'))->with('oldDriverId', $request->driver_id)
         ->with('oldDateFrom', $request->date_from)
+        ->with('oldItem_id', $request->item_id)
         ->with('oldDateTo', $request->date_to);
     }
     public function driverDailyReport(Request $request)
@@ -231,7 +239,145 @@ class ReportController extends Controller
         return response($mpdf->Output('driverDailyReport-Date' . $request->date_from . '.pdf', 'I'))
             ->header('Content-Type', 'application/pdf');
     }
+    public function customerDetailsReport(Request $request)
+    {
+        if(!empty($request->driver_id)){
+            
+          $invoices = CustomerTransactionSummary::with('customer')->where(function ($query) use ($request) {
+            if ($request->has('driver_id') && !empty($request->driver_id)) {
+                $customerIds = DriverCustomer::where('driver_id', $request->driver_id)->pluck('customer_id');
+                $query->whereIn('customer_id', $customerIds);
+            }
+            if ($request->has('customer_id') && !empty($request->customer_id)) {
+                $query->where('customer_id', $request->customer_id);
+            }
+            if ($request->has('date_from') && !empty($request->date_from)) {
+                $query->whereDate('date', '>=', $request->date_from);
+            }
+            if ($request->has('date_to') && !empty($request->date_to)) {
+                $query->whereDate('date', '<=', $request->date_to);
+            }
+        })
+        ->get();
+        }else{
+            $invoices=[];
+        
+        }
+        $drivers= Driver::get();
+        return view('reports.customerDetailsReport',compact('invoices','drivers'))->with('oldDriverId', $request->driver_id)
+        ->with('oldCustomerId', $request->customer_id)
+        ->with('oldDateFrom', $request->date_from)
+        ->with('oldDateTo', $request->date_to);
+    }
+     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function customerDetailsReportPrint(Request $request)
+    {
+        $invoices = CustomerTransactionSummary::with('customer')->where(function ($query) use ($request) {
+            if ($request->has('driver_id') && !empty($request->driver_id)) {
+                $customerIds = DriverCustomer::where('driver_id', $request->driver_id)->pluck('customer_id');
+                $query->whereIn('customer_id', $customerIds);
+            }
+            if ($request->has('customer_id') && !empty($request->customer_id)) {
+                $query->where('customer_id', $request->customer_id);
+            }
+            if ($request->has('date_from') && !empty($request->date_from)) {
+                $query->whereDate('date', '>=', $request->date_from);
+            }
+            if ($request->has('date_to') && !empty($request->date_to)) {
+                $query->whereDate('date', '<=', $request->date_to);
+            }
+        })
+        ->get();
 
+      $driver= Driver::where('id',$request->driver_id)->first();
+      $driverName= $driver->name??'';
+      $date =date('Y-d-m');
+        // Convert your view into HTML
+        $html = view('reports.customerDetailsReportPrint', [
+            'invoices' => $invoices, 
+            'driverName' => $driverName,
+            'date' => $date,
+        ])->render();
+        // Create an instance of Mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8', 
+            'format' => 'A4', 
+            'autoScriptToLang' => true, 
+            'autoLangToFont' => true
+        ]);
+        // Write HTML to the PDF
+        $mpdf->WriteHTML($html);
+        // Output the generated PDF to browser
+        return response($mpdf->Output('customerDetailsReport-Date' . $date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
+    }
+    public function allCustomerRemainingReport(Request $request)
+    {
+        if(!empty($request->driver_id)){
+            
+          $allRemaining = Customer::where(function ($query) use ($request) {
+            if ($request->has('driver_id') && !empty($request->driver_id)) {
+                $customerIds = DriverCustomer::where('driver_id', $request->driver_id)->pluck('customer_id');
+                $query->whereIn('id', $customerIds);
+            }
+            if ($request->has('customer_id') && !empty($request->customer_id)) {
+                $query->where('id', $request->customer_id);
+            }
+           })
+          ->get();
+        }else{
+            $allRemaining=[];
+        
+        }
+        $drivers= Driver::get();
+        return view('reports.allCustomerRemainingReport',compact('allRemaining','drivers'))->with('oldDriverId', $request->driver_id)
+        ->with('oldCustomerId', $request->customer_id);
+    }
+     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function allCustomerRemainingReportPrint(Request $request)
+    {
+        $allRemaining = Customer::where(function ($query) use ($request) {
+            if ($request->has('driver_id') && !empty($request->driver_id)) {
+                $customerIds = DriverCustomer::where('driver_id', $request->driver_id)->pluck('customer_id');
+                $query->whereIn('id', $customerIds);
+            }
+            if ($request->has('customer_id') && !empty($request->customer_id)) {
+                $query->where('id', $request->customer_id);
+            }
+           })
+          ->get();
+      $driver= Driver::where('id',$request->driver_id)->first();
+      $driverName= $driver->name??'';
+      $date =date('Y-d-m');
+        // Convert your view into HTML
+        $html = view('reports.allCustomerRemainingReportPrint', [
+            'allRemaining' => $allRemaining, 
+            'driverName' => $driverName,
+            'date' => $date,
+        ])->render();
+        // Create an instance of Mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8', 
+            'format' => 'A4', 
+            'autoScriptToLang' => true, 
+            'autoLangToFont' => true
+        ]);
+        // Write HTML to the PDF
+        $mpdf->WriteHTML($html);
+        // Output the generated PDF to browser
+        return response($mpdf->Output('AllCustomerRemainingReport-Date' . $date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
+    }
     public function driverReport(Request $request)
     {
        
