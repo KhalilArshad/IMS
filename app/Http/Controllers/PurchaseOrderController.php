@@ -77,6 +77,7 @@ class PurchaseOrderController extends Controller
              $purchaseOrder->total_bill= $request->total_bill;
              $purchaseOrder->current_payment= $request->paid_amount;
              $purchaseOrder->remaining= $request->remaining;
+             $purchaseOrder->old_receive= $request->old_receive;
              $purchaseOrder->date= $request->date;
              $purchaseOrder->save();
              $purchase_order_id= $purchaseOrder->id;
@@ -163,24 +164,20 @@ class PurchaseOrderController extends Controller
                 $purchaseOrder=PurchaseOrder::where('id',$id)->first();
                 $purchase_order_id = $purchaseOrder->id;
                 $supplier_id = $purchaseOrder->supplier_id;
-                $purchase_order_date = $purchaseOrder->date;
+                $date = $purchaseOrder->date;
                 $total_bill = $purchaseOrder->total_bill;
                 $current_payment = $purchaseOrder->current_payment;
                 $remaining = $purchaseOrder->remaining;
+                $old_receive = $purchaseOrder->old_receive;
+
                 // selecting previous_balance of supplier
                 $supplierBalance = DB::select("SELECT `previous_balance` FROM `suppliers` WHERE `id`=?", [$supplier_id]);
                 $supplierPreviousBalance = $supplierBalance[0]->previous_balance;
                 $updatedSupplierBalance = $supplierPreviousBalance + $remaining;
                 // updating previous_balance of supplier
                 DB::table("suppliers")->where("id", '=', $supplier_id)->update(['previous_balance' => $updatedSupplierBalance]);
-                // selecting previous_balance of SupplierLedger
-                // $supplierLedgerBalance = SupplierLedger::select('balance')->where('supplier_id', $supplier_id)->orderBy('id', 'desc')->first();
-                // if (!$supplierLedgerBalance) {
-                //     $lastSupplierLedgerBalance = 0;
-                // } else {
-                //     $lastSupplierLedgerBalance = $supplierLedgerBalance->balance;
-                // }
-                $date = date('Y-m-d');
+               
+                // $date = date('Y-m-d');
                 if($current_payment == $total_bill){
                     $description = 'Paid against purchase order';
                 }else{
@@ -197,6 +194,45 @@ class PurchaseOrderController extends Controller
                 $supplierLedger->date= $date;
                 $supplierLedger->description= $description;
                 $supplierLedger->save();
+              if($old_receive > 0){
+                        // selecting previous_balance of supplier
+                        $supplierBalance = DB::select("SELECT `previous_balance` FROM `suppliers` WHERE `id`=?", [$supplier_id]);
+                        $supplierPreviousBalance = $supplierBalance[0]->previous_balance;
+                        $updatedSupplierBalance = $supplierPreviousBalance - $old_receive;
+                        // updating previous_balance of supplier
+                        DB::table("suppliers")->where("id", '=', $supplier_id)->update(['previous_balance' => $updatedSupplierBalance]);
+            
+                        $description = 'Old Amount Paid in PO';
+                        $supplierLedger = new SupplierLedger();
+                        $supplierLedger->supplier_id= $supplier_id;
+                        $supplierLedger->purchase_order_id= $purchase_order_id;
+                        $supplierLedger->previous_balance= $supplierPreviousBalance;
+                        $supplierLedger->total_bill= 0;
+                        $supplierLedger->payment= $old_receive;
+                        $supplierLedger->remaining= $updatedSupplierBalance;
+                        $supplierLedger->date= $date;
+                        $supplierLedger->description= $description;
+                        $supplierLedger->save();
+                        $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
+                        if (!$shopLedgerBalance) {
+                            $lastShopLedgerBalance = 0;
+                        } else {
+                            $lastShopLedgerBalance = $shopLedgerBalance->balance;
+                        }
+                       
+                        $debit = 0;
+                        $credit = $old_receive;
+                        $shopBalance = $debit - $credit + $lastShopLedgerBalance;
+                        $shopLedger = new ShopLedger();
+                        $shopLedger->supplier_id= $supplier_id;
+                        $shopLedger->purchase_order_id= $purchase_order_id;
+                        $shopLedger->credit= $credit;
+                        $shopLedger->debit= $debit;
+                        $shopLedger->balance= $shopBalance;
+                        $shopLedger->date= $date;
+                        $shopLedger->description= $description;
+                        $shopLedger->save();
+                  }
 
                     if ($current_payment > 0) {
                         $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
@@ -243,7 +279,6 @@ class PurchaseOrderController extends Controller
                         $newStock->unit_price= $row->unit_price;
                         $newStock->save();
                     }
-                    $date = date("Y-m-d");
                     $stockTransaction = new StockTransaction();
                     $stockTransaction->purchase_order_id= $id;
                     $stockTransaction->supplier_id= $supplier_id;
@@ -368,5 +403,12 @@ class PurchaseOrderController extends Controller
         PurchaseOrder::destroy($id);
         PurchaseOrderChild::where('purchase_order_id',$id)->delete();
         return redirect('purchase-order-list')->with(['status' => 'success', 'message' => 'Purchase Order Deleted successfully']);
+    }
+
+    public function getSupplierRemaining(Request $request)
+    {
+        $id=$request->id;
+        $previous_balance=Supplier::select('id','previous_balance')->where('id',$id)->first();
+        return $previous_balance;
     }
 }

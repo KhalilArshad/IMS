@@ -47,16 +47,22 @@
                             ?>
                             <form method="GET"  action="{{ url('getDriverReport') }}" class="d-flex flex-wrap gap-2">
                             @csrf
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <label for="driver">Driver</label>
-                                    <select name="driver_id" id="driver_id" class="form-control">
-                                        <option value="">Select driver</option>
-                                         @foreach($drivers as $driver)
-                                         <option value="{{ $driver->id }}" {{ old('driver', $oldDriverId) == $driver->id ? 'selected' : '' }}>{{ $driver->name }}</option>
-                                        @endforeach
-                                    </select>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="driver">Driver</label>
+                                        <select name="driver_id" id="driver_id" class="form-control">
+                                            <option value="">Select driver</option>
+                                            @foreach($drivers as $driver)
+                                            <option value="{{ $driver->id }}" {{ old('driver', $oldDriverId) == $driver->id ? 'selected' : '' }}>{{ $driver->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="date">Date</label>
+                                        <input type="date" name="date" id="date" class="form-control" value="{{ old('date', $oldDate ?? $currentDate) }}">
+                                    </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <label for="date_to"></label>

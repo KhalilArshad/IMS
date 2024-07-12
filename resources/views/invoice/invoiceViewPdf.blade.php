@@ -219,24 +219,27 @@
 <body>
     {{-- header --}}
     <div class="container">
-        <div class="company-details">
+    <div class="company-details">
             <p>
-            <strong>Taghreed Mohammed Ibrahim Al </strong> <br>
-            <strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maqil Trading Est</strong> <br>
-            &nbsp;  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; الدمام،الدمام  32416<br>
-            &nbsp;&nbsp;&nbsp;&nbsp; VAT No:311360273200003
+            <strong>Iman Yahya Bin Muhammad Al</strong> <br>
+            <strong>Mufarreh Foundation General</strong> <br>
+            <strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contracting</strong> <br>
+            &nbsp;  &nbsp; الدمام،الدمام،الامام الترمزي  32263<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;VAT No:310421133800003
             </p>
         </div>
 
         <div class="company-logo">
-            <img src="assets/images/logo-img.png" class="logo-icon" alt="logo icon" style="margin-left: -20rem;
-                    width: 100px; height: 50px;" alt="Company Logo">
+            <!-- <img src="assets/images/logo-img.png" class="logo-icon" alt="logo icon" style="margin-left: -17rem;
+                    width: 100px; height: 70px;" alt="Company Logo"> -->
         </div>
         <div class="company-details-arabic">
             <p dir="rtl">
-            <strong> امؤسسة تغريد محمد ابراهيم المعقل التجارية</strong><br>
-            32416  الدمام،الدمام <br>
-            الرقم الضريبي :311360273200003
+            <strong>مؤسسة ايمان يحي ابن محمد آل مفرح</strong><br>
+            <strong>للمقاولات العامة  </strong><br>  
+            الدمام،الدمام،الامام الترمزي 
+            32263<br>
+            الرقم الضريبي :310421133800003
             </p>
         </div>
     </div>
@@ -343,10 +346,14 @@
         <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Remaining: &nbsp; <small>{{$invoice->remaining}}</small> </h5>
 
     </div>
+    <div class="pdf-bill-details">
+        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Old Received: &nbsp; <small>{{$invoice->old_receive}}</small> </h5>
+
+    </div>
     {{-- /bill details --}}
     
     <div class="footer">
-    © 2024 Taghreed Mohammed Ibrahim Al Maqil Trading Est All rights reserved.
+        <h6> © 2024 Iman Yahya Bin Muhammad Al Mufarreh Foundation General All rights reserved.</h6>
     </div>
 </body>
 

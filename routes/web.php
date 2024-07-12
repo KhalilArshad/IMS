@@ -177,6 +177,7 @@ Route::get('/receive-purchase-order/{id}', [PurchaseOrderController::class, 'rec
 Route::get('/delete-po-item/{id}', [PurchaseOrderController::class, 'deletePoItem'])->name('deletePoItem');
 Route::get('purchase-order-delete/{id}', [PurchaseOrderController::class, 'deletePurchaseOrder'])->name('purchase-order-delete');
 Route::post('updatePurchaseOrder', [PurchaseOrderController::class, 'updatePurchaseOrder'])->name('updatePurchaseOrder');
+Route::post('get-supplier-remaining', [PurchaseOrderController::class, 'getSupplierRemaining'])->name('get-supplier-remaining');
 //stock route
 Route::get('stock-list', [StockController::class, 'index'])->name('stock-list');
 
@@ -194,6 +195,7 @@ Route::get('driverStockFlow', [InvoiceController::class, 'driverStockFlow'])->na
 
 Route::post('getDriverCustomer', [InvoiceController::class, 'getDriverCustomer'])->name('getDriverCustomer');
 Route::post('getItemUnitForSale', [InvoiceController::class, 'getItemUnitForSale'])->name('getItemUnitForSale');
+Route::post('get-customer-remaining', [InvoiceController::class, 'getCustomerRemaining'])->name('get-customer-remaining');
 //vehicle and driver route
 Route::get('add-driver',[VehicleController::class,'addDriver'])->name('add-driver');
 Route::post('save-driver',[VehicleController::class,'saveDriver'])->name('save-driver');

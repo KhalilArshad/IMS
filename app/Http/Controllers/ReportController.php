@@ -382,7 +382,7 @@ class ReportController extends Controller
     {
        
         if(!empty($request->driver_id)){
-            $date = date('Y-m-d');
+            $date = $request->date;
             $driverReceiveStocks = DriverStockChild::with('item')->whereDate('date',$date)->where('driver_id',$request->driver_id)->where('remarks','Received')->get();
           foreach ($driverReceiveStocks as $driverStock) {
             $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
@@ -443,7 +443,7 @@ class ReportController extends Controller
             $driverRemainingStocks = [];
         }
         $drivers= Driver::get();
-        return view('reports.driverReport',compact('totalSales','drivers','driverDailyExpenseSum','otherExpenseSum','driverReceiveStocks','driverRemainingStocks','totalDiscount','totalAfterDiscount','totalPaid','totalRemaining','totalProfit'))->with('oldDriverId', $request->driver_id);
+        return view('reports.driverReport',compact('totalSales','drivers','driverDailyExpenseSum','otherExpenseSum','driverReceiveStocks','driverRemainingStocks','totalDiscount','totalAfterDiscount','totalPaid','totalRemaining','totalProfit'))->with('oldDriverId', $request->driver_id)->with('oldDate', $request->date);
         
     }
     public function singleDriverReportPrint(Request $request)

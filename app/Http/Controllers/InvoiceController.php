@@ -87,13 +87,6 @@ class InvoiceController extends Controller
         try {
             DB::transaction(function () use ($request) {
 
-            // $checkCustomerAgainstDriver =DriverCustomer::where('driver_id',$request->driver_id)->where('customer_id',$request->customer_id)->first();
-            // if(!$checkCustomerAgainstDriver){
-            //     $storeCustomerAgainstDriver =new DriverCustomer();
-            //     $storeCustomerAgainstDriver->driver_id= $request->driver_id;
-            //     $storeCustomerAgainstDriver->customer_id= $request->customer_id;
-            //     $storeCustomerAgainstDriver->save();
-            // }
              $invoice = new Invoice();
              $invoice->customer_id= $request->customer_id;
              $invoice->driver_id= $request->driver_id;
@@ -110,6 +103,7 @@ class InvoiceController extends Controller
              $invoice->total_after_discount= $request->total_after_discount;
              $invoice->paid_amount= $request->paid_amount;
              $invoice->remaining= $request->remaining;
+             $invoice->old_receive= $request->old_receive;
              $invoice->date= $request->date;
              $invoice->save();
              $invoice_id= $invoice->id;
@@ -122,7 +116,7 @@ class InvoiceController extends Controller
              // updating previous_balance of supplier
              DB::table("customers")->where("id", '=', $request->customer_id)->update(['previous_balance' => $updatedCustomerBalance]);
 
-                $date = date('Y-m-d');
+                $date = $request->date;
                 $description = 'Credit Against Invoice:'.' '.$invoice_no;
                 $customerLedger = new CustomerLedger();
                 $customerLedger->customer_id= $request->customer_id;
@@ -133,18 +127,68 @@ class InvoiceController extends Controller
                 $customerLedger->date= $date;
                 $customerLedger->description= $description;
                 $customerLedger->save();
+                
+               
+                if($request->old_receive == 0){
+                    $customerTran = new CustomerTransactionSummary();
+                    $customerTran->customer_id        = $request->customer_id;
+                    $customerTran->today_bill         = $request->total_after_discount;
+                    $customerTran->today_remaining    = $request->remaining;
+                    $customerTran->old_remaining      = $customerPreviousBalance;
+                    $customerTran->old_received       = 0;
+                    $customerTran->net_remaining      = $updatedCustomerBalance;
+                    $customerTran->description        = $description;
+                    $customerTran->date  = $date;
+                    $customerTran->save();
+                }
+                if($request->old_receive > 0){
 
-                $customerTran = new CustomerTransactionSummary();
-                $customerTran->customer_id        = $request->customer_id;
-                $customerTran->today_bill         = $request->total_after_discount;
-                $customerTran->today_remaining    = $request->remaining;
-                $customerTran->old_remaining      = $customerPreviousBalance;
-                $customerTran->old_received       = 0;
-                $customerTran->net_remaining      = $updatedCustomerBalance;
-                $customerTran->description        = $description;
-                $customerTran->date  = $date;
-                $customerTran->save();
+                    $customerBalance = DB::select("SELECT `previous_balance` FROM `customers` WHERE `id`=?", [$request->customer_id]);
+                    $customerPreviousBalance_ = $customerBalance[0]->previous_balance;
+                    $updatedCustomerBalance_ = $customerPreviousBalance_ - $request->old_receive ;
+                    // updating previous_balance of supplier
+                    DB::table("customers")->where("id", '=', $request->customer_id)->update(['previous_balance' => $updatedCustomerBalance_]);
+       
+                    $description = 'Old Amount Received Against Invoice:'.' '.$invoice_no;
+                    $customerLedger = new CustomerLedger();
+                    $customerLedger->customer_id= $request->customer_id;
+                    $customerLedger->invoice_id= $invoice_id;
+                    $customerLedger->credit= $request->old_receive;
+                    $customerLedger->debit= 0;
+                    $customerLedger->balance= $updatedCustomerBalance_;
+                    $customerLedger->date= $date;
+                    $customerLedger->description= $description;
+                    $customerLedger->save();
 
+                    $customerTran = new CustomerTransactionSummary();
+                    $customerTran->customer_id        = $request->customer_id;
+                    $customerTran->today_bill         = $request->total_after_discount;
+                    $customerTran->today_remaining    = $request->remaining;
+                    $customerTran->old_remaining      = $customerPreviousBalance;
+                    $customerTran->old_received       = $request->old_receive;
+                    $customerTran->net_remaining      = $updatedCustomerBalance_;
+                    $customerTran->description        = $description;
+                    $customerTran->date  = $date;
+                    $customerTran->save();
+                    $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
+                    if (!$shopLedgerBalance) {
+                        $lastShopLedgerBalance = 0;
+                    } else {
+                        $lastShopLedgerBalance = $shopLedgerBalance->balance;
+                    }
+                    $credit = 0;
+                    $debit = $request->old_receive;
+                    $shopBalance = $debit - $credit + $lastShopLedgerBalance;
+                    $shopLedger = new ShopLedger();
+                    $shopLedger->customer_id= $request->customer_id;
+                    $shopLedger->invoice_id= $invoice_id;
+                    $shopLedger->credit= $credit;
+                    $shopLedger->debit= $debit;
+                    $shopLedger->balance= $shopBalance;
+                    $shopLedger->date= $date;
+                    $shopLedger->description= $description;
+                    $shopLedger->save();
+                }
                 if ($request->paid_amount > 0) {
                     $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
                     if (!$shopLedgerBalance) {
@@ -216,8 +260,6 @@ class InvoiceController extends Controller
                 $driverStockChild->remarks= "Sold";
                 $driverStockChild->save();
                 
-
-                $date = date("Y-m-d");
                 $stockTransaction = new StockTransaction();
                 $stockTransaction->invoice_id= $invoice_id;
                 $stockTransaction->customer_id= $request->customer_id;
@@ -475,5 +517,12 @@ class InvoiceController extends Controller
        $driveTotalInvoices =Invoice::with('customer')->where('driver_id',$driver_id)->whereBetween('date', [$from, $to])->get();
       return view('driver.driverStockFlow',compact('driverName','driver_id','driverReceiveStock','driverSoldStock','driveTotalInvoices', 'from', 'to'));
 
+    }
+
+    public function getCustomerRemaining(Request $request)
+    {
+        $id=$request->id;
+        $previous_balance=Customer::select('id','previous_balance')->where('id',$id)->first();
+        return $previous_balance;
     }
 }

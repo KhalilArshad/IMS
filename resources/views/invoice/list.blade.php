@@ -68,6 +68,7 @@
                                                 <th>Total After Discount</th>
                                                 <th>Current Payment</th>
                                                 <th>Remaining</th>
+                                                <th>Old Received</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -114,6 +115,11 @@
                                                 <td>
                                               
                                                    {{ $invoice->remaining}}
+                                                  
+                                                  </td>
+                                                <td>
+                                              
+                                                   {{ $invoice->old_receive}}
                                                   
                                                   </td>
                                                   <td>

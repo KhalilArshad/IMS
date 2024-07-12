@@ -65,6 +65,7 @@
                                                 <th>Total Bill</th>
                                                 <th>Current Payment</th>
                                                 <th>Remaining</th>
+                                                <th>Old Paid</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -97,11 +98,8 @@
                                                    {{ $purchaseOrder->current_payment}}
                                                   
                                                   </td>
-                                                <td>
-                                              
-                                                   {{ $purchaseOrder->remaining}}
-                                                  
-                                                  </td>
+                                                <td>{{ $purchaseOrder->remaining}}</td>
+                                                <td>{{ $purchaseOrder->old_receive}}</td>
                                                   <td>
                                                     @if($purchaseOrder->status =="Inprogress")
                                                     <button onclick="window.location.href='{{ route('receivePo', $purchaseOrder->id) }}'" class="btn btn-sm btn-outline-primary">

@@ -153,7 +153,11 @@
                                                 <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="0" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                     
+                                    
+                                    </div>
+                                    <div class="row mt-4">
+                                    <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="remaining" class="form-label">Remaining<span
                                                     class="text-danger"> *</span></label>
@@ -161,8 +165,32 @@
 
                                             </div>
                                         </div>
-                                    
-                                    </div>
+                                       <div class="col-md-3">
+                                           <div class="mb-3">
+                                               <label for="old_remaining" class="form-label">Old Remaining<span
+                                                   class="text-danger"> *</span></label>
+                                               <input type="number" class="form-control" name='old_remaining' id="old_remaining" placeholder="Old Remaining" readonly required>
+
+                                           </div>
+                                       </div>
+                                       
+                                       <div class="col-md-3">
+                                           <div class="mb-3">
+                                               <label for="old_receive" class="form-label">Old Receive<span
+                                                   class="text-danger"> *</span></label>
+                                               <input type="number" class="form-control" name='old_receive' id="old_receive" value="0" placeholder="old Receive"  onchange="calculateRemaining()" onkeyup="calculateRemaining()"  required>
+
+                                           </div>
+                                       </div>
+                                       <div class="col-md-3">
+                                           <div class="mb-3">
+                                               <label for="net_remaining" class="form-label">Net Remaining<span
+                                                   class="text-danger"> *</span></label>
+                                               <input type="number" class="form-control" name='net_remaining' id="net_remaining" placeholder="Net Remaining" readonly required>
+
+                                           </div>
+                                       </div>
+                                   </div>
                                     <div class="mb-3 mt-3">
                                         <div class="d-grid">
                                             <button  type="submit" class="btn btn-info">Save</button>
@@ -314,7 +342,7 @@ function addItem(defaultItemId)
                             },
                             success:function(result)
                             {
-                                console.log(result)
+                                // console.log(result)
                                 $('#unit_' + rowno).val(result.unit_name);
                                 $('#qtyInStock' + rowno).val(result.driverCurrentStock);
                                 $('#purchase_price_' + rowno).val(result.purchase_price);
@@ -384,23 +412,38 @@ function addItem(defaultItemId)
                         }
                         var totalAfterDiscount = parseFloat($('#total_after_discount').val());
                         var remaining = totalAfterDiscount - paidAmount;
-
+                        if (paidAmount > totalAfterDiscount) {
+                            alert('Paid amount cannot be greater than the total bill.');
+                            document.getElementById('paid_amount').value = totalAfterDiscount;
+                            remaining = 0;
+                        }
                         if (!isNaN(remaining)) {
                             $('#remaining').val(remaining.toFixed(2));
                         } else {
                             $('#remaining').val('');
                         }
+                        calculateNetRemaining();
                     }
-
-                    var today = new Date();
-    
-    // Format the date as YYYY-MM-DD for input type date
-    var formattedDate = today.toISOString().substr(0, 10);
-    
-    // Set the value of the input field to today's date
-    document.getElementById('date').value = formattedDate;
-
-
+                    function calculateNetRemaining() {
+                        var old_receive = parseFloat($('#old_receive').val());
+                        var old_remaining = parseFloat($('#old_remaining').val());
+                        var net_remaining = old_remaining - old_receive;
+                        
+                        var totalBill = parseFloat($('#total_bill').val());
+                        var paidAmount = parseFloat($('#paid_amount').val());
+                        var bill_remaining = totalBill - paidAmount;
+                         var total_remaining =net_remaining + bill_remaining;
+                        if (old_receive > old_remaining) {
+                            alert('Old Receive cannot be greater than the Old Remaining.');
+                            document.getElementById('old_receive').value = old_remaining;
+                            total_remaining = total_remaining;
+                        }
+                        if (!isNaN(total_remaining)) {
+                            $('#net_remaining').val(total_remaining.toFixed(2));
+                        } else {
+                            $('#net_remaining').val('');
+                        }
+                    }
     function getDriverCustomer(driver_id) {
             if (driver_id) {
                 var _token = $('input[name="_token"]').val();
@@ -436,6 +479,32 @@ function addItem(defaultItemId)
             }
 
         }
+
+        $(document).ready(function() {
+            $('#customer_id').change(function() {
+                var customer_id = $(this).val();
+                console.log(customer_id)
+                if (customer_id) {
+                    const csrf_token = '{{ csrf_token() }}';
+                    $.ajax({
+                    type: "POST",
+                    url: '{{ route("get-customer-remaining") }}',
+                    data: {
+                        _token: csrf_token, 
+                        id: customer_id,
+                    },
+                    success: function(res) {
+                        console.log(res)
+                        $('#old_remaining').val(res.previous_balance);
+
+                    },
+                
+                    });
+                } else {
+                    $('#old_remaining').val('');
+                }
+            });
+        });
     </script>
 
 @endsection
