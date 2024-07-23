@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\DriverCustomer;
+use App\Models\Setting;
 use App\Models\Vehicle;
 use App\Models\VehicleExpense;
 use App\Models\VehicleInstallment;
@@ -109,7 +110,9 @@ class VehicleController extends Controller
     {
         $vehicleExpenses= VehicleExpense::with('vehicle')->orderBy('id', 'desc')->get();
         $vehicles= Vehicle::with('driver')->get();
-        return view('vehicle.vehicleExpense',compact('vehicleExpenses','vehicles'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('vehicle.vehicleExpense',compact('vehicleExpenses','vehicles','system_date'));
     }
     
         /**
@@ -152,7 +155,9 @@ class VehicleController extends Controller
         ->orderBy('id', 'desc')->get();
         $vehicles= Vehicle::get();
         $oldVehicleId=$request ->vehicle_id;
-        return view('vehicle.vehicleInstallment',compact('vehicles','vehicleInstallments','oldVehicleId'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('vehicle.vehicleInstallment',compact('vehicles','vehicleInstallments','oldVehicleId','system_date'));
     }
     public function getRemaining(Request $request)
     {

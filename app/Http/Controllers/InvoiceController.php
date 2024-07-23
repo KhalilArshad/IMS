@@ -12,6 +12,7 @@ use App\Models\DriverStockChild;
 use App\Models\Invoice;
 use App\Models\InvoiceChild;
 use App\Models\Item;
+use App\Models\Setting;
 use App\Models\ShopLedger;
 use App\Models\Stock;
 use App\Models\StockTransaction;
@@ -34,7 +35,9 @@ class InvoiceController extends Controller
         $items= Item::get();
         $customers= Customer::get();
         $drivers= Driver::get();
-        return view('invoice.create',compact('items','customers','drivers'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('invoice.create',compact('items','customers','drivers','system_date'));
     }
 
     /**
@@ -367,7 +370,9 @@ class InvoiceController extends Controller
         $items= Item::get();
         $customers= Customer::get();
         $drivers= Driver::get();
-        return view('invoice.createStockAssignToDriver',compact('items','customers','drivers'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('invoice.createStockAssignToDriver',compact('items','customers','drivers','system_date'));
     }
 
     public function  saveStockAssignToDriver(Request $request){

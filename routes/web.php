@@ -219,6 +219,7 @@ Route::post('getDriverCustomers',[VehicleController::class,'getDriverCustomers']
 
 //report route
 Route::post('get-dashboard-data',[DashboardController::class,'index'])->name('get-dashboard-data');
+Route::post('update-date',[DashboardController::class,'updateDate'])->name('update-date');
 
 //Employee route
 Route::get('add-labour', [EmployeeController::class, 'addEmployee'])->name('add-labour');

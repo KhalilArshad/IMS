@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Models\ShopLedger;
 use App\Models\Supplier;
 use App\Models\SupplierLedger;
@@ -165,8 +166,9 @@ class SupplierController extends Controller
     public function supplierPayAbleCreate(Request $request)
     {
         $supplier= Supplier::where('id',$request->id)->select('id','name','previous_balance')->first();
-        
-        return view('supplier.supplierPayable',compact('supplier'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('supplier.supplierPayable',compact('supplier','system_date'));
     }
 
     public function SaveSupplierPayable(Request $request){
@@ -188,7 +190,7 @@ class SupplierController extends Controller
          // updating previous_balance of supplier
          DB::table("suppliers")->where("id", '=', $request->supplier_id)->update(['previous_balance' => $updatedSupplierBalance]);
      
-         $date = date('Y-m-d');
+         $date = $request->date;
          $description = 'Payment To Supplier';
          $supplierLedger = new SupplierLedger();
          $supplierLedger->supplier_id= $request->supplier_id;

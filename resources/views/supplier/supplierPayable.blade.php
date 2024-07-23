@@ -64,7 +64,7 @@
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Date<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="date"  name="date" required class="form-control" id="date" placeholder="Enter date">
+                                                <input type="date"  name="date" required class="form-control" value="{{$system_date}}" placeholder="Enter date">
                                             </div>
                                         </div>
                                     
@@ -153,9 +153,6 @@
                    }
                  }
 
-                var today = new Date();
-                var formattedDate = today.toISOString().substr(0, 10);
-                document.getElementById('date').value = formattedDate;
     </script>
 
 @endsection

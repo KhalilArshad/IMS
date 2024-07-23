@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Mail\sendMail;
+use App\Models\Setting;
 use Mail;
 
 
@@ -107,7 +108,8 @@ class AuthController extends Controller
             Session::put('user_id', $user->id);
             Session::put('role_id', $user->role_id);
             Session::put('name', $user->name);
-            
+            $system_date = Setting::select('id','system_date')->first();
+            Session::put('system_date', $system_date->system_date);
             
            
            return redirect()->route('admin-dashboard')->with(['status'=>'success','message'=>'Welcome..! '.$user->name]);

@@ -9,6 +9,6 @@ class Setting extends Model
 {
     public $timestamps = false;
     use HasFactory;
-    protected $fillable = ['theme'];
+    protected $fillable = ['theme','system_date'];
 
 }

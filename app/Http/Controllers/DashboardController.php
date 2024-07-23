@@ -13,9 +13,12 @@ use App\Models\Invoice;
 use App\Models\InvoiceChild;
 use App\Models\Payroll;
 use App\Models\PurchaseOrder;
+use App\Models\Setting;
 use App\Models\Supplier;
 use App\Models\VehicleExpense;
-
+use PhpParser\Node\Expr\FuncCall;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 class DashboardController extends Controller
 {
     public function index(Request $request)
@@ -56,13 +59,34 @@ class DashboardController extends Controller
         $totalEmployeePayroll = Payroll::whereBetween('date', [$startDate, $endDate])->sum('total_salary_to_be_paid');
         $supplierRemaining = Supplier::sum('previous_balance');
         $customerPayable = Customer::sum('previous_balance');
-
-        return view('index', compact('totalSales', 'totalPurchase', 'vehicleExpense', 'totalProfit','supplierRemaining','customerPayable', 'date','totalEmployeePayroll'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('index', compact('totalSales', 'totalPurchase', 'vehicleExpense', 'totalProfit','supplierRemaining','customerPayable', 'date','totalEmployeePayroll','system_date'));
 
     }
     public function create()
     {
         return view('admin.add_project');
+    }
+
+    public function updateDate(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'date' => 'required|date', 
+            ]);
+            $setting = Setting::first(); 
+            if ($setting) {
+                $setting->system_date = $validated['date'];
+                $setting->save();
+                Session::put('system_date', $setting->system_date);
+                return response()->json(['success' => true, 'message' => 'System date updated successfully.']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'No settings found to update.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to update system date.'], 500);
+        }
     }
 
 }

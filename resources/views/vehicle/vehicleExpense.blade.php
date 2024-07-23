@@ -164,7 +164,7 @@
                                     <div class="mb-3 col-6">
                                     <label for="inputProductTitle" class="form-label">Date<span
                                                     class="text-danger"> *</span></label>
-                                    <input type="date" name="date" id="date" class="form-control" value="{{$currentDate}}"placeholder="Enter description">
+                                    <input type="date" name="date" id="date" class="form-control" value="{{$system_date}}"placeholder="Enter description">
                                     </div>
 
                                   

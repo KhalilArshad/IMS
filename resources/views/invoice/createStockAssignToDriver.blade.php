@@ -73,7 +73,7 @@
                                             <div class="mb-3">
                                                 <label for="date" class="form-label">Date<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="date" name="date" required class="form-control"  value="{{$currentDate}}" placeholder="Enter date">
+                                                <input type="date" name="date" required class="form-control"  value="{{$system_date}}" placeholder="Enter date">
                                             </div>
                                         </div>
                                     </div>

@@ -29,11 +29,14 @@
                     @endif
                 </div>
             </div>
-           
-            <div class="card">
+            <div id="alertPlaceholder" class="container mt-3"></div>
+            <div class="card">   
             <form method="post" action="{{ url('get-dashboard-data') }}" autocomplete="off">
                 @csrf
                 <div class="row p-3">
+                    <!-- <div class="col-md-1"><label for="date">Current Date:</label></div>
+                    <div class="col-md-3">
+                        <input type="date" name="date" id="date" class="form-control" value="{{$system_date}}"></div> -->
                     <div class="col-md-7"></div>
                     <div class="col-md-3">
                         <select class="form-control selectric lang" name="date_filter" id="date_filter" required>

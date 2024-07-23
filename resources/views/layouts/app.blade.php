@@ -121,6 +121,28 @@
             $("#dismiss").delay(6000).slideUp(300, function() {
                 $(this).alert('close');
             });
+
+            $('#date').change(function() {
+                    var selectedDate = $(this).val(); 
+                    const csrf_token = '{{ csrf_token() }}';
+                    $.ajax({
+                        url: "{{ route('update-date') }}",
+                        type: "POST",
+                        data: {
+                            date: selectedDate,
+                            _token: csrf_token 
+                        },
+                        success: function(response) {
+                            $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">System date update Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                            setTimeout(function() {
+                                    $('#alertPlaceholder .alert').alert('close');
+                                }, 2000);
+                         },
+                        error: function(xhr, status, error) {
+                            console.error('Error updating date:', error);
+                        }
+                    });
+                });
         });
 
         $('#dis_comission').on('click',function(){

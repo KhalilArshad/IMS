@@ -141,7 +141,7 @@
                                 <div class="mb-3">
                                 <label for="inputProductTitle" class="form-label">Select Employee<span
                                                     class="text-danger"> *</span></label>
-                               <select name="employee_id" id="employee_id" required class="form-control">
+                               <select name="employee_id_save" id="employee_id_save" required class="form-control">
                                    <option value="">Select employee</option>
                                 @foreach($employees as $employee)
                                 <option value="{{$employee->id}}">{{$employee->name}}</option>
@@ -155,6 +155,11 @@
                                 <input type="number" name="advance_amount" required class="form-control" id="advance_amount" placeholder="Enter Advance Amount">
                                 </div>
 
+                                <div class="mb-3">
+                                                <label for="date" class="form-label">Date<span
+                                                    class="text-danger"> *</span></label>
+                                                <input type="date"  name="advance_date" id="advance_date" required class="form-control" value="{{$system_date}}" placeholder="Enter date">
+                                            </div>
                                 <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
                                
@@ -199,11 +204,12 @@
             .appendTo('#example2_wrapper .col-md-6:eq(0)');
     });
     function saveEmployeeAdvance() {
-        const employee_id = $('#employee_id').val();
+        const employee_id = $('#employee_id_save').val();
         const advance_amount = $('#advance_amount').val();
         const description = $('#description').val();
+        const date = $('#advance_date').val();
         const csrf_token = '{{ csrf_token() }}';
-        if (!employee_id || !advance_amount || !description) {
+        if (!employee_id || !advance_amount || !description || !date) {
         // Display error message for required fields
         $('#alertPlaceholderReq').html('<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" role="alert">All required fields must be filled.</div>');
         return; // Stop further execution
@@ -215,6 +221,7 @@
                 _token: csrf_token, 
                 employee_id: employee_id,
                 advance_amount: advance_amount,
+                date: date,
                 description: description,
             },
             success: function(res) {

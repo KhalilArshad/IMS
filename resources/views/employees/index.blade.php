@@ -139,7 +139,11 @@
                                                     class="text-danger"> *</span></label>
                                 <input type="number" name="advance_amount" required class="form-control" id="advance_amount" placeholder="Enter Advance Amount">
                                 </div>
-
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Date<span
+                                                    class="text-danger"> *</span></label>
+                                    <input type="date"  name="advance_date" id="advance_date" required class="form-control" value="{{$system_date}}" placeholder="Enter date">
+                                </div>
                                 <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
                                
@@ -177,6 +181,7 @@
         const employee_id = $('#employee_id').val();
         const advance_amount = $('#advance_amount').val();
         const description = $('#description').val();
+        const date = $('#date').val();
         const csrf_token = '{{ csrf_token() }}';
         if (!employee_id || !advance_amount || !description) {
         // Display error message for required fields
@@ -191,6 +196,7 @@
                 employee_id: employee_id,
                 advance_amount: advance_amount,
                 description: description,
+                date: date,
             },
             success: function(res) {
                 var myModal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));

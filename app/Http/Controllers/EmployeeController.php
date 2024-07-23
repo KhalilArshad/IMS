@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\EmployeeAdvance;
+use App\Models\Setting;
 use App\Models\ShopLedger;
 use Mpdf\Mpdf;
 
@@ -44,7 +45,9 @@ class EmployeeController extends Controller
     {
       
         $getEmployees = Employee::orderBy('id','desc')->paginate(10);
-        return view('employees.index',compact('getEmployees'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('employees.index',compact('getEmployees','system_date'));
     }
 
     public function addEmployee()
@@ -188,7 +191,9 @@ class EmployeeController extends Controller
         $employeesAdvance = $query->get();
         // $employeesAdvance= EmployeeAdvance::with('employee')->orderBy('id','desc')->get();
         $employees= Employee::get();
-        return view('employees.addEmployeeAdvance',compact('employeesAdvance','employees'))->with('oldEmployeeId', $request->employee_id)
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('employees.addEmployeeAdvance',compact('employeesAdvance','employees','system_date'))->with('oldEmployeeId', $request->employee_id)
         ->with('oldDateFrom', $request->date_from)
         ->with('oldDateTo', $request->date_to);
     }
@@ -225,7 +230,7 @@ class EmployeeController extends Controller
                 $employee->advance_amount         = $request->advance_amount;
                 $employee->paid_amount         = 0;
                 $employee->description  = $request->description;
-                $employee->date  = date('Y-m-d');
+                $employee->date  = $request->date;
                 $employee->save();
         return response()->json(['success' => 'employee advance saved successfully']);
     }

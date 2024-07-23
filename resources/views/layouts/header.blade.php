@@ -2,6 +2,10 @@
         <header>
             <div class="topbar d-flex align-items-center">
                 <nav class="navbar navbar-expand">
+                <div class="date-input-container d-flex align-items-center me-auto">
+                    <label for="date" class="form-label pe-2">Current Date:</label>
+                    <input type="date" name="date" id="date" class="form-control" value="{{ session('system_date', \Carbon\Carbon::now()->format('Y-m-d')) }}">
+                </div>
                     <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
                     </div>
 

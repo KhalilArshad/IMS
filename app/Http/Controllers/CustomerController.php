@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\CustomerLedger;
 use App\Models\CustomerTransactionSummary;
+use App\Models\Setting;
 use App\Models\ShopLedger;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
@@ -197,8 +198,9 @@ class CustomerController extends Controller
     public function customerReceivableCreate(Request $request)
     {
         $customer= Customer::where('id',$request->id)->select('id','name','previous_balance')->first();
-        
-        return view('customer.customerReceivable',compact('customer'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('customer.customerReceivable',compact('customer','system_date'));
     }
     
     public function SaveCustomerReceivable(Request $request){
@@ -220,7 +222,7 @@ class CustomerController extends Controller
          // updating previous_balance of supplier
          DB::table("customers")->where("id", '=', $request->customer_id)->update(['previous_balance' => $updatedCustomerBalance]);
      
-         $date = date('Y-m-d');
+         $date = $request->date;
          $description = 'Payment Received Against Customer';
          $customerLedger = new CustomerLedger();
          $customerLedger->customer_id= $request->customer_id;

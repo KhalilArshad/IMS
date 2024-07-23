@@ -6,6 +6,7 @@ use App\Models\DriverStock;
 use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderChild;
+use App\Models\Setting;
 use App\Models\ShopLedger;
 use App\Models\Stock;
 use App\Models\StockTransaction;
@@ -26,7 +27,9 @@ class PurchaseOrderController extends Controller
     {
         $items= Item::get();
         $suppliers= Supplier::get();
-        return view('purchaseOrder.create',compact('items','suppliers'));
+        $system_date = Setting::select('id','system_date')->first();
+        $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+        return view('purchaseOrder.create',compact('items','suppliers','system_date'));
     }
     public function getPoNo(){
          $purchase_order= PurchaseOrder::orderBy('id','desc')->first();
