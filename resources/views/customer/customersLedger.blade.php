@@ -3,6 +3,29 @@
     <link href="assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 @endsection
 @section("wrapper")
+<style>
+/* Custom CSS for Select2 to match the form input styles */
+.select2-container .select2-selection--single {
+    height: 38px; 
+}
+.select2-container--default .select2-selection--single {
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    background-color: #fff;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px; 
+    padding-left: 8px; 
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px; 
+    position: absolute;
+    top: 1px; 
+    right: 1px; 
+    width: 20px; 
+}
+
+</style>
 <!--start page wrapper -->
 <div class="page-wrapper">
     <div class="page-content">
@@ -156,6 +179,10 @@
     <script>
     $(document).ready(function () {
             $('#example').DataTable();
+            $('#customer_id').select2({
+                placeholder: "{{ __('Select customer') }}",
+                allowClear: true
+            });
     });
     $(document).ready(function() {
         $('#payButton').click(function() { // Attach the click event directly to the Pay button

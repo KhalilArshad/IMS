@@ -93,8 +93,8 @@ class PurchaseOrderController extends Controller
                 $purchaseOrderChild->unit_price= $request->unit_price[$i];
                 // $purchaseOrderChild->sale_price= $request->selling_price[$i];
                 $purchaseOrderChild->quantity= $request->quantity[$i];
-                $purchaseOrderChild->vat_in_per= $request->vat_in_per[$i];
-                $purchaseOrderChild->total_vat= $request->total_vat[$i];
+                // $purchaseOrderChild->vat_in_per= $request->vat_in_per[$i];
+                // $purchaseOrderChild->total_vat= $request->total_vat[$i];
                 $purchaseOrderChild->total= $request->total[$i];
                 $purchaseOrderChild->save();
              }

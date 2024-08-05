@@ -14,6 +14,28 @@
     .custom-input-date {
     width: 130px;
 }
+
+/* Custom CSS for Select2 to match the form input styles */
+.select2-container .select2-selection--single {
+    height: 38px; 
+}
+.select2-container--default .select2-selection--single {
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    background-color: #fff;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px; 
+    padding-left: 8px; 
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px; 
+    position: absolute;
+    top: 1px; 
+    right: 1px; 
+    width: 20px; 
+}
+
 </style>
 <!--start page wrapper -->
 <div class="page-wrapper">
@@ -106,8 +128,8 @@
                                             <th scope="col">Last Selling Date</th>
                                             <th scope="col">Selling Price</th>
                                             <th scope="col">Quantity</th>
-                                            <th scope="col">Vat in %</th>
-                                            <th scope="col">Vat Total</th>
+                                            <!-- <th scope="col">Vat in %</th> -->
+                                            <!-- <th scope="col">Vat Total</th> -->
                                             <th scope="col">Total Price</th>
                                             <th scope="col">Remove</th>
                                             </tr>
@@ -226,7 +248,10 @@
    $(document).ready(function () {
     $('#example').DataTable();
     console.log("jQuery is ready");
-
+    $('#customer_id').select2({
+        placeholder: "{{ __('Select customer') }}",
+        allowClear: true
+    });
     $('#productSave').click(function (event) {
         event.preventDefault();
         var form = $('#productForm');
@@ -294,11 +319,11 @@ function addItem(defaultItemId)
                 
                 html += "<td> <input required type='number' min='0' autocomplete='off' id='quantity_"+items+"' onchange='calculatetotal("+items+")' onkeyup='calculatetotal("+items+")' name='quantity[]' placeholder='Quantity' class='form-control custom-input'></td>";
 
-                html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
-                html += '<option value="0" selected>No VAT</option>';
-                html += '<option value="15">15%</option>';
-                html += '</select></td>';
-                html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
+                // html += '<td><select required name="vat_in_per[]" style=" width:100px;" id="vatInPer_' + items + '" onchange="calculatetotal(' + items + ')" class="form-control">';
+                // html += '<option value="0" selected>No VAT</option>';
+                // html += '<option value="15">15%</option>';
+                // html += '</select></td>';
+                // html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_vat form-control  custom-input' id='total_vat_"+items+"' name='total_vat[]' placeholder='Total Vat' readonly '></td>";
 
                 html += "<td> <input required type='number' min='0.00' step='0.01' autocomplete='off' class='total_price form-control  custom-input' id='total_price_"+items+"' name='total[]' placeholder='Total' readonly '></td>";
                 html += '<td> <button  style=" margin-left:10px;"  name="remove"  class="btn btn-danger btn-sm remove"> X </button></td></div>';
@@ -356,7 +381,7 @@ function addItem(defaultItemId)
                         var sale_price = parseFloat($('#sale_price_' + rowno).val());
                         var quantity = parseInt($('#quantity_' + rowno).val());
                         var qtyInStock = parseInt($('#qtyInStock' + rowno).val());
-                        var vatRate = parseFloat($('#vatInPer_' + rowno).val());
+                        // var vatRate = parseFloat($('#vatInPer_' + rowno).val());
 
                         if (quantity > qtyInStock) {
                             // Show error message
@@ -378,12 +403,12 @@ function addItem(defaultItemId)
                         }
 
                         // Calculate VAT
-                        var totalVAT = totalExcludingVAT * (vatRate / 100);
-                        $('#total_vat_' + rowno).val(totalVAT.toFixed(2));
+                        // var totalVAT = totalExcludingVAT * (vatRate / 100);
+                        // $('#total_vat_' + rowno).val(totalVAT.toFixed(2));
 
                         // Calculate total price including VAT
-                        var totalPriceIncludingVAT = totalExcludingVAT + totalVAT;
-                        $('#total_price_' + rowno).val(totalPriceIncludingVAT.toFixed(2));
+                        // var totalPriceIncludingVAT = totalExcludingVAT + totalVAT;
+                        $('#total_price_' + rowno).val(totalExcludingVAT.toFixed(2));
                         updateTotalBill();
                     }
 

@@ -292,7 +292,7 @@
                 <th style="width:20%;">Unit</th>
                 <th style="width:20%;">Quantity</th>
                 <th style="width:20%;">Price</th>
-                <th style="width:20%;">Vat</th>
+                <!-- <th style="width:20%;">Vat</th> -->
                 <th style="width:20%;">Total Price</th>
             </tr>
         </thead>
@@ -314,7 +314,7 @@
                 <td>{{$data->items->unit->name}}</td>
                 <td>{{$data->quantity}}</td>
                 <td>{{$data->selling_price}}</td>
-                <td>{{$data->total_vat}}</td>
+                <!-- <td>{{$data->total_vat}}</td> -->
                 <td>{{$data->total}}</td>
             </tr>
             @endforeach

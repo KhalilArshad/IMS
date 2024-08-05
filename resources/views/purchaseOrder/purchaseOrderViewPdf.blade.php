@@ -292,19 +292,17 @@
                 <th style="width:20%;">Unit</th>
                 <th style="width:20%;">Quantity</th>
                 <th style="width:20%;">Purchase Price</th>
-                <th style="width:20%;">Total Vat</th>
+                <!-- <th style="width:20%;">Total Vat</th> -->
                 <th style="width:20%;">Total Price</th>
             </tr>
         </thead>
         <tbody style="font-size:11px; text-align:center; padding:0px; margin:0px; ">
             @php
                 $count = 0;
-                $total_vat = 0;
             @endphp
             @foreach($purchaseOrderChild as $data)
             @php
                 $count++;
-                $total_vat += $data->total_vat;
             @endphp
             <tr>
                 <td>
@@ -314,7 +312,7 @@
                 <td>{{$data->items->unit->name}}</td>
                 <td>{{$data->quantity}}</td>
                 <td>{{$data->unit_price}}</td>
-                <td>{{$data->total_vat}}</td>
+                <!-- <td>{{$data->total_vat}}</td> -->
                 <td>{{$data->total}}</td>
             </tr>
             @endforeach
@@ -323,17 +321,14 @@
     {{-- /items details --}}
     {{-- bill details --}}
     <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Total: &nbsp; <small>{{$purchaseOrder->total_bill - $total_vat}}</small> </h5>
+        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Total: &nbsp; <small>{{$purchaseOrder->total_bill}}</small> </h5>
 
     </div>
     <div class="pdf-bill-details">
         <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Discount: &nbsp; <small>0</small> </h5>
 
     </div>
-    <div class="pdf-bill-details">
-        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Vat: 15%&nbsp; <small>{{$total_vat}}</small> </h5>
-
-    </div>
+   
     <div class="pdf-bill-details">
         <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;">Net Total&nbsp; <small>{{$purchaseOrder->total_bill}}</small> </h5>
 

@@ -159,7 +159,7 @@ body {
                                 <div class="border p-4 rounded">
                                     <div class="text-center">
                                         <h3 class="">Sign in</h3>
-                                        <p style="color: #ff0027">Taghreed Mohammed Ibrahim Al Maqil Trading Est </a>
+                                        <p style="color: #ff0027">Iman Yahya Bin Muhammad Al Mufarreh Foundation General Contracting </a>
                                         </p>
                                     </div>
                                    @if (Session::has('status'))

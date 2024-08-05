@@ -218,26 +218,27 @@ class InvoiceController extends Controller
              $total_profit = 0;
              for ($i = 0; $i < $rows; $i++) {
                 $purchasePriceExVAT = $request->purchase_price[$i];
-                $vatAmountPurchase = $purchasePriceExVAT * (15 / 100);
-                $totalPurchasePriceWithVAT = ($purchasePriceExVAT + $vatAmountPurchase) * $request->quantity[$i];
+                // $vatAmountPurchase = $purchasePriceExVAT * (15 / 100);
+                // $totalPurchasePriceWithVAT = ($purchasePriceExVAT + $vatAmountPurchase) * $request->quantity[$i];
 
                 // Calculate the total selling price including VAT
                 $sellingPriceExVAT = $request->selling_price[$i];
-                $vatAmountSelling = $sellingPriceExVAT * ($request->vat_in_per[$i] / 100);
-                $totalSellingPriceWithVAT = ($sellingPriceExVAT + $vatAmountSelling) * $request->quantity[$i];
+                // $vatAmountSelling = $sellingPriceExVAT * ($request->vat_in_per[$i] / 100);
+                // $totalSellingPriceWithVAT = ($sellingPriceExVAT + $vatAmountSelling) * $request->quantity[$i];
 
                 // Calculate profit
-                $profit = $totalSellingPriceWithVAT - $totalPurchasePriceWithVAT;
+                $profit = $sellingPriceExVAT - $purchasePriceExVAT;
+                $item_total_profit = $profit *  $request->quantity[$i];
                 $invoiceChild = new InvoiceChild();
                 $invoiceChild->invoice_id= $invoice_id;
                 $invoiceChild->item_id      = $request->itemid[$i];
                 $invoiceChild->purchase_price= $request->purchase_price[$i];
                 $invoiceChild->selling_price= $request->selling_price[$i];
-                $invoiceChild->vat_in_per= $request->vat_in_per[$i];
-                $invoiceChild->total_vat= $request->total_vat[$i];
+                // $invoiceChild->vat_in_per= $request->vat_in_per[$i];
+                // $invoiceChild->total_vat= $request->total_vat[$i];
                 $invoiceChild->quantity= $request->quantity[$i];
                 $invoiceChild->total= $request->total[$i];
-                $invoiceChild->profit= $profit;
+                $invoiceChild->profit= $item_total_profit;
                 $invoiceChild->save();
 
                 // geeting quantity of item from stock table using item_id
@@ -276,7 +277,7 @@ class InvoiceController extends Controller
                 $stockTransaction->inventory_type= 'inventory sale with invoice'.' '.$invoice_no;
                 $stockTransaction->save();
                 
-                $total_profit = $total_profit + $profit;
+                $total_profit = $total_profit + $item_total_profit;
              }
              $update_invoice_no=Invoice::find($invoice_id)->update(['profit'=> $total_profit]);
             });

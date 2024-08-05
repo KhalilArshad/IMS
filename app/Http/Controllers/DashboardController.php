@@ -55,7 +55,7 @@ class DashboardController extends Controller
         $totalSales = Invoice::whereBetween('date', [$startDate, $endDate])->sum('total_bill');
         $totalPurchase = PurchaseOrder::whereBetween('date', [$startDate, $endDate])->sum('total_bill');
         $vehicleExpense = VehicleExpense::whereBetween('date', [$startDate, $endDate])->sum('amount');
-        $totalProfit = InvoiceChild::whereBetween('created_at', [$startDate, $endDate])->sum('profit');
+        $totalProfit = Invoice::whereBetween('date', [$startDate, $endDate])->sum('profit');
         $totalEmployeePayroll = Payroll::whereBetween('date', [$startDate, $endDate])->sum('total_salary_to_be_paid');
         $supplierRemaining = Supplier::sum('previous_balance');
         $customerPayable = Customer::sum('previous_balance');
