@@ -127,7 +127,7 @@
                                                 <th>Old Received</th>
                                                 <th>Net Remaining</th>
                                                 <th>Date</th>
-                                                <!-- <th>Description</th> -->
+                                                <th>Description</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -143,7 +143,7 @@
                                                 <td>{{ $child->old_received}}</td>
                                                 <td>{{ $child->net_remaining}}</td>
                                                 <td>{{ $child->date}}</td>
-                                                <!-- <td>{{ $child->description}}</td> -->
+                                                <td>{{ $child->description}}</td>
                                             </tr>
                                             @php($i++)
                                             @endforeach

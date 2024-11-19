@@ -454,7 +454,7 @@ function addItem(defaultItemId)
                         var old_remaining = parseFloat($('#old_remaining').val());
                         var net_remaining = old_remaining - old_receive;
                         
-                        var totalBill = parseFloat($('#total_bill').val());
+                        var totalBill = parseFloat($('#total_after_discount').val());
                         var paidAmount = parseFloat($('#paid_amount').val());
                         var bill_remaining = totalBill - paidAmount;
                          var total_remaining =net_remaining + bill_remaining;

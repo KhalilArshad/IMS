@@ -72,6 +72,7 @@ class EmployeeController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
         }
+        DB::beginTransaction();
         try {
 
             $createById = Session::get('user_id');
@@ -84,10 +85,27 @@ class EmployeeController extends Controller
             $employee->date_of_joining = $request->date_of_joining;
             $employee->salary = $request->salary;
             $employee->address = $request->address;
+            $employee->advance = $request->advance_amount;
+            $employee->remaining = $request->remaining_amount;
             $employee->save();
-
+            $employee_id =$employee->id;
+            
+            if($request->advance_amount !=0 || $request->remaining_amount !=0){
+            $date=date('Y-m-d');
+            $description = 'employee added';
+            $employee = new EmployeeAdvance();
+            $employee->employee_id   = $employee_id;
+            $employee->advance_amount     = $request->advance_amount ??0;
+            $employee->paid_amount         = 0;
+            $employee->remaining         = $request->remaining_amount ??0;
+            $employee->date  = $date;
+            $employee->description  = $description;
+            $employee->save();
+            }
+            DB::commit();
             return redirect()->back()->with(['status' => 'success', 'message' => 'Employee stored successfully']);
         } catch (Exception $e) {
+            DB::rollBack();
             return redirect()->back()->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
         }
     }
@@ -204,34 +222,46 @@ class EmployeeController extends Controller
                 $employeeRemaining =$employee->remaining;
                 if($employeeRemaining > 0){
                     if($request->advance_amount == $employeeRemaining ){
-                        $updateAdvance =  0;
+                        // $updateAdvance =  0;
                         $updateRemaining=  0;
                         Employee::where('id',$request->employee_id)
-                        ->update(['advance'=>$updateAdvance,'remaining'=>$updateRemaining]);
+                        ->update(['remaining'=>$updateRemaining]);
                     }elseif($request->advance_amount < $employeeRemaining){
-                        $updateAdvance =  0;
+                        // $updateAdvance =  0;
                         $updateRemaining=  $employeeRemaining - $request->advance_amount;
                         Employee::where('id',$request->employee_id)
-                        ->update(['advance'=>$updateAdvance,'remaining'=>$updateRemaining]);
+                        ->update(['remaining'=>$updateRemaining]);
                     }elseif($request->advance_amount > $employeeRemaining){
                         $updateAdvance =  $request->advance_amount -$employeeRemaining;
                         $updateRemaining= 0;
+                        $updateEmployeeAdvance=$employeeAdvance+ $updateAdvance;
                         Employee::where('id',$request->employee_id)
-                        ->update(['advance'=>$updateAdvance,'remaining'=>$updateRemaining]);
+                        ->update(['advance'=>$updateEmployeeAdvance,'remaining'=>$updateRemaining]);
                     }
+                    $employee = new EmployeeAdvance();
+                    $employee->employee_id   = $request->employee_id;
+                    $employee->advance_amount         = $request->advance_amount;
+                    $employee->paid_amount         = 0;
+                    $employee->remaining         = $updateRemaining;
+                    $employee->description  = $request->description;
+                    $employee->date  = $request->date;
+                    $employee->save();
                 }else{
                     $updateAdvance =  $employeeAdvance + $request->advance_amount;
                     Employee::where('id',$request->employee_id)
                     ->update(['advance'=>$updateAdvance]);
+
+                    $employee = new EmployeeAdvance();
+                    $employee->employee_id   = $request->employee_id;
+                    $employee->advance_amount         = $request->advance_amount;
+                    $employee->paid_amount         = 0;
+                    $employee->remaining         = 0;
+                    $employee->description  = $request->description;
+                    $employee->date  = $request->date;
+                    $employee->save();
                 }
 
-                $employee = new EmployeeAdvance();
-                $employee->employee_id   = $request->employee_id;
-                $employee->advance_amount         = $request->advance_amount;
-                $employee->paid_amount         = 0;
-                $employee->description  = $request->description;
-                $employee->date  = $request->date;
-                $employee->save();
+            
         return response()->json(['success' => 'employee advance saved successfully']);
     }
     public function searchEmployeeByajax(Request $req)
@@ -265,83 +295,62 @@ class EmployeeController extends Controller
 
     public function createPayroll(Request $request){
         // return $request;
-        $date = date('Y-m-d');
-        list($year, $month, $day) = explode('-', $date); 
-        $monthName = date("F", mktime(0, 0, 0, $month, 1)).' '.$year;
-        $checkCurrentMonthPayroll = Payroll::where('employee_id', $request->id)
-            ->whereYear('date', $year) 
-            ->whereMonth('date', $month) 
+        $checkPrevMonthPayroll = Payroll::where('employee_id', $request->id)
+            ->select('month')
+            ->orderBy('id', 'desc')
             ->first();
-            if($checkCurrentMonthPayroll){
-                return redirect()->back()->with(['status' => 'danger', 'message' => 'Employee Payroll for this month already generated']);
-            }else{
-                
-                $employee= Employee::where('id',$request->id)->first();
-                return view('employees.generatePayroll',compact('employee','monthName'));
-            }
+            $lastMonth= $checkPrevMonthPayroll->month??'';
+             
+            $employee= Employee::where('id',$request->id)->first();
+            return view('employees.generatePayroll',compact('employee','lastMonth'));
        
     }
 
     public function savePayroll(Request $request){
         $rules = array(
             'employee_id' => 'required',
-            'current_salary' => 'required',
+            'current_paid' => 'required',
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return redirect('employees-list')->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
         }
-        // return $request;
         try {
             DB::transaction(function () use ($request) {
-                $employee= Employee::where('id',$request->employee_id)->select('id','advance','remaining')->first();
+                $employee= Employee::where('id',$request->employee_id)->select('id','advance','remaining','salary')->first();
                 $employeeAdvance =$employee->advance;
-                $employeeRemaining =$employee->remaining;
-                $updatedRemaining = $employeeRemaining + $request->add_in_remaining;
+                $salary =$employee->salary;
                 $updateAdvance =  $employeeAdvance - $request->paid_in_advance;
                 Employee::where('id',$request->employee_id)
-               ->update(['advance'=>$updateAdvance,'remaining'=>$updatedRemaining]);
+               ->update(['advance'=>$updateAdvance,'remaining'=>$request->total_remaining]);
               
-                $date = date('Y-m-d');
-                list($year, $month, $day) = explode('-', $date); 
-                $monthName = date("F", mktime(0, 0, 0, $month, 1)).' '.$year;
-                $description = 'Payroll Generated for the month '.$monthName;
+               $system_date = Setting::select('id','system_date')->first();
+                $date = $system_date->system_date;
+                $months=  implode(',', $request->month);
+                $description = 'Payroll Generated for the month of: '.$months;
                 $payroll = new Payroll();
-                $payroll->employee_id= $request->employee_id;
+                $payroll->employee_id= $request->employee_id; 
                 $payroll->date= $date;
-                $payroll->salary= $request->salary;
+                $payroll->salary= $salary;
                 $payroll->advance= $request->advance;
                 $payroll->paid_in_advance= $request->paid_in_advance;
-                $payroll->remaining= $request->remaining_amount;
-                $payroll->add_in_remaining= $request->add_in_remaining;
+                $payroll->remaining= $request->total_remaining;
                 $payroll->overtime=  $request->overtime;
-                $payroll->total_salary_to_be_paid= $request->current_salary;
+                $payroll->total_salary_to_be_paid= $request->current_paid;
                 $payroll->description= $description;
+                $payroll->month= $months;
                 $payroll->save();
 
+                $employee = new EmployeeAdvance();
+                $employee->employee_id   = $request->employee_id;
+                $employee->advance_amount         = 0;
+                $employee->paid_amount         = $request->paid_in_advance ??0;
+                $employee->remaining         = $request->total_remaining;
+                $employee->description  = $description;
+                $employee->date  = $date;
+                $employee->save();
 
-                if($request->paid_in_advance > 0){
-                    $description = 'Amount Paid in Advance in the month of: '.$monthName;
-                    $employee = new EmployeeAdvance();
-                    $employee->employee_id   = $request->employee_id;
-                    $employee->advance_amount         = 0;
-                    $employee->paid_amount         = $request->paid_in_advance;
-                    $employee->description  = $description;
-                    $employee->date  = date('Y-m-d');
-                    $employee->save();
-                }
-                if($request->add_in_remaining > 0){
-                    $description = 'Amount Remaining in the month of: '.$monthName;
-                    $employee = new EmployeeAdvance();
-                    $employee->employee_id   = $request->employee_id;
-                    $employee->advance_amount         = 0;
-                    $employee->paid_amount         = 0;
-                    $employee->remaining         = $request->add_in_remaining;
-                    $employee->description  = $description;
-                    $employee->date  = date('Y-m-d');
-                    $employee->save();
-                }
-                if ($request->current_salary > 0) {
+                if ($request->current_paid > 0) {
                     $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
                     if (!$shopLedgerBalance) {
                         $lastShopLedgerBalance = 0;
@@ -349,9 +358,9 @@ class EmployeeController extends Controller
                         $lastShopLedgerBalance = $shopLedgerBalance->balance;
                     }
                     $date = date('Y-m-d');
-                    $description = 'Paid Employee Salary in the month of: '.$monthName;
+                    $description = 'Paid Employee Salary for the month of: '.$months;
                     $debit = 0;
-                    $credit = $request->current_salary; 
+                    $credit = $request->current_paid; 
                     $shopBalance = $debit - $credit + $lastShopLedgerBalance;
                     $shopLedger = new ShopLedger();
                     $shopLedger->employee_id= $request->employee_id;
@@ -393,5 +402,39 @@ class EmployeeController extends Controller
         // Output the generated PDF to browser
         return response($mpdf->Output('payroll-' . $payroll->id . '-Date' . $payroll->date . '.pdf', 'I'))
             ->header('Content-Type', 'application/pdf');
+    }
+    
+    public function getEmployeeSalary(Request $request)
+    {
+        $id=$request->id;
+        $salary=Employee::select('id','salary')->where('id',$id)->first();
+        return $salary;
+    }
+
+    public function saveEmployeeSalary(Request $request)
+    {
+        $employee= Employee::where('id',$request->employee_id)->select('id','remaining','salary')->first();
+        $employeeRemaining =$employee->remaining ?? 0;
+        $employeeSalary =$employee->salary ?? 0;
+        $updateRemaining =  $employeeRemaining + $request->basic_salary;
+        // Employee::where('id',$request->employee_id)
+        // ->update(['remaining'=>$updateAdvance]);
+        
+        $employee = Employee::find($request->employee_id);
+        $employee->remaining = $updateRemaining;
+        $employee->save();
+
+        $date=date('Y-m-d');
+        $description = 'employee salary ('.$employeeSalary .') added for the month of: '.$request->month;
+        $employee = new EmployeeAdvance();
+        $employee->employee_id   = $request->employee_id;
+        $employee->advance_amount     = 0;
+        $employee->paid_amount         = 0;
+        $employee->remaining         = $updateRemaining;
+        $employee->date  = $date;
+        $employee->description  = $description;
+        $employee->month  = $request->month;
+        $employee->save();
+    return response()->json(['success' => 'employee salary saved successfully']);
     }
 }

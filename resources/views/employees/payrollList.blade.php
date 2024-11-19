@@ -51,7 +51,7 @@
                                                                  <th>Salary</th>
                                                                 <th>Advance</th>
                                                                 <th>Paid in Advance</th>
-                                                                <th>Add in Remaining</th>
+                                                                <th>Total Remaining</th>
                                                                 <th>Over time</th>
                                                                 <th>Current Month Salary</th>
                                                                 <th>Date</th>
@@ -64,11 +64,11 @@
                                             @foreach ($payrolls  as $payroll)
                                             <tr>
                                             <td>{{ $i }}</td>
-                                                                <td>{{ $payroll->employee->name }}</td>
+                                                                <td>{{ $payroll->employee->name??'' }}</td>
                                                                 <td>{{ $payroll->salary }}</td>
                                                                 <td>{{ $payroll->advance }}</td>
                                                                 <td>{{ $payroll->paid_in_advance }}</td>
-                                                                <td>{{ $payroll->add_in_remaining }}</td>
+                                                                <td>{{ $payroll->remaining }}</td>
                                                                 <td>{{ $payroll->overtime }}</td>
                                                                 <td>{{ $payroll->total_salary_to_be_paid }}</td>
                                                                 <td>{{ $payroll->date }}</td>

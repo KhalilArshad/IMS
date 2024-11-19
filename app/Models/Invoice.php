@@ -20,7 +20,8 @@ class Invoice extends Model
         'remaining', 
         'date', 
         'invoice_no',
-        'profit'
+        'profit',
+        'deleted'
     ];
     public function customer()
     {

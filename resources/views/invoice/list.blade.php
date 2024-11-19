@@ -129,6 +129,8 @@
                                                 
                                                  <div class="d-flex order-actions">
                                                     <a href="view-invoice/{{ $invoice->id }}" class="ms-3"  target="_blank"><i class='bx bxs-show  text-info'></i></a>
+
+                                                    <a href="invoice-delete/{{ $invoice->id }}" class="ms-3"  onclick="return confirm('Are you sure you want to delete this Invoice?')"><i class='bx bxs-trash text-danger'></i></a>
                                                     </div>
                                                 </td>
                                             </tr>

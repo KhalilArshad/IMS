@@ -385,14 +385,14 @@ class ReportController extends Controller
             $date = $request->date;
             $driverReceiveStocks = DriverStockChild::with('item')->whereDate('date',$date)->where('driver_id',$request->driver_id)->where('remarks','Received')->get();
           foreach ($driverReceiveStocks as $driverStock) {
-            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
+            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('date',$date)->orderBy('id', 'desc')->first();
             $driverStock->purchase_price = $purchaseOrder ? $purchaseOrder->unit_price : 0;
             $driverStock->vat = $purchaseOrder ? $purchaseOrder->vat_in_per : 0;
         }
               $driverReceiveStocks ;
             $driverRemainingStocks = DriverStock::with('item')->where('driver_id',$request->driver_id)->get();
           foreach ($driverRemainingStocks as $driverStock) {
-            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
+            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('date',$date)->orderBy('id', 'desc')->first();
             $driverStock->vat = $purchaseOrder ? $purchaseOrder->vat_in_per : 0;
             $driverStock->purchase_price_new = $purchaseOrder ? $purchaseOrder->unit_price : 0;
         }
@@ -450,12 +450,12 @@ class ReportController extends Controller
     {
      
         $driverReports =[];
-        $date = date('Y-m-d');
+        $date = $request->date;
 
             $driverReceiveStocks = DriverStockChild::with('item')->whereDate('date',$date)->where('driver_id',$request->driver_id)->where('remarks','Received')->get();
             $total_purchase_of_single_driver =0;
            foreach ($driverReceiveStocks as $driverStock) {
-            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
+            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('date',$date)->orderBy('id', 'desc')->first();
             $driverStock->purchase_price = $purchaseOrder ? $purchaseOrder->unit_price : 0;
             $driverStock->vat = $purchaseOrder ? $purchaseOrder->vat_in_per : 0;
 
@@ -467,7 +467,7 @@ class ReportController extends Controller
             $driverRemainingStocks = DriverStock::with('item')->where('driver_id',$request->driver_id)->get();
             $total_remaining_of_single_driver =0;
           foreach ($driverRemainingStocks as $driverStock) {
-            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
+            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('date',$date)->orderBy('id', 'desc')->first();
             $driverStock->vat = $purchaseOrder ? $purchaseOrder->vat_in_per : 0;
             $driverStock->purchase_price_new = $purchaseOrder ? $purchaseOrder->unit_price : 0;
 
@@ -548,14 +548,15 @@ class ReportController extends Controller
 
     public function allDriverReportPrint(Request $request)
     {
+        $date = $request->date;
         $drivers =Driver::get();
         $driverReports =[];
-        $date = date('Y-m-d');
+        // $date = date('Y-m-d');
         foreach($drivers as $driver){
             $driverReceiveStocks = DriverStockChild::with('item')->whereDate('date',$date)->where('driver_id',$driver->id)->where('remarks','Received')->get();
             $total_purchase_of_single_driver =0;
            foreach ($driverReceiveStocks as $driverStock) {
-            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
+            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('date',$date)->orderBy('id', 'desc')->first();
             $driverStock->purchase_price = $purchaseOrder ? $purchaseOrder->unit_price : 0;
             $driverStock->vat = $purchaseOrder ? $purchaseOrder->vat_in_per : 0;
 
@@ -567,7 +568,7 @@ class ReportController extends Controller
             $driverRemainingStocks = DriverStock::with('item')->where('driver_id',$driver->id)->get();
             $total_remaining_of_single_driver =0;
           foreach ($driverRemainingStocks as $driverStock) {
-            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('created_at',$date)->orderBy('id', 'desc')->first();
+            $purchaseOrder = PurchaseOrderChild::where('item_id', $driverStock->item_id)->whereDate('date',$date)->orderBy('id', 'desc')->first();
             $driverStock->vat = $purchaseOrder ? $purchaseOrder->vat_in_per : 0;
             $driverStock->purchase_price_new = $purchaseOrder ? $purchaseOrder->unit_price : 0;
 

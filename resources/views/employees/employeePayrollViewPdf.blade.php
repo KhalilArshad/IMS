@@ -242,9 +242,8 @@
             <tr>
                 @php
                 $date = new DateTime($payroll->date);
-                $salary_month = $date->format('M Y');
                 @endphp
-                <td>{{ $salary_month }}</td>
+                <td>{{  $payroll->month }}</td>
                 <td>{{ $payroll->employee->designation }}</td>
                 <td>{{ $payroll->employee->salary}}</td>
             </tr>
@@ -264,30 +263,16 @@
                 <td>{{ $remainingAdvance }}</td>
             </tr>
             <tr>
-                <th>Remaining Amount</th>
-                <th>Add in Remaining</th>
                 <th>Total Remaining</th>
-            </tr>
-            <tr>
-                @php
-                $remaining = $payroll->remaining;
-                $add_in_remaining = $payroll->add_in_remaining;
-                $TotalRemaining =  $remaining + $add_in_remaining;
-                @endphp
-                <td>{{ $payroll->remaining }}</td>
-                <td>{{ $payroll->add_in_remaining }}</td>
-                <td>{{ $TotalRemaining }}</td>
-            </tr>
-            <tr>
                 <th>Over Time</th>
-                <th></th>
                 <th>Total Salary To be Paid</th>
             </tr>
             <tr>
+                <td>{{ $payroll->remaining }}</td>
                 <td>{{ $payroll->overtime }}</td>
-                <td></td>
-                <td>{{ $payroll->total_salary_to_be_paid}}</td>
+                <td>{{ $payroll->total_salary_to_be_paid }}</td>
             </tr>
+          
         </tbody>
     </table>
 

@@ -287,7 +287,139 @@ class InvoiceController extends Controller
         }
         
     }
+    
+    public function invoiceDelete($id){
 
+        $invoice = Invoice::with('customer')->where('id', $id)->first();
+        $invoiceChild = InvoiceChild::with('items')->where('invoice_id', $id)->get();
+
+        $customerBalance = DB::select("SELECT `previous_balance` FROM `customers` WHERE `id`=?", [$invoice->customer_id]);
+        $customerPreviousBalance = $customerBalance[0]->previous_balance;
+        $updatedCustomerBalance = $customerPreviousBalance - $invoice->remaining;
+        // updating previous_balance of supplier
+        DB::table("customers")->where("id", '=', $invoice->customer_id)->update(['previous_balance' => $updatedCustomerBalance]);
+
+           $date = date('Y-m-d');
+           $description = 'Debit Against Deleted Invoice:'.' '.$invoice->invoice_no;
+           $customerLedger = new CustomerLedger();
+           $customerLedger->customer_id= $invoice->customer_id;
+           $customerLedger->invoice_id= $id;
+           $customerLedger->credit= $invoice->remaining;
+           $customerLedger->debit= $invoice->paid_amount;
+           $customerLedger->balance= $updatedCustomerBalance;
+           $customerLedger->date= $date;
+           $customerLedger->description= $description;
+           $customerLedger->save();
+
+        if($invoice->old_receive > 0){
+
+            $customerBalance = DB::select("SELECT `previous_balance` FROM `customers` WHERE `id`=?", [$invoice->customer_id]);
+            $customerPreviousBalance_ = $customerBalance[0]->previous_balance;
+            $updatedCustomerBalance_ = $customerPreviousBalance_ + $invoice->old_receive ;
+            // updating previous_balance of supplier
+            DB::table("customers")->where("id", '=', $invoice->customer_id)->update(['previous_balance' => $updatedCustomerBalance_]);
+
+            $description = 'Old Amount Reversed Against Deleted Invoice:'.' '.$invoice->invoice_no;
+            $customerLedger = new CustomerLedger();
+            $customerLedger->customer_id= $invoice->customer_id;
+            $customerLedger->invoice_id= $id;
+            $customerLedger->credit= 0;
+            $customerLedger->debit= $invoice->old_receive;
+            $customerLedger->balance= $updatedCustomerBalance_;
+            $customerLedger->date= $date;
+            $customerLedger->description= $description;
+            $customerLedger->save();
+
+            $customerTran = new CustomerTransactionSummary();
+            $customerTran->customer_id        = $invoice->customer_id;
+            $customerTran->today_bill         = $invoice->total_after_discount;
+            $customerTran->today_remaining    = $invoice->remaining;
+            $customerTran->old_remaining      = $customerPreviousBalance;
+            $customerTran->old_received       = $invoice->old_receive;
+            $customerTran->net_remaining      = $updatedCustomerBalance_;
+            $customerTran->description        = $description;
+            $customerTran->date  = $date;
+            $customerTran->save();
+            $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
+            if (!$shopLedgerBalance) {
+                $lastShopLedgerBalance = 0;
+            } else {
+                $lastShopLedgerBalance = $shopLedgerBalance->balance;
+            }
+            $credit = $invoice->old_receive;
+            $debit = 0;
+            $shopBalance = $debit - $credit + $lastShopLedgerBalance;
+            $shopLedger = new ShopLedger();
+            $shopLedger->customer_id= $invoice->customer_id;
+            $shopLedger->invoice_id= $id;
+            $shopLedger->credit= $credit;
+            $shopLedger->debit= $debit;
+            $shopLedger->balance= $shopBalance;
+            $shopLedger->date= $date;
+            $shopLedger->description= $description;
+            $shopLedger->save();
+        }
+        if ($invoice->paid_amount > 0) {
+            $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
+            if (!$shopLedgerBalance) {
+                $lastShopLedgerBalance = 0;
+            } else {
+                $lastShopLedgerBalance = $shopLedgerBalance->balance;
+            }
+            $description = 'Received Amount Reversed Against Deleted Invoice:'.' '.$invoice->invoice_no;
+            $credit = $invoice->paid_amount;
+            $debit = 0;
+            $shopBalance = $debit - $credit + $lastShopLedgerBalance;
+            $shopLedger = new ShopLedger();
+            $shopLedger->customer_id= $invoice->customer_id;
+            $shopLedger->invoice_id= $id;
+            $shopLedger->credit= $credit;
+            $shopLedger->debit= $debit;
+            $shopLedger->balance= $shopBalance;
+            $shopLedger->date= $date;
+            $shopLedger->description= $description;
+            $shopLedger->save();
+        }
+
+        foreach ($invoiceChild as $child) {
+      
+            // geeting quantity of item from stock table using item_id
+            $driverStock =DriverStock::where('item_id',$child->item_id)
+            ->where('driver_id',$invoice->driver_id)
+            ->select('id','current_stock')->first();
+            $driverCurrentStock =$driverStock->current_stock;
+          
+            $remainingDriverStock = $driverCurrentStock +  $child->quantity;
+            DriverStock::where('item_id',$child->item_id)->where('driver_id',$invoice->driver_id)->update(['current_stock'=>$remainingDriverStock]);
+            
+
+            $driverStockChild = new DriverStockChild();
+            $driverStockChild->driver_id= $invoice->driver_id;
+            $driverStockChild->customer_id= $invoice->customer_id;
+            $driverStockChild->item_id      = $child->item_id;
+            $driverStockChild->date= $date;
+            $driverStockChild->current_stock= $remainingDriverStock;
+            $driverStockChild->sold_stock=  $child->quantity;
+            $driverStockChild->remarks= "Reversed Sold quantity with delete invoice";
+            $driverStockChild->save();
+            
+            $stockTransaction = new StockTransaction();
+            $stockTransaction->invoice_id= $id;
+            $stockTransaction->customer_id= $invoice->customer_id;
+            $stockTransaction->driver_id= $invoice->driver_id;
+            $stockTransaction->item_id= $child->item_id;
+            $stockTransaction->unit_price= $child->purchase_price;
+            $stockTransaction->quantity=  $child->quantity;
+            $stockTransaction->sale_price= $child->selling_price;
+            $stockTransaction->total=  $child->total;
+            $stockTransaction->date= $date;
+            $stockTransaction->inventory_type= 'inventory Reversed with delete invoice'.' '.$invoice->invoice_no;
+            $stockTransaction->save();
+         }
+         Invoice::destroy($id);
+         InvoiceChild::where('invoice_id',$id)->delete();
+        return redirect('invoice-list')->with(['status' => 'success', 'message' => 'Invoice Deleted successfully']);
+    }
     public function list()
     {
         $customers= Customer::get();

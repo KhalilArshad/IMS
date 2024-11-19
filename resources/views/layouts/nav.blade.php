@@ -150,7 +150,7 @@
                 </li>
                 <li> <a href="{{url('employees-list')}}" ><i class="bx bx-list-ul"></i>Employee List</a>
                 </li>
-                <li> <a href="{{url('AddEmployee-advance')}}" ><i class="bx bx-list-ul"></i>Employee Advance</a>
+                <li> <a href="{{url('AddEmployee-advance')}}" ><i class="bx bx-list-ul"></i>Advance/Remaining Logs</a>
                 </li>
                 <li> <a href="{{url('get-payroll')}}" ><i class="bx bx-list-ul"></i>Payroll</a>
                 </li>

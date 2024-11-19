@@ -96,6 +96,7 @@ class PurchaseOrderController extends Controller
                 // $purchaseOrderChild->vat_in_per= $request->vat_in_per[$i];
                 // $purchaseOrderChild->total_vat= $request->total_vat[$i];
                 $purchaseOrderChild->total= $request->total[$i];
+                $purchaseOrderChild->date= $request->date;
                 $purchaseOrderChild->save();
              }
 
@@ -372,6 +373,7 @@ class PurchaseOrderController extends Controller
                  //$purchaseOrderChild->sale_price= $request->selling_price[$i];
                    $purchaseOrderChild->quantity= $request->quantity[$i];
                    $purchaseOrderChild->total= $request->total[$i];
+                   $purchaseOrderChild->date= $date;
                    $purchaseOrderChild->save();
                 }
         });

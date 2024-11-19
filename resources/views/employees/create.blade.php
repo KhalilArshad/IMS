@@ -111,16 +111,32 @@
                                                 <input type="date" name="date_of_joining" class="form-control" id="date_of_joining" placeholder="Enter Date Of Joining">
                                             </div>
                                         </div>
-                                        
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="mb-3">
 
                                                 <label for="inputAddressDescription" class="form-label">Address<span
                                                     class="text-danger"> *</span></label>
                                                  <textarea class="form-control"  id="address" name="address" rows="2" placeholder="Address"></textarea>
+
+
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="advance_amount" class="form-label">Advance<span
+                                                    class="text-danger"> *</span></label>
+                                                <input type="number" name="advance_amount" id="advance_amount" class="form-control" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="remaining_amount" class="form-label">Remaining<span
+                                                    class="text-danger"> *</span></label>
+                                                    <input type="number" name="remaining_amount" id="remaining_amount" class="form-control" value="0">
 
 
                                             </div>

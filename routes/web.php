@@ -186,6 +186,7 @@ Route::get('create-invoice', [InvoiceController::class, 'index'])->name('create-
 Route::post('saveInvoice', [InvoiceController::class, 'store'])->name('saveInvoice');
 Route::get('invoice-list', [InvoiceController::class, 'list'])->name('invoice-list');
 Route::get('view-invoice/{id}', [InvoiceController::class, 'viewInvoice'])->name('view-invoice');
+Route::get('invoice-delete/{id}', [InvoiceController::class, 'invoiceDelete'])->name('invoice-delete');
 //stock Assign to driver and driver reports route
 Route::get('stockAssignTo-driver', [InvoiceController::class, 'createStockAssignToDriver'])->name('stockAssignTo-driver');
 Route::post('saveStockAssignToDriver', [InvoiceController::class, 'saveStockAssignToDriver'])->name('saveStockAssignToDriver');
@@ -239,6 +240,8 @@ Route::post('savePayroll', [EmployeeController::class, 'savePayroll'])->name('sa
 Route::get('get-payroll', [EmployeeController::class, 'getPayroll'])->name('get-payroll');
 Route::get('view-payroll/{id}', [EmployeeController::class, 'viewPayroll'])->name('view-payroll');
 
+Route::post('get-employee-salary', [EmployeeController::class, 'getEmployeeSalary'])->name('get-employee-salary');
+Route::post('save-employee-salary', [EmployeeController::class, 'saveEmployeeSalary'])->name('save-employee-salary');
 //reports
 
 Route::get('driverDaily-saleReport', [ReportController::class, 'dailyDriverSaleReport'])->name('driverDaily-saleReport');

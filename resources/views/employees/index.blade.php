@@ -43,8 +43,8 @@
                     <div id="alertPlaceholder" class="container mt-3"></div>
                            <div class="d-lg-flex align-items-center mb-4 gap-3">
                              <div class="ms-auto">
-                                <a href="{{ url('addEmployee') }}" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Employee</a>
-                          
+                                <!-- <a href="{{ url('addEmployee') }}" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Employee</a> -->
+                               <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addEmployeeSalary" ><i class="bx bxs-plus-square"></i> Add Employee Salary</a>
                                <a href="#" class="btn btn-outline-info px-3" data-bs-toggle="modal" data-bs-target="#addSupplierModal" ><i class="bx bxs-plus-square"></i> Add Employee Advance</a>
 
                              </div>
@@ -113,52 +113,109 @@
                         </div>
 
                                       <!-- Modal for adding a new supplier -->
-            <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addSupplierModalLabel">Add Employee Advance</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="border border-3 p-4 rounded borderRmv">
-                            <div id="alertPlaceholderReq"></div>
-                                <div class="mb-3">
-                                <label for="inputProductTitle" class="form-label">Select Employee<span
-                                                    class="text-danger"> *</span></label>
-                               <select name="employee_id" id="employee_id" required class="form-control">
-                                   <option value="">Select employee</option>
-                                @foreach($getEmployees as $employee)
-                                <option value="{{$employee->id}}">{{$employee->name}}</option>
-                                @endforeach
-                               </select>
+                    <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addSupplierModalLabel">Add Employee Advance</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
+                                <div class="modal-body">
+                                    <div class="border border-3 p-4 rounded borderRmv">
+                                    <div id="alertPlaceholderReq"></div>
+                                        <div class="mb-3">
+                                        <label for="inputProductTitle" class="form-label">Select Employee<span
+                                                            class="text-danger"> *</span></label>
+                                    <select name="employee_id" id="employee_id" required class="form-control">
+                                        <option value="">Select employee</option>
+                                        @foreach($getEmployees as $employee)
+                                        <option value="{{$employee->id}}">{{$employee->name}}</option>
+                                        @endforeach
+                                    </select>
+                                        </div>
 
-                                <div class="mb-3">
-                                <label for="inputProductTitle" class="form-label">Advance Amount<span
-                                                    class="text-danger"> *</span></label>
-                                <input type="number" name="advance_amount" required class="form-control" id="advance_amount" placeholder="Enter Advance Amount">
+                                        <div class="mb-3">
+                                        <label for="inputProductTitle" class="form-label">Advance Amount<span
+                                                            class="text-danger"> *</span></label>
+                                        <input type="number" name="advance_amount" required class="form-control" id="advance_amount" placeholder="Enter Advance Amount">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="date" class="form-label">Date<span
+                                                            class="text-danger"> *</span></label>
+                                            <input type="date"  name="advance_date" id="advance_date" required class="form-control" value="{{$system_date}}" placeholder="Enter date">
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                    
+                                        <textarea name="description" id="description" required class="form-control"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="date" class="form-label">Date<span
-                                                    class="text-danger"> *</span></label>
-                                    <input type="date"  name="advance_date" id="advance_date" required class="form-control" value="{{$system_date}}" placeholder="Enter date">
-                                </div>
-                                <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                               
-                                <textarea name="description" id="description" required class="form-control"></textarea>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-info" onclick="saveEmployeeAdvance();">Save changes</button>
+                                
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-info" onclick="saveEmployeeAdvance();">Save changes</button>
-                          
+                    </div>
+                    <div class="modal fade" id="addEmployeeSalary" tabindex="-1" aria-labelledby="addEmployeeSalaryLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addEmployeeSalaryLabel">Add Employee Basic Salary</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="border border-3 p-4 rounded borderRmv">
+                                    <div id="alertPlaceholderReq"></div>
+                                        <div class="mb-3">
+                                        <label for="inputProductTitle" class="form-label">Select Employee<span
+                                                            class="text-danger"> *</span></label>
+                                    <select name="employee_id_for_salary" id="employee_id_for_salary" required class="form-control">
+                                        <option value="">Select employee</option>
+                                        @foreach($getEmployees as $employee)
+                                        <option value="{{$employee->id}}">{{$employee->name}}</option>
+                                        @endforeach
+                                    </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                        <label for="inputProductTitle" class="form-label">salary<span
+                                                            class="text-danger"> *</span></label>
+                                        <input type="number" name="basic_salary" required class="form-control" id="basic_salary" placeholder="Enter Basic Salary" disabled>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="date" class="form-label">Month<span
+                                                            class="text-danger"> *</span></label>
+                                                            <select name="month" id="month" required class="form-control">
+                                                                <option value="">Select Month</option>
+                                                                <option value="January">January</option>
+                                                                <option value="February">February</option>
+                                                                <option value="March">March</option>
+                                                                <option value="April">April</option>
+                                                                <option value="May">May</option>
+                                                                <option value="June">June</option>
+                                                                <option value="July">July</option>
+                                                                <option value="August">August</option>
+                                                                <option value="September">September</option>
+                                                                <option value="October">October</option>
+                                                                <option value="November">November</option>
+                                                                <option value="December">December</option>
+                                                            </select>
+
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-info" onclick="saveEmployeeBasicSalary();">Save changes</button>
+                                
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
                     </div>
                 </div>
             </div>
@@ -215,6 +272,69 @@
         
             });
         }
+    function saveEmployeeBasicSalary() {
+        const employee_id = $('#employee_id_for_salary').val();
+        const basic_salary = $('#basic_salary').val();
+        const month = $('#month').val();
+        const csrf_token = '{{ csrf_token() }}';
+        if (!employee_id || !basic_salary || !month) {
+        // Display error message for required fields
+        $('#alertPlaceholderReq').html('<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" role="alert">All required fields must be filled.</div>');
+        return; // Stop further execution
+        }
+            $.ajax({
+            type: "POST",
+            url: '{{ route("save-employee-salary") }}',
+            data: {
+                _token: csrf_token, 
+                employee_id: employee_id,
+                basic_salary: basic_salary,
+                month: month,
+            },
+            success: function(res) {
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('addEmployeeSalary'));
+                myModal.hide();
+                $('#alertPlaceholder').html('<div class="alert alert-success border-0 bg-success alert-dismissible fade show" role="alert"><div class="text-white">Employee Basic salary Saved Successfully</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+            // Clear form fields
+            $('#employee_id').val('');
+            $('#basic_salary').val('');
+            $('#description').val('');
+            $('#month').val('');
+            // Optionally, hide the message after a delay
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000); 
+            },
+        
+            });
+        }
+
+        $(document).ready(function() {
+            $('#employee_id_for_salary').change(function() {
+                var employee_id_for_salary = $(this).val();
+                console.log(employee_id_for_salary)
+                if (employee_id_for_salary) {
+                    const csrf_token = '{{ csrf_token() }}';
+                    $.ajax({
+                    type: "POST",
+                    url: '{{ route("get-employee-salary") }}',
+                    data: {
+                        _token: csrf_token, 
+                        id: employee_id_for_salary,
+                    },
+                    success: function(res) {
+                        console.log(res)
+                        $('#basic_salary').val(res.salary);
+
+                    },
+                
+                    });
+                } else {
+                    $('#basic_salary').val('');
+                }
+            });
+        });
     </script>
 
     

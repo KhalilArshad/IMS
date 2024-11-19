@@ -230,23 +230,26 @@
         table.buttons().container()
             .appendTo('#example2_wrapper .col-md-6:eq(0)');
    
-
+            var oldDate = "{{ $oldDate ?? $currentDate }}";
+            console.log('Old Date:', oldDate);
         $('#printReportBtn').click(function() {
        
             var baseUrl = "{{ url('/') }}";
 
             // Construct the URL for the print route
-            var printUrl = `${baseUrl}/allDriverReportPrint`;
+            var printUrl = `${baseUrl}/allDriverReportPrint?date=${oldDate}`;
 
             // Open the print route URL in a new tab
             window.open(printUrl, '_blank');
         });
+
         $('#printSingleDriverReportBtn').click(function() {
             var driverId = $('#driver_id').val();
+            var date = oldDate;
             var baseUrl = "{{ url('/') }}";
 
             // Construct the URL for the print route
-            var printUrl = `${baseUrl}/singleDriverReportPrint?driver_id=${driverId}`;
+            var printUrl = `${baseUrl}/singleDriverReportPrint?driver_id=${driverId}&date=${date}`;
 
             // Open the print route URL in a new tab
             window.open(printUrl, '_blank');
