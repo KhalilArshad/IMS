@@ -55,10 +55,12 @@ class InvoiceController extends Controller
       
         $customerData = [];
         foreach ($driverCustomers as $dc) {
+            if ($dc->customer) {
             $customerData[] = [
                 'customer_id' => $dc->customer->id,
                 'customer_name' => $dc->customer->name
             ];
+        }
         }
 
         return response()->json(['customers' => $customerData]);
@@ -137,12 +139,14 @@ class InvoiceController extends Controller
                     $customerTran->customer_id        = $request->customer_id;
                     $customerTran->today_bill         = $request->total_after_discount;
                     $customerTran->today_remaining    = $request->remaining;
+                    $customerTran->today_received     = $request->paid_amount ?? 0;
                     $customerTran->old_remaining      = $customerPreviousBalance;
                     $customerTran->old_received       = 0;
                     $customerTran->net_remaining      = $updatedCustomerBalance;
                     $customerTran->description        = $description;
                     $customerTran->date  = $date;
                     $customerTran->save();
+                    $customerTran_id= $customerTran->id;
                 }
                 if($request->old_receive > 0){
 
@@ -167,12 +171,14 @@ class InvoiceController extends Controller
                     $customerTran->customer_id        = $request->customer_id;
                     $customerTran->today_bill         = $request->total_after_discount;
                     $customerTran->today_remaining    = $request->remaining;
+                    $customerTran->today_received     = $request->paid_amount ?? 0;
                     $customerTran->old_remaining      = $customerPreviousBalance;
                     $customerTran->old_received       = $request->old_receive;
                     $customerTran->net_remaining      = $updatedCustomerBalance_;
                     $customerTran->description        = $description;
                     $customerTran->date  = $date;
                     $customerTran->save();
+                    $customerTran_id= $customerTran->id;
                     $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
                     if (!$shopLedgerBalance) {
                         $lastShopLedgerBalance = 0;
@@ -280,6 +286,7 @@ class InvoiceController extends Controller
                 $total_profit = $total_profit + $item_total_profit;
              }
              $update_invoice_no=Invoice::find($invoice_id)->update(['profit'=> $total_profit]);
+             CustomerTransactionSummary::find($customerTran_id)->update(['profit'=> $total_profit]);
             });
             return redirect()->back()->with(['status' => 'success', 'message' => 'Invoice stored successfully']);
         } catch (Exception $e) {
@@ -422,6 +429,7 @@ class InvoiceController extends Controller
     }
     public function list()
     {
+        ini_set('memory_limit', '512M');
         $customers= Customer::get();
          $invoices= Invoice::with('customer','driver')->orderBy('id', 'desc')->get();
         return view('invoice.list',compact('invoices'));

@@ -123,9 +123,11 @@
                                                 <th>Customer</th>
                                                 <th>Today Bill</th>
                                                 <th>Today Remaining</th>
+                                                <th>Today Received</th>
                                                 <th>Old Remaining</th>
                                                 <th>Old Received</th>
                                                 <th>Net Remaining</th>
+                                                <th>Profit</th>
                                                 <th>Date</th>
                                                 <th>Description</th>
                                                 </tr>
@@ -139,9 +141,11 @@
                                                 <td>{{ $child->customer->name }}</td>
                                                 <td>{{ $child->today_bill}}</td>
                                                 <td>{{ $child->today_remaining}}</td>
+                                                <td>{{ $child->today_received}}</td>
                                                 <td>{{ $child->old_remaining}}</td>
                                                 <td>{{ $child->old_received}}</td>
                                                 <td>{{ $child->net_remaining}}</td>
+                                                <td>{{ $child->profit}}</td>
                                                 <td>{{ $child->date}}</td>
                                                 <td>{{ $child->description}}</td>
                                             </tr>

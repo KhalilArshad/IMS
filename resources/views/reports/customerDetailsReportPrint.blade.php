@@ -149,9 +149,11 @@
                                     <th>گاہک کا نام</th>
                                     <th>کل بل</th>
                                     <th>اج بقایا</th>
+                                    <th>اج موصول</th>
                                     <th>پرانا بقایا</th>
                                     <th>پرانا موصول </th>
                                     <th>کل بقایا</th>
+                                    <th>منافع</th>
                                      <th>تاریخ</th>
                                     </tr>
                                 </thead>
@@ -164,9 +166,11 @@
                                                 <td>{{ $child->customer->name }}</td>
                                                 <td>{{ $child->today_bill}}</td>
                                                 <td>{{ $child->today_remaining}}</td>
+                                                <td>{{ $child->today_received}}</td>
                                                 <td>{{ $child->old_remaining}}</td>
                                                 <td>{{ $child->old_received}}</td>
                                                 <td>{{ $child->net_remaining}}</td>
+                                                <td>{{ $child->profit}}</td>
                                                 <td>{{ $child->date}}</td>
                                             </tr>
                                     

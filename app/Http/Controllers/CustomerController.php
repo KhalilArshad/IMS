@@ -52,7 +52,7 @@ class CustomerController extends Controller
 
             $customer_check=CustomerTransactionSummary::where('customer_id',$request->update_customer_id)
              ->orderBy('id','DESC')->first();
-            $customer_already_exist= $customer_check->customer_id;
+            $customer_already_exist= $customer_check?->customer_id;
             if(empty($customer_already_exist)){
                 $customerTran = new CustomerTransactionSummary();
                 $customerTran->customer_id        = $request->update_customer_id;

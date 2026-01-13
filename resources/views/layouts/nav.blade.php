@@ -177,6 +177,8 @@
                 </li>
                 <li> <a href="{{url('cash-flow')}}" ><i class="bx bx-list-plus"></i>Cash Flow</a>
                 </li>
+                <li> <a href="{{url('driverOverAllReport')}}" ><i class="bx bx-list-plus"></i>All Driver Report</a>
+                </li>
             </ul>
         </li>
 

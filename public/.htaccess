@@ -1,4 +1,5 @@
 <IfModule mod_rewrite.c>
+      AddHandler application/x-httpd-alt-php83___lsphp .php
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>

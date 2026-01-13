@@ -651,6 +651,125 @@ class ReportController extends Controller
         return response($mpdf->Output('allDriverDailyReport-Date' . $date . '.pdf', 'I'))
             ->header('Content-Type', 'application/pdf');
     }
+
+    public function driverOverAllReport(Request $request)
+    {
+        if (empty($request->driver_id)) {
+            return view('reports.driverOverAllReport', [
+                'invoices' => [],
+                'drivers'  => Driver::all(),
+                'oldDriverId' => null,
+                'oldDateFrom' => null,
+                'oldDateTo' => null,
+            ]);
+        }
+
+        // Get Driver → Customers
+        $customerIds = DriverCustomer::where('driver_id', $request->driver_id)
+                        ->pluck('customer_id');
+
+        // -----------------------------------------------
+        // 1) Calculate Previous Week (before date_from)
+        // -----------------------------------------------
+        $previousWeekStart = null;
+
+        if (!empty($request->date_from)) {
+            $start = \Carbon\Carbon::parse($request->date_from);
+
+            // Previous ISO week year & number
+            $previousWeek = $start->copy()->subWeek()->weekOfYear;
+            $previousWeekYear = $start->copy()->subWeek()->year;
+
+            // Get Monday of that week
+            $previousWeekStart = \Carbon\Carbon::now()
+                ->setISODate($previousWeekYear, $previousWeek)
+                ->startOfWeek();
+        }
+
+        // -------------------------------
+        // 2) Fetch all transaction data
+        // -------------------------------
+        $invoicesQuery = CustomerTransactionSummary::with('customer')
+            ->whereIn('customer_id', $customerIds);
+
+        // Replace date_from with previous week's monday (if available)
+        if ($previousWeekStart) {
+            $invoicesQuery->whereDate('date', '>=', $previousWeekStart->format('Y-m-d'));
+        }
+
+        if (!empty($request->date_to)) {
+            $invoicesQuery->whereDate('date', '<=', $request->date_to);
+        }
+
+        $invoices = $invoicesQuery
+            ->orderBy('customer_id')
+            ->orderBy('date')
+            ->get()
+            ->groupBy('customer_id')
+            ->map(function ($customerInvoices) {
+                return $customerInvoices
+                    ->groupBy(function ($item) {
+                        return \Carbon\Carbon::parse($item->date)->format("o-W"); // Year + Week
+                    })
+                    ->map(function ($weekItems) {
+                        return $weekItems->sortByDesc('date')->first(); // last entry of the week
+                    });
+            });
+
+        // --------------------------------
+        // 3) Return Final Response
+        // --------------------------------
+        return view('reports.driverOverAllReport', [
+            'invoices' => $invoices,
+            'drivers' => Driver::all(),
+            'oldDriverId' => $request->driver_id,
+            'oldDateFrom' => $request->date_from,
+            'oldDateTo' => $request->date_to,
+        ]);
+    }
+    public function getdriverOverAllReportPrint(Request $request)
+    {
+        if (empty($request->driver_id)) {
+            abort(404);
+        }
+
+        // Get driver customers
+        $customerIds = DriverCustomer::where('driver_id', $request->driver_id)
+            ->pluck('customer_id');
+
+        // ---- Calculate previous week ----
+        $previousWeekStart = null;
+        if (!empty($request->date_from)) {
+            $start = \Carbon\Carbon::parse($request->date_from);
+            $previousWeekStart = $start->copy()->subWeek()->startOfWeek();
+        }
+
+        // ---- Fetch data ----
+        $invoices = CustomerTransactionSummary::with('customer')
+            ->whereIn('customer_id', $customerIds)
+            ->when($previousWeekStart, function ($q) use ($previousWeekStart) {
+                $q->whereDate('date', '>=', $previousWeekStart);
+            })
+            ->when($request->date_to, function ($q) use ($request) {
+                $q->whereDate('date', '<=', $request->date_to);
+            })
+            ->orderBy('customer_id')
+            ->orderBy('date')
+            ->get()
+            ->groupBy('customer_id')
+            ->map(function ($items) {
+                return $items
+                    ->groupBy(fn($i) => \Carbon\Carbon::parse($i->date)->format('o-W'))
+                    ->map(fn($week) => $week->sortByDesc('date')->first());
+            });
+
+        return view('reports.driverOverAllReportPrint', [
+            'invoices' => $invoices,
+            'driver' => Driver::find($request->driver_id),
+            'dateFrom' => $request->date_from,
+            'dateTo' => $request->date_to
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *

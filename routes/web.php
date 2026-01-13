@@ -261,5 +261,7 @@ Route::get('driverReport', [ReportController::class, 'driverReport'])->name('dri
 Route::get('getDriverReport', [ReportController::class, 'driverReport'])->name('getDriverReport');
 Route::get('allDriverReportPrint', [ReportController::class, 'allDriverReportPrint'])->name('allDriverReportPrint');
 Route::get('singleDriverReportPrint', [ReportController::class, 'singleDriverReportPrint'])->name('singleDriverReportPrint');
-
+Route::get('driverOverAllReport', [ReportController::class, 'driverOverAllReport'])->name('driverOverAllReport');
+Route::get('getdriverOverAllReport', [ReportController::class, 'driverOverAllReport'])->name('getdriverOverAllReport');
+Route::get('getdriverOverAllReportPrint', [ReportController::class, 'getdriverOverAllReportPrint'])->name('getdriverOverAllReportPrint');
 });

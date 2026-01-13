@@ -13,10 +13,12 @@ class CustomerTransactionSummary extends Model
         'date',
         'today_bill',
         'today_remaining',
+        'today_received',
         'old_remaining',
         'old_received',
         'net_remaining',
         'description',
+        'profit',
     ];
 
     public function customer()

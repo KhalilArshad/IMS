@@ -191,7 +191,7 @@
                                            <div class="mb-3">
                                                <label for="old_remaining" class="form-label">Old Remaining<span
                                                    class="text-danger"> *</span></label>
-                                               <input type="number" class="form-control" name='old_remaining' id="old_remaining" placeholder="Old Remaining" readonly required>
+                                               <input type="number" class="form-control" name='old_remaining' id="old_remaining" value="0" placeholder="Old Remaining" readonly required>
 
                                            </div>
                                        </div>
