@@ -60,6 +60,7 @@
                                                 <th>Phone No</th>
                                                 <th>Email</th>
                                                 <th>Previous Balance</th>
+                                                <th>Reminder Days</th>
                                                 <th>Action</th>
                                                 <th>Receive Pay</th>
                                             </tr>
@@ -87,6 +88,9 @@
                                                    {{ $customer->previous_balance}}
                                                   
                                                   </td>
+                                                <td>
+                                              
+                                                   {{ $customer->reminder_days}}
                                                 <td>
                                                 
                                                  <div class="d-flex order-actions">
@@ -142,6 +146,10 @@
                                 <label for="inputProductTitle" class="form-label">Opening Balance</label>
                                 <input type="number" name="opening_balance" class="form-control" id="opening_balance" placeholder="Enter Opening Balance">
                                 </div>
+                                <div class="mb-3" id="hide_field">
+                                <label for="inputProductTitle" class="form-label">Reminder in days</label>
+                                <input type="number" name="reminder_days" class="form-control" id="reminder_days" placeholder="Enter Reminder Days (3, 5, 7 etc.)">
+                                </div>
 
                             </div>
                         </div>
@@ -176,6 +184,7 @@
         const phone_no = $('#phone_no').val();
         const email = $('#email').val();
         const opening_balance = $('#opening_balance').val();
+        const reminder_days = $('#reminder_days').val();
         const update_customer_id = $('#update_customer_id').val();
         const csrf_token = '{{ csrf_token() }}';
         if (!name || !phone_no) {
@@ -193,6 +202,7 @@
                 email: email,
                 opening_balance: opening_balance,
                 update_customer_id: update_customer_id,
+                reminder_days: reminder_days,
             },
             success: function(res) {
                 var myModal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
@@ -231,6 +241,7 @@
                     $('#phone_no').val(res.phone_no);
                     $('#email').val(res.email);
                     $('#opening_balance').val(res.previous_balance);
+                    $('#reminder_days').val(res.reminder_days);
                     $('#update_customer_id').val(id);
 
                 },

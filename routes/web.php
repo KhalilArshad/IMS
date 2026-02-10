@@ -159,6 +159,7 @@ Route::get('customer-receivable', [CustomerController::class, 'customerReceivabl
 Route::post('SaveCustomerReceivable', [CustomerController::class, 'SaveCustomerReceivable'])->name('SaveCustomerReceivable');
 Route::get('Receipt-voucher', [CustomerController::class, 'receiptVoucher'])->name('Receipt-voucher');
 Route::get('view-receiptVoucher/{id}', [CustomerController::class, 'viewVoucher'])->name('view-receiptVoucher');
+Route::get('customer-reminder', [CustomerController::class, 'Reminders'])->name('customer-reminder');
 
 //Units and Item routes
 Route::get('add-unit', [ProductController::class, 'index'])->name('add-unit');

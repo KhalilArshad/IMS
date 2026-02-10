@@ -55,6 +55,7 @@
                 </li>
                 <li> <a href="{{ url('Receipt-voucher') }}" ><i class="bx bx-list-ul"></i>Receipt  Voucher</a>
                 </li>
+                <li> <a href="{{ url('customer-reminder') }}" ><i class="bx bx-list-plus"></i>Reminders</a>
             </ul>
         </li>
         <li>

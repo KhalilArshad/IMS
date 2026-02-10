@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\CustomerLedger;
 use App\Models\CustomerTransactionSummary;
+use App\Models\Reminder;
 use App\Models\Setting;
 use App\Models\ShopLedger;
 use App\Models\Voucher;
@@ -48,7 +49,7 @@ class CustomerController extends Controller
         
         if(!empty($request->update_customer_id)){
             Customer::where('id',$request->update_customer_id)
-            ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email,'previous_balance'=>$request->opening_balance]);
+            ->update(['name'=>$request->name,'phone_no'=>$request->phone_no,'email'=>$request->email,'previous_balance'=>$request->opening_balance,'reminder_days'=>$request->reminder_days]);
 
             $customer_check=CustomerTransactionSummary::where('customer_id',$request->update_customer_id)
              ->orderBy('id','DESC')->first();
@@ -72,6 +73,7 @@ class CustomerController extends Controller
                 $customer->phone_no         = $request->phone_no;
                 $customer->email            = $request->email;
                 $customer->previous_balance  = $request->opening_balance;
+                $customer->reminder_days     = $request->reminder_days;
                 $customer->save();
                 $customer_id =$customer->id;
 
@@ -184,7 +186,7 @@ class CustomerController extends Controller
 
     public function getCustomerData(Request $request){
         $id=$request->id;
-        $customer=Customer::select('id','name','phone_no','email','previous_balance')->where('id',$id)->first();
+        $customer=Customer::select('id','name','phone_no','email','previous_balance','reminder_days')->where('id',$id)->first();
         return $customer;
     }
 
@@ -320,5 +322,10 @@ class CustomerController extends Controller
         // Output the generated PDF to browser
         return response($mpdf->Output('voucher-' . $voucher->id . '-Date' . $voucher->date . '.pdf', 'I'))
             ->header('Content-Type', 'application/pdf');
+    }
+    public function Reminders()
+    {
+        $reminders = Reminder::with('customer', 'invoice')->where('status', '0')->get();
+        return view('customer.reminder',compact('reminders'));
     }
 }
