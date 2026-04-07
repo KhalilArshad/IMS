@@ -67,7 +67,10 @@
                 <div class="card">
                     <div class="card-body">
                         <div id="alertPlaceholder" class="mb-4"></div>
-
+                           <?php
+                             $system_date = App\Models\Setting::select('id','system_date')->first();
+                             $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+                            ?>
                         <!-- Search Form -->
                         <div class="row mb-4">
                             <div class="col-12">
@@ -87,13 +90,13 @@
                                     <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="date_from">Date From</label>
-                                            <input type="date" name="date_from" id="date_from" class="form-control" value="{{ old('date_from', $oldDateFrom ?? date('Y-m-d')) }}">
+                                            <input type="date" name="date_from" id="date_from" class="form-control" value="{{ old('date_from', $oldDateFrom ?? $system_date) }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="date_to">Date To</label>
-                                            <input type="date" name="date_to" id="date_to" class="form-control" value="{{ old('date_to', $oldDateTo ?? date('Y-m-d')) }}">
+                                            <input type="date" name="date_to" id="date_to" class="form-control" value="{{ old('date_to', $oldDateTo ?? $system_date) }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-2 d-flex align-items-end">

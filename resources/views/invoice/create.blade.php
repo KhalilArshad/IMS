@@ -383,16 +383,16 @@ function addItem(defaultItemId)
                         var qtyInStock = parseInt($('#qtyInStock' + rowno).val());
                         // var vatRate = parseFloat($('#vatInPer_' + rowno).val());
 
-                        if (quantity > qtyInStock) {
-                            // Show error message
-                            alert('Quantity must be less than or equal to quantity in stock');
-                            $('#quantity_' + rowno).val(''); 
-                            $('#total_price_' + rowno).val(''); 
-                            $('#total_bill').val(''); 
-                            $('#remaining').val(''); 
-                            $('#total_vat_' + rowno).val('');
-                            return;
-                        }
+                        // if (quantity > qtyInStock) {
+                        //     // Show error message
+                        //     alert('Quantity must be less than or equal to quantity in stock');
+                        //     $('#quantity_' + rowno).val(''); 
+                        //     $('#total_price_' + rowno).val(''); 
+                        //     $('#total_bill').val(''); 
+                        //     $('#remaining').val(''); 
+                        //     $('#total_vat_' + rowno).val('');
+                        //     return;
+                        // }
                        
                         // Calculate total price before VAT
                         var totalExcludingVAT = sale_price * quantity;

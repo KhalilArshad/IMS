@@ -85,7 +85,7 @@
                                             <div class="mb-3">
                                                 <label for="paid_amount" class="form-label">Paid Amount<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="0" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
+                                                <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
                                             </div>
                                         </div>
                                         <div class="col-md-4">

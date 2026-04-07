@@ -11,6 +11,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TrillaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -160,7 +161,10 @@ Route::post('SaveCustomerReceivable', [CustomerController::class, 'SaveCustomerR
 Route::get('Receipt-voucher', [CustomerController::class, 'receiptVoucher'])->name('Receipt-voucher');
 Route::get('view-receiptVoucher/{id}', [CustomerController::class, 'viewVoucher'])->name('view-receiptVoucher');
 Route::get('customer-reminder', [CustomerController::class, 'Reminders'])->name('customer-reminder');
-
+Route::delete('/reminders/clear-all', [CustomerController::class, 'clearAll'])
+    ->name('reminders.clearAll');
+    Route::get('/reminders/print', [CustomerController::class, 'printUnread'])
+    ->name('reminders.print');
 //Units and Item routes
 Route::get('add-unit', [ProductController::class, 'index'])->name('add-unit');
 Route::post('saveUnits', [ProductController::class, 'store'])->name('saveUnits');
@@ -266,3 +270,30 @@ Route::get('driverOverAllReport', [ReportController::class, 'driverOverAllReport
 Route::get('getdriverOverAllReport', [ReportController::class, 'driverOverAllReport'])->name('getdriverOverAllReport');
 Route::get('getdriverOverAllReportPrint', [ReportController::class, 'getdriverOverAllReportPrint'])->name('getdriverOverAllReportPrint');
 });
+
+
+//trillas routes
+Route::get('trilla-driver-list',[TrillaController::class,'index'])->name('trilla-driver-list');
+Route::post('save-trilla-driver',[TrillaController::class,'saveDriver'])->name('save-trilla-driver');
+Route::post('get-trilla-driver-data',[TrillaController::class,'getDriverData'])->name('get-trilla-driver-data');
+Route::get('trilla-list',[TrillaController::class,'TrillaList'])->name('trilla-list');
+Route::post('save-trilla',[TrillaController::class,'saveTrilla'])->name('save-trilla');
+Route::post('get-trilla-data',[TrillaController::class,'getTrillaData'])->name('get-trilla-data');
+Route::get('trilla-delete/{id}', [TrillaController::class, 'trillaDelete'])->name('trilla-delete');
+Route::get('trilla-record-list',[TrillaController::class,'TrillaRecordList'])->name('trilla-record-list');
+Route::get('trilla-record-create',[TrillaController::class,'TrillaRecordCreate'])->name('trilla-record.create');
+Route::post('save-trilla-record',[TrillaController::class,'saveTrillaRecord'])->name('trilla.records.store');
+Route::get('/edit-trilla-records', [TrillaController::class,'edit'])
+    ->name('trilla.records.edit');
+
+Route::put('/trilla-records/{id}', [TrillaController::class,'update'])
+    ->name('trilla.records.update');
+Route::get('/trilla-record/print/{id}', [TrillaController::class, 'print'])
+    ->name('trilla-record.print');
+
+
+
+//profile route
+Route::get('profile', [UserController::class, 'edit'])->name('profile');
+Route::post('/updateUser', [UserController::class, 'update'])->name('updateUser');
+

@@ -43,9 +43,15 @@
                     <div id="alertPlaceholder" class="container mt-3"></div>
                            <div class="d-lg-flex align-items-center mb-4 gap-3">
                                     <div class="ms-auto">
-
+                                    <a href="{{ route('reminders.print') }}"
+                                    class="btn btn-outline-danger px-3"
+                                    target="_blank">
+                                    Print PDF
+                                    </a>
                                      <!-- <a href="" class="btn btn-outline-info px-3"><i class="bx bxs-plus-square"></i> Add New Supplier</a> -->
-                                     <a href="#" class="btn btn-outline-info px-3"  onclick="prepareAddNewSupplier();"> Clear All</a>
+                                    <a href="#" id="clearAllBtn" class="btn btn-outline-info px-3">
+                                        Clear All
+                                    </a>
 
                                     </div>
                             </div>
@@ -113,4 +119,31 @@
     </div>
 </div>
 <!--end page wrapper -->
+@endsection
+@section("script")
+<script>
+$(document).on('click', '#clearAllBtn', function(e) {
+    e.preventDefault();
+
+    if (!confirm('Are you sure you want to clear all reminders?')) {
+        return;
+    }
+
+    $.ajax({
+        url: "{{ route('reminders.clearAll') }}",
+        type: "DELETE",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            if (response.success) {
+                location.reload(); // refresh table
+            }
+        },
+        error: function() {
+            alert('Something went wrong.');
+        }
+    });
+});
+</script>
 @endsection

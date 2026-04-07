@@ -251,13 +251,25 @@ class InvoiceController extends Controller
                 $driverStock =DriverStock::where('item_id',$request->itemid[$i])
                 ->where('driver_id',$request->driver_id)
                 ->select('id','current_stock')->first();
-                $driverCurrentStock =$driverStock->current_stock;
+                $driverCurrentStock =$driverStock->current_stock ?? 0;
                 if ($driverCurrentStock == $request->quantity[$i]) {
                     DriverStock::where('item_id',$request->itemid[$i])->where('driver_id',$request->driver_id)->update(['current_stock'=>0]);
                     $remainingDriverStock =0;
                 } elseif ($request->quantity[$i] < $driverCurrentStock) {
                     $remainingDriverStock = $driverCurrentStock -  $request->quantity[$i];
                     DriverStock::where('item_id',$request->itemid[$i])->where('driver_id',$request->driver_id)->update(['current_stock'=>$remainingDriverStock]);
+                }else{
+                    $remainingDriverStock = $driverCurrentStock -  $request->quantity[$i];
+                    if($driverStock){
+                        DriverStock::where('item_id',$request->itemid[$i])->where('driver_id',$request->driver_id)->update(['current_stock'=>$remainingDriverStock]);
+                    }else{
+                        $driverStock = new DriverStock();
+                        $driverStock->driver_id= $request->driver_id;
+                        $driverStock->item_id= $request->itemid[$i];
+                        $driverStock->purchase_price= $request->purchase_price[$i];
+                        $driverStock->current_stock=  $remainingDriverStock;
+                        $driverStock->save();
+                    }
                 }
 
                 $driverStockChild = new DriverStockChild();

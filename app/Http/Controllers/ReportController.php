@@ -17,6 +17,7 @@ use App\Models\Item;
 use App\Models\Payroll;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderChild;
+use App\Models\Setting;
 use App\Models\ShopLedger;
 use App\Models\Vehicle;
 use App\Models\VehicleExpense;
@@ -782,8 +783,10 @@ class ReportController extends Controller
               $date_from =$request->date_from;
               $date_to = $request->date_to;
             }else{
-                $date_from = date('Y-m-d');
-                $date_to = date('Y-m-d');
+                $system_date = Setting::select('id','system_date')->first();
+                $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
+                $date_from = $system_date;
+                $date_to = $system_date;
             }
                 $cashFlow = ShopLedger::
                 whereBetween('date', [$date_from, $date_to])->orderBy('id', 'desc')

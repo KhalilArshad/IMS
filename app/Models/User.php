@@ -25,11 +25,7 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-      
-        'company',
-       
-        'role_id',
-        'phone_no',
+        'un_password',
     ];
     /**
      * The attributes that are mass assignable.

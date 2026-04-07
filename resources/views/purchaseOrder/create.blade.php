@@ -153,7 +153,7 @@
                                             <div class="mb-3">
                                                 <label for="paid_amount" class="form-label">Paid Amount<span
                                                     class="text-danger"> *</span></label>
-                                                <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="0" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
+                                                <input type="number" name="paid_amount" required class="form-control" id="paid_amount" placeholder="Enter Paid Amount" value="" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -189,6 +189,13 @@
                                                 <label for="net_remaining" class="form-label">Net Remaining<span
                                                     class="text-danger"> *</span></label>
                                                 <input type="number" class="form-control" name='net_remaining' id="net_remaining" placeholder="Net Remaining" readonly required>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="extra_purchase_expense" class="form-label">Extra Purchase Expense</label>
+                                                <input type="number" class="form-control" name='extra_purchase_expense' id="extra_purchase_expense" placeholder="Extra Purchase Expense">
 
                                             </div>
                                         </div>

@@ -43,20 +43,22 @@
                     <div id="alertPlaceholder" class="container mt-3"></div>
                     <div class="row  mb-4">
                           <?php
-                            $currentDate = date('Y-m-d');
+                            // $currentDate = date('Y-m-d');
+                            $system_date = App\Models\Setting::select('id','system_date')->first();
+                            $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
                             ?>
                             <form method="GET"  action="{{ url('cash-flow') }}" class="d-flex flex-wrap gap-2">
                             @csrf
                                 <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="date_from">Date From</label>
-                                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ old('date_from', $oldDateFrom ?? $currentDate) }}">
+                                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ old('date_from', $oldDateFrom ?? $system_date) }}">
                                 </div>
                                 </div>
                                 <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="date_to">Date To</label>
-                                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ old('date_to', $oldDateTo ?? $currentDate) }}">
+                                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ old('date_to', $oldDateTo ?? $system_date) }}">
                                 </div>
                                 </div>
                                 <div class="col-sm-2">

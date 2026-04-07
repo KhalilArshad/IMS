@@ -328,4 +328,34 @@ class CustomerController extends Controller
         $reminders = Reminder::with('customer', 'invoice')->where('status', '0')->get();
         return view('customer.reminder',compact('reminders'));
     }
+    public function clearAll()
+    {
+        Reminder::where('status', 0)->update([
+            'status' => 1
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All reminders cleared successfully.'
+        ]);
+    }
+    public function printUnread()
+    {
+        $reminders = Reminder::with(['customer','invoice'])
+            ->where('status', 0)
+            ->get();
+
+        $html = view('customer.reminder_pdf', compact('reminders'))->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P'
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('unread-reminders.pdf', 'I'), 200)
+            ->header('Content-Type', 'application/pdf');
+    }
 }

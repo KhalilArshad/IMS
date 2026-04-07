@@ -345,6 +345,10 @@
         <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Remaining: &nbsp; <small>{{$purchaseOrder->remaining}}</small> </h5>
 
     </div>
+    <div class="pdf-bill-details">
+        <h5 style="padding:0px; margin:0px; border:1px solid black; text-align:center;"> Extra Purchase Expense: &nbsp; <small>{{$purchaseOrder->extra_purchase_expense}}</small> </h5>
+
+    </div>
     {{-- /bill details --}}
     
     <div class="footer">

@@ -160,6 +160,23 @@
 
         <li>
             <a class="has-arrow" href="javascript:;">
+                <div class="parent-icon"><i class="lni lni-caravan"></i>
+                </div>
+                <div class="menu-title">Trilla</div>
+            </a>
+            <ul>
+        <!-- </li> -->
+                <li> <a href="{{ url('trilla-driver-list') }}" ><i class="bx bx-list-ul"></i>Drivers</a>
+                </li>
+                <li> <a href="{{ url('trilla-list') }}" ><i class="bx bx-list-plus"></i>Trilla List</a>
+                </li>
+                    <li> <a href="{{ url('trilla-record-list') }}" ><i class="bx bx-list-ul"></i>Trilla Record</a>
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            <a class="has-arrow" href="javascript:;">
                 <div class="parent-icon"><i class="lni lni-layers"></i>
                 </div>
                 <div class="menu-title">Reports</div>

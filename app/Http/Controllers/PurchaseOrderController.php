@@ -71,6 +71,9 @@ class PurchaseOrderController extends Controller
         if ($validator->fails()) {
             return redirect('create-purchase-order')->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
         }
+        if(($request->itemid) == null){
+            return redirect('create-purchase-order')->withInput()->with(['status' => 'danger', 'message' => 'Please add at least one item']);
+        }
         try {
             DB::transaction(function () use ($request) {
              $purchaseOrder = new PurchaseOrder();
@@ -82,6 +85,7 @@ class PurchaseOrderController extends Controller
              $purchaseOrder->remaining= $request->remaining;
              $purchaseOrder->old_receive= $request->old_receive;
              $purchaseOrder->date= $request->date;
+             $purchaseOrder->extra_purchase_expense= $request->extra_purchase_expense;
              $purchaseOrder->save();
              $purchase_order_id= $purchaseOrder->id;
              
@@ -364,6 +368,8 @@ class PurchaseOrderController extends Controller
                     'current_payment' => $paid_amount,
                     'remaining' => $remaining,
                     'date' => $date,
+                    'date' => $date,
+                    'extra_purchase_expense' => $request->extra_purchase_expense
                 ]);
 
                 $rows = count($request->purchase_order_child_id);

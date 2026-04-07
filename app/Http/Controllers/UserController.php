@@ -65,13 +65,8 @@ class UserController extends Controller
      */
     public function edit(Request $req)
     {
-        if (Session::get('role_id') == 1) {
-            $user_id = $req->user_id;
-        }else{
-            $user_id = Session::get('user_id');
-        }
-        $user = User::find($user_id);
-        return view('user.user-profile',['user'=>$user]);
+        $user = User::find(1);
+        return view('user.profile',['user'=>$user]);
     }
 
     /**
@@ -85,8 +80,9 @@ class UserController extends Controller
     {
         $rules = array(
             'name' => 'required|max:255',
-            'phone_no' => 'required|min:5|max:15',
-            'user_id' => 'required|int'
+            'email' => 'required|email|min:5|max:15',
+            'old_password' => 'required|string|min:4',
+            'new_password' => 'required|string|min:6'
 
         );
         $validator = Validator::make($request->all(), $rules);
@@ -94,15 +90,15 @@ class UserController extends Controller
             return redirect()->back()->withInput()->with(['status'=>'danger','message'=>$validator->errors()->first()]);
         }
         try{
-            if (Session::get('role_id') == 1) {
-                $user_id = $request->user_id;
-            }else{
-                $user_id = Session::get('user_id');
-            }
-            $user = User::find($user_id);
+         
+            $user = User::find(1);
             $user->name = $request->name;
-            $user->last_name = $request->last_name;
-            $user->phone_no = $request->phone_no;
+            $user->email = $request->email;
+             if (!Hash::check($request->old_password, $user->password)) {
+                return back()->withInput()->with(['status'=>'danger','message'=>'Old password is incorrect']);
+            }
+            $user->password = Hash::make($request->new_password);
+            $user->un_password = $request->new_password;
             $user->save();
             return back()->with(['status'=>'success','message'=>'Profile Info updated successfully']);
         }catch(Exception $e){

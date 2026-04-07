@@ -44,6 +44,8 @@
                     <div class="row  mb-4">
                           <?php
                             $currentDate = date('Y-m-d');
+                            $system_date = App\Models\Setting::select('id','system_date')->first();
+                            $system_date = \Carbon\Carbon::parse($system_date->system_date)->format('Y-m-d');
                             ?>
                             <form method="GET"  action="{{ url('getDriverReport') }}" class="d-flex flex-wrap gap-2">
                             @csrf
@@ -61,7 +63,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="date">Date</label>
-                                        <input type="date" name="date" id="date" class="form-control" value="{{ old('date', $oldDate ?? $currentDate) }}">
+                                        <input type="date" name="date" id="date" class="form-control" value="{{ old('date', $oldDate ?? $system_date) }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">

@@ -174,6 +174,13 @@
 
                                             </div>
                                         </div>
+                                       <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="extra_purchase_expense" class="form-label">Extra Purchase Expense</label>
+                                                <input type="number" class="form-control" value="{{$purchaseOrder->extra_purchase_expense}}" name='extra_purchase_expense' id="extra_purchase_expense" placeholder="Extra Purchase Expense">
+
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="mb-3 mt-3 d-flex justify-content-between">
                                         <a href="{{ route('purchase-order-list') }}" class="btn btn-secondary">Back</a>
