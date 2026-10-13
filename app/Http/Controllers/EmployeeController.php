@@ -17,6 +17,7 @@ use App\Models\Employee;
 use App\Models\EmployeeAdvance;
 use App\Models\Setting;
 use App\Models\ShopLedger;
+use Carbon\Carbon;
 use Mpdf\Mpdf;
 
 class EmployeeController extends Controller
@@ -294,113 +295,231 @@ class EmployeeController extends Controller
     }
 
     public function createPayroll(Request $request){
-        // return $request;
-        $checkPrevMonthPayroll = Payroll::where('employee_id', $request->id)
-            ->select('month')
-            ->orderBy('id', 'desc')
-            ->first();
-            $lastMonth= $checkPrevMonthPayroll->month??'';
-             
-            $employee= Employee::where('id',$request->id)->first();
-            return view('employees.generatePayroll',compact('employee','lastMonth'));
-       
+        $employee = Employee::findOrFail($request->id);
+        $systemDate = Setting::select('system_date')->first();
+        $defaultYear = $systemDate && $systemDate->system_date
+            ? Carbon::parse($systemDate->system_date)->year
+            : now()->year;
+
+        $selectedYear = (int) ($request->year ?: $defaultYear);
+
+        $payrollRows = Payroll::where('employee_id', $employee->id)
+            ->whereYear('date', $selectedYear)
+            ->orderBy('date')
+            ->get()
+            ->map(function ($payroll) {
+                return [
+                    'id' => $payroll->id,
+                    'month' => $payroll->month,
+                    'salary' => (float) $payroll->salary,
+                    'advance' => (float) $payroll->advance,
+                    'old_remaining' => (float) ($payroll->add_in_remaining ?? 0),
+                    'paid_in_advance' => (float) $payroll->paid_in_advance,
+                    'overtime' => (float) $payroll->overtime,
+                    'current_paid' => (float) $payroll->total_salary_to_be_paid,
+                    'remaining' => (float) $payroll->remaining,
+                ];
+            });
+
+        if ($payrollRows->isEmpty()) {
+            $payrollRows = collect([[
+                'id' => null,
+                'month' => '',
+                'salary' => (float) ($employee->salary ?? 0),
+                'advance' => (float) ($employee->advance ?? 0),
+                'old_remaining' => (float) ($employee->remaining ?? 0),
+                'paid_in_advance' => 0,
+                'overtime' => 0,
+                'current_paid' => 0,
+                'remaining' => (float) ($employee->remaining ?? 0),
+            ]]);
+        }
+
+        $lastMonth = optional(
+            Payroll::where('employee_id', $employee->id)
+                ->orderBy('date', 'desc')
+                ->first()
+        )->month;
+
+        $yearOptions = Payroll::where('employee_id', $employee->id)
+            ->selectRaw('YEAR(date) as payroll_year')
+            ->distinct()
+            ->orderBy('payroll_year', 'desc')
+            ->pluck('payroll_year')
+            ->filter()
+            ->map(fn ($year) => (int) $year)
+            ->values()
+            ->all();
+
+        $yearOptions[] = $defaultYear;
+        $yearOptions[] = $defaultYear - 1;
+        $yearOptions[] = $defaultYear + 1;
+        $yearOptions = collect($yearOptions)->unique()->sortDesc()->values()->all();
+
+        return view('employees.generatePayroll', compact('employee', 'lastMonth', 'selectedYear', 'payrollRows', 'yearOptions'));
     }
 
     public function savePayroll(Request $request){
         $rules = array(
-            'employee_id' => 'required',
-            'current_paid' => 'required',
+            'employee_id' => 'required|exists:employees,id',
+            'year' => 'required|integer|min:2000|max:2100',
+            'rows' => 'required|array|min:1',
+            'rows.*.month' => 'required',
+            'rows.*.salary' => 'nullable|numeric|min:0',
+            'rows.*.advance' => 'nullable|numeric|min:0',
+            'rows.*.old_remaining' => 'nullable|numeric|min:0',
+            'rows.*.paid_in_advance' => 'nullable|numeric|min:0',
+            'rows.*.overtime' => 'nullable|numeric|min:0',
+            'rows.*.current_paid' => 'nullable|numeric|min:0',
+            'rows.*.remaining' => 'nullable|numeric|min:0',
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return redirect('employees-list')->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
+            return redirect()->back()->withInput()->with(['status' => 'danger', 'message' => $validator->errors()->first()]);
         }
+
+        $submittedMonths = collect($request->rows)
+            ->pluck('month')
+            ->filter()
+            ->map(fn ($month) => strtolower(trim($month)));
+
+        if ($submittedMonths->count() !== $submittedMonths->unique()->count()) {
+            return redirect()->back()->withInput()->with(['status' => 'danger', 'message' => 'Each month can only be added once in the selected year.']);
+        }
+
         try {
             DB::transaction(function () use ($request) {
-                $employee= Employee::where('id',$request->employee_id)->select('id','advance','remaining','salary')->first();
-                $employeeAdvance =$employee->advance;
-                $salary =$employee->salary;
-                $updateAdvance =  $employeeAdvance - $request->paid_in_advance;
-                Employee::where('id',$request->employee_id)
-               ->update(['advance'=>$updateAdvance,'remaining'=>$request->total_remaining]);
-              
-               $system_date = Setting::select('id','system_date')->first();
-                $date = $system_date->system_date;
-                $months=  implode(',', $request->month);
-                $description = 'Payroll Generated for the month of: '.$months;
-                $payroll = new Payroll();
-                $payroll->employee_id= $request->employee_id; 
-                $payroll->date= $date;
-                $payroll->salary= $salary;
-                $payroll->advance= $request->advance;
-                $payroll->paid_in_advance= $request->paid_in_advance;
-                $payroll->remaining= $request->total_remaining;
-                $payroll->overtime=  $request->overtime;
-                $payroll->total_salary_to_be_paid= $request->current_paid;
-                $payroll->description= $description;
-                $payroll->month= $months;
-                $payroll->save();
+                $monthOrder = $this->getPayrollMonthOrder();
+                $selectedYear = (int) $request->year;
+                $existingPayrollIds = Payroll::where('employee_id', $request->employee_id)
+                    ->whereYear('date', $selectedYear)
+                    ->pluck('id')
+                    ->all();
 
-                $employee = new EmployeeAdvance();
-                $employee->employee_id   = $request->employee_id;
-                $employee->advance_amount         = 0;
-                $employee->paid_amount         = $request->paid_in_advance ??0;
-                $employee->remaining         = $request->total_remaining;
-                $employee->description  = $description;
-                $employee->date  = $date;
-                $employee->save();
+                $keptPayrollIds = [];
+                $finalRow = null;
 
-                if ($request->current_paid > 0) {
-                    $shopLedgerBalance = ShopLedger::select('balance')->orderBy('id', 'desc')->first();
-                    if (!$shopLedgerBalance) {
-                        $lastShopLedgerBalance = 0;
-                    } else {
-                        $lastShopLedgerBalance = $shopLedgerBalance->balance;
+                $rows = collect($request->rows)
+                    ->sortBy(function ($row) use ($monthOrder) {
+                        return $monthOrder[$row['month']] ?? 99;
+                    })
+                    ->values();
+
+                foreach ($rows as $row) {
+                    $monthName = $row['month'];
+                    $monthNumber = $monthOrder[$monthName] ?? null;
+                    if (!$monthNumber) {
+                        throw new Exception('Invalid month selected.');
                     }
-                    $date = date('Y-m-d');
-                    $description = 'Paid Employee Salary for the month of: '.$months;
-                    $debit = 0;
-                    $credit = $request->current_paid; 
-                    $shopBalance = $debit - $credit + $lastShopLedgerBalance;
-                    $shopLedger = new ShopLedger();
-                    $shopLedger->employee_id= $request->employee_id;
-                    $shopLedger->credit= $credit;
-                    $shopLedger->debit= $debit;
-                    $shopLedger->balance= $shopBalance;
-                    $shopLedger->date= $date;
-                    $shopLedger->description= $description;
-                    $shopLedger->save();
-                
+
+                    $date = Carbon::create($selectedYear, $monthNumber, 1)->format('Y-m-d');
+                    $description = 'Payroll saved for ' . $monthName . ' ' . $selectedYear;
+
+                    $payroll = !empty($row['id']) && in_array((int) $row['id'], $existingPayrollIds)
+                        ? Payroll::find($row['id'])
+                        : new Payroll();
+
+                    $payroll->employee_id = $request->employee_id;
+                    $payroll->date = $date;
+                    $payroll->salary = $row['salary'] ?? 0;
+                    $payroll->advance = $row['advance'] ?? 0;
+                    $payroll->add_in_remaining = $row['old_remaining'] ?? 0;
+                    $payroll->paid_in_advance = $row['paid_in_advance'] ?? 0;
+                    $payroll->remaining = $row['remaining'] ?? 0;
+                    $payroll->overtime = $row['overtime'] ?? 0;
+                    $payroll->total_salary_to_be_paid = $row['current_paid'] ?? 0;
+                    $payroll->description = $description;
+                    $payroll->month = $monthName;
+                    $payroll->save();
+
+                    $keptPayrollIds[] = $payroll->id;
+                    $finalRow = $row;
                 }
 
+                Payroll::where('employee_id', $request->employee_id)
+                    ->whereYear('date', $selectedYear)
+                    ->whereNotIn('id', $keptPayrollIds)
+                    ->delete();
+
+                if ($finalRow) {
+                    Employee::where('id', $request->employee_id)
+                        ->update([
+                            'advance' => $finalRow['advance'] ?? 0,
+                            'remaining' => $finalRow['remaining'] ?? 0,
+                        ]);
+                }
             });
-            return redirect('employees-list')->with(['status' => 'success', 'message' => 'Payroll Generated successfully']);
+            return redirect()->route('get-payroll')->with(['status' => 'success', 'message' => 'Year payroll saved successfully']);
         } catch (Exception $e) {
-            return redirect('employees-list')->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
+            return redirect()->back()->withInput()->with(['status' => 'danger', 'message' => $e->getMessage()]);
         }
     }
     public function getPayroll(){
-        $payrolls= Payroll::with('employee')->orderBy('id', 'desc')->get();
-        return view('employees.payrollList',compact('payrolls'));
+        $payrolls = Payroll::with('employee')
+            ->orderBy('date')
+            ->get()
+            ->groupBy(function ($payroll) {
+                return $payroll->employee_id . '-' . Carbon::parse($payroll->date)->year;
+            })
+            ->map(function ($records) {
+                $first = $records->first();
+                $last = $records->sortBy('date')->last();
+
+                return (object) [
+                    'employee_id' => $first->employee_id,
+                    'employee_name' => optional($first->employee)->name,
+                    'designation' => optional($first->employee)->designation,
+                    'payroll_year' => Carbon::parse($first->date)->year,
+                    'total_months' => $records->count(),
+                    'total_salary' => $records->sum('salary'),
+                    'total_advance' => $records->sum('advance'),
+                    'total_paid_old' => $records->sum('paid_in_advance'),
+                    'total_paid_salary' => $records->sum('total_salary_to_be_paid'),
+                    'latest_remaining' => $last->remaining ?? 0,
+                    'latest_date' => $last->date ?? null,
+                ];
+            })
+            ->sortBy(function ($item) {
+                return sprintf('%04d-%s', 9999 - (int) $item->payroll_year, strtolower($item->employee_name ?? ''));
+            })
+            ->values();
+
+        return view('employees.payrollList', compact('payrolls'));
     }
 
-    public function viewPayroll($id){
-        $payroll = Payroll::with('employee')->where('id', $id)->first();
-        // Convert your view into HTML
+    public function viewPayroll($employee, $year){
+        $employee = Employee::findOrFail($employee);
+        $payrolls = Payroll::where('employee_id', $employee->id)
+            ->whereYear('date', $year)
+            ->orderBy('date')
+            ->get();
+
+        abort_if($payrolls->isEmpty(), 404);
+
+        $summary = [
+            'total_salary' => $payrolls->sum('salary'),
+            'total_advance' => $payrolls->sum('advance'),
+            'total_old_remaining' => $payrolls->sum('add_in_remaining'),
+            'total_paid_old' => $payrolls->sum('paid_in_advance'),
+            'total_overtime' => $payrolls->sum('overtime'),
+            'total_paid_salary' => $payrolls->sum('total_salary_to_be_paid'),
+            'current_remaining' => optional($payrolls->last())->remaining ?? 0,
+        ];
+
         $html = view('employees.employeePayrollViewPdf', [
-            'payroll' => $payroll
+            'employee' => $employee,
+            'payrolls' => $payrolls,
+            'year' => $year,
+            'summary' => $summary,
         ])->render();
-        // Create an instance of Mpdf
         $mpdf = new Mpdf([
             'mode' => 'utf-8', 
             'format' => 'A4', 
             'autoScriptToLang' => true, 
             'autoLangToFont' => true
         ]);
-        // Write HTML to the PDF
         $mpdf->WriteHTML($html);
-        // Output the generated PDF to browser
-        return response($mpdf->Output('payroll-' . $payroll->id . '-Date' . $payroll->date . '.pdf', 'I'))
+        return response($mpdf->Output('payroll-' . $employee->id . '-year-' . $year . '.pdf', 'I'))
             ->header('Content-Type', 'application/pdf');
     }
     
@@ -436,5 +555,23 @@ class EmployeeController extends Controller
         $employee->month  = $request->month;
         $employee->save();
     return response()->json(['success' => 'employee salary saved successfully']);
+    }
+
+    private function getPayrollMonthOrder(): array
+    {
+        return [
+            'January' => 1,
+            'February' => 2,
+            'March' => 3,
+            'April' => 4,
+            'May' => 5,
+            'June' => 6,
+            'July' => 7,
+            'August' => 8,
+            'September' => 9,
+            'October' => 10,
+            'November' => 11,
+            'December' => 12,
+        ];
     }
 }

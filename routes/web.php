@@ -243,7 +243,7 @@ Route::get('getEmployeeAdvanceFilter', [EmployeeController::class, 'AddEmployeeA
 Route::get('createPayroll', [EmployeeController::class, 'createPayroll'])->name('createPayroll');
 Route::post('savePayroll', [EmployeeController::class, 'savePayroll'])->name('savePayroll');
 Route::get('get-payroll', [EmployeeController::class, 'getPayroll'])->name('get-payroll');
-Route::get('view-payroll/{id}', [EmployeeController::class, 'viewPayroll'])->name('view-payroll');
+Route::get('view-payroll/{employee}/{year}', [EmployeeController::class, 'viewPayroll'])->name('view-payroll');
 
 Route::post('get-employee-salary', [EmployeeController::class, 'getEmployeeSalary'])->name('get-employee-salary');
 Route::post('save-employee-salary', [EmployeeController::class, 'saveEmployeeSalary'])->name('save-employee-salary');
@@ -269,6 +269,9 @@ Route::get('singleDriverReportPrint', [ReportController::class, 'singleDriverRep
 Route::get('driverOverAllReport', [ReportController::class, 'driverOverAllReport'])->name('driverOverAllReport');
 Route::get('getdriverOverAllReport', [ReportController::class, 'driverOverAllReport'])->name('getdriverOverAllReport');
 Route::get('getdriverOverAllReportPrint', [ReportController::class, 'getdriverOverAllReportPrint'])->name('getdriverOverAllReportPrint');
+Route::get('allDriverDailyReport', [ReportController::class, 'allDriverDailyReport'])->name('allDriverDailyReport');
+Route::get('getAllDriverDailyReport', [ReportController::class, 'allDriverDailyReport'])->name('getAllDriverDailyReport');
+Route::get('allDriverDailyReportPrint', [ReportController::class, 'allDriverDailyReportPrint'])->name('allDriverDailyReportPrint');
 });
 
 
@@ -296,4 +299,3 @@ Route::get('/trilla-record/print/{id}', [TrillaController::class, 'print'])
 //profile route
 Route::get('profile', [UserController::class, 'edit'])->name('profile');
 Route::post('/updateUser', [UserController::class, 'update'])->name('updateUser');
-

@@ -19,6 +19,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderChild;
 use App\Models\Setting;
 use App\Models\ShopLedger;
+use App\Models\Stock;
 use App\Models\Vehicle;
 use App\Models\VehicleExpense;
 use App\Models\Voucher;
@@ -818,6 +819,210 @@ class ReportController extends Controller
     public function edit($id)
     {
         //
+    }
+
+    /**
+     * All Driver Daily Report (sale by item, stock assigned, vehicle expenses, net profit).
+     */
+    public function allDriverDailyReport(Request $request)
+    {
+        $date = $request->date;
+        $reportData = [
+            'items' => collect(),
+            'expenseTypes' => $this->vehicleExpenseTypes(),
+            'driverReports' => [],
+            'totals' => [],
+        ];
+
+        if (!empty($date)) {
+            $reportData = $this->buildAllDriverDailyReportData($date);
+            dd($reportData);
+        }
+
+        return view('reports.allDriverDailyReport', [
+            'items' => $reportData['items'],
+            'expenseTypes' => $reportData['expenseTypes'],
+            'driverReports' => $reportData['driverReports'],
+            'totals' => $reportData['totals'],
+            'oldDate' => $date,
+        ]);
+    }
+
+    public function allDriverDailyReportPrint(Request $request)
+    {
+        $date = $request->date;
+        if (empty($date)) {
+            abort(404, 'Date is required');
+        }
+
+        $reportData = $this->buildAllDriverDailyReportData($date);
+
+        $html = view('reports.allDriverDailyReportPdf', [
+            'items' => $reportData['items'],
+            'expenseTypes' => $reportData['expenseTypes'],
+            'driverReports' => $reportData['driverReports'],
+            'totals' => $reportData['totals'],
+            'date' => $date,
+        ])->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+        ]);
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('allDriverDailyReport-' . $date . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
+    }
+
+    private function vehicleExpenseTypes()
+    {
+        return [
+            'Driver Daily Expense',
+            'Rent',
+            'Fuel',
+            'Repairing',
+            'Other Expense',
+        ];
+    }
+
+    private function buildAllDriverDailyReportData($date)
+    {
+        $expenseTypes = $this->vehicleExpenseTypes();
+
+        $drivers = Driver::where(function ($query) {
+            $query->whereNull('type')->orWhere('type', '!=', 'trilla');
+        })->orderBy('name')->get();
+
+        // Items sold by any driver on this date (for dynamic columns)
+        $itemIds = InvoiceChild::whereHas('invoice', function ($query) use ($date) {
+            $query->whereDate('date', $date);
+        })->pluck('item_id')->unique()->values();
+
+        $items = Item::whereIn('id', $itemIds)->orderBy('name')->get();
+
+        $driverReports = [];
+        $totals = [
+            'item_sales' => [],
+            'total_sale' => 0,
+            'total_purchase' => 0,
+            'expenses' => [],
+            'total_expense' => 0,
+            'net_profit' => 0,
+        ];
+
+        foreach ($items as $item) {
+            $totals['item_sales'][$item->id] = 0;
+        }
+        foreach ($expenseTypes as $type) {
+            $totals['expenses'][$type] = 0;
+        }
+
+        foreach ($drivers as $driver) {
+            // Per-item sales (InvoiceChild.total)
+            $itemSalesRaw = InvoiceChild::select(
+                    'invoice_children.item_id',
+                    DB::raw('SUM(invoice_children.total) as total_sale')
+                )
+                ->join('invoices', 'invoices.id', '=', 'invoice_children.invoice_id')
+                ->whereDate('invoices.date', $date)
+                ->where('invoices.driver_id', $driver->id)
+                ->groupBy('invoice_children.item_id')
+                ->pluck('total_sale', 'item_id');
+
+            $itemSales = [];
+            foreach ($items as $item) {
+                $sale = (float) ($itemSalesRaw[$item->id] ?? 0);
+                $itemSales[$item->id] = $sale;
+                $totals['item_sales'][$item->id] += $sale;
+            }
+
+            $totalSale = (float) Invoice::whereDate('date', $date)
+                ->where('driver_id', $driver->id)
+                ->sum('total_after_discount');
+
+            // TOTAL PURCHASE = stock assigned to driver on this report date
+            // (DriverStockChild remarks=Received). Cost = same price used when assigning
+            // (DriverStock.purchase_price from warehouse Stock.unit_price).
+            $totalPurchase = 0;
+            $receivedStocks = DriverStockChild::whereDate('date', $date)
+                ->where('driver_id', $driver->id)
+                ->where('remarks', 'Received')
+                ->get();
+
+            foreach ($receivedStocks as $assigned) {
+                $driverStock = DriverStock::where('driver_id', $driver->id)
+                    ->where('item_id', $assigned->item_id)
+                    ->first();
+
+                $unitPrice = $driverStock ? (float) $driverStock->purchase_price : 0;
+
+                if ($unitPrice <= 0) {
+                    $warehouseStock = Stock::where('item_id', $assigned->item_id)->first();
+                    $unitPrice = $warehouseStock ? (float) $warehouseStock->unit_price : 0;
+                }
+
+                $totalPurchase += $unitPrice * (float) $assigned->current_stock;
+            }
+
+            // Vehicle expenses by type (expense date on vehicle_expenses)
+            $vehicleExpenses = VehicleExpense::whereDate('date', $date)
+                ->whereHas('vehicle', function ($query) use ($driver) {
+                    $query->where('driver_id', $driver->id);
+                })
+                ->get();
+
+            $expenses = [];
+            foreach ($expenseTypes as $type) {
+                $expenses[$type] = 0;
+            }
+            foreach ($vehicleExpenses as $expense) {
+                $type = $expense->expense_type;
+                if (isset($expenses[$type])) {
+                    $expenses[$type] += (float) $expense->amount;
+                } elseif (isset($expenses['Other Expense'])) {
+                    $expenses['Other Expense'] += (float) $expense->amount;
+                }
+            }
+
+            $totalExpense = array_sum($expenses);
+            $netProfit = $totalSale - $totalPurchase - $totalExpense;
+
+            $hasActivity = $totalSale > 0 || $totalPurchase > 0 || $totalExpense > 0;
+            if (!$hasActivity) {
+                continue;
+            }
+
+            $driverReports[] = [
+                'driver_name' => $driver->name,
+                'item_sales' => $itemSales,
+                'total_sale' => $totalSale,
+                'total_purchase' => $totalPurchase,
+                'expenses' => $expenses,
+                'total_expense' => $totalExpense,
+                'net_profit' => $netProfit,
+            ];
+
+            $totals['total_sale'] += $totalSale;
+            $totals['total_purchase'] += $totalPurchase;
+            $totals['total_expense'] += $totalExpense;
+            $totals['net_profit'] += $netProfit;
+            foreach ($expenses as $type => $amount) {
+                if (!isset($totals['expenses'][$type])) {
+                    $totals['expenses'][$type] = 0;
+                }
+                $totals['expenses'][$type] += $amount;
+            }
+        }
+
+        return [
+            'items' => $items,
+            'expenseTypes' => $expenseTypes,
+            'driverReports' => $driverReports,
+            'totals' => $totals,
+        ];
     }
 
     /**

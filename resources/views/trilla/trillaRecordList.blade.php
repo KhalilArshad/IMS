@@ -99,7 +99,7 @@
                                                   </td>
                                                 <td>
                                               
-                                                   {{ $trilla->other_expense}}
+                                                   {{ $trilla->other_expense_total }}
                                                   
                                                   </td>
                                                 <td>
@@ -126,7 +126,7 @@
                                                     data-driver_salary="{{ $trilla->driver_salary }}"
                                                     data-total_expenses="{{ $trilla->total_expenses }}"
                                                     data-profit="{{ $trilla->profit }}"
-                                                    data-other_expense="{{ $trilla->other_expense }}"
+                                                    data-other_expense="{{ $trilla->other_expense_total }}"
                                                     data-net_profit="{{ $trilla->net_profit }}"
                                                     >
                                                     <i class='bx bxs-show text-primary'></i>

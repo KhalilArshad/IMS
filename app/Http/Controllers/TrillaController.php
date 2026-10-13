@@ -141,14 +141,20 @@ class TrillaController extends Controller
             'date.*' => 'required|date',
             // Add validation for other fields as needed
         ]);
+
+        $otherExpenseItems = $this->prepareOtherExpenses($request);
+        $otherExpenseTotal = collect($otherExpenseItems)->sum(function ($item) {
+            return (float) ($item['amount'] ?? 0);
+        });
+
         $trilla_record = new TrillaRecord();
         $trilla_record->trilla_id   = $request->trilla_id;
         $trilla_record->month         = $request->month;
         $trilla_record->driver_salary = $request->driver_salary;
         $trilla_record->total_expenses   = $request->total_expenses;
         $trilla_record->profit = $request->profit;
-        $trilla_record->other_expense = $request->other_expense;
-        $trilla_record->net_profit   = $request->net_profit;
+        $trilla_record->other_expense = json_encode($otherExpenseItems);
+        $trilla_record->net_profit   = ((float) $request->profit) - $otherExpenseTotal;
         $trilla_record->save();
 
         // Save child records
@@ -182,14 +188,19 @@ class TrillaController extends Controller
 
     public function update(Request $request,$id)
     {
+        $otherExpenseItems = $this->prepareOtherExpenses($request);
+        $otherExpenseTotal = collect($otherExpenseItems)->sum(function ($item) {
+            return (float) ($item['amount'] ?? 0);
+        });
+
         $trilla_record = TrillaRecord::findOrFail($id);
         $trilla_record->trilla_id   = $request->trilla_id;
         $trilla_record->month         = $request->month;
         $trilla_record->driver_salary = $request->driver_salary;
         $trilla_record->total_expenses   = $request->total_expenses;
         $trilla_record->profit = $request->profit;
-        $trilla_record->other_expense = $request->other_expense;
-        $trilla_record->net_profit   = $request->net_profit;
+        $trilla_record->other_expense = json_encode($otherExpenseItems);
+        $trilla_record->net_profit   = ((float) $request->profit) - $otherExpenseTotal;
         $trilla_record->save();
 
         // delete old trips
@@ -220,6 +231,53 @@ class TrillaController extends Controller
         return redirect()->route('trilla-record-list')
             ->with(['status'=>'success','message'=>'Record Updated Successfully']);
     }
+
+    private function prepareOtherExpenses(Request $request): array
+    {
+        $items = [];
+        $amounts = $request->input('other_expense_amount', []);
+        $explanations = $request->input('other_expense_explanation', []);
+
+        if (is_array($amounts) || is_array($explanations)) {
+            $maxCount = max(count((array) $amounts), count((array) $explanations));
+
+            for ($i = 0; $i < $maxCount; $i++) {
+                $rawAmount = $amounts[$i] ?? null;
+                $explanation = trim((string) ($explanations[$i] ?? ''));
+
+                $hasAmount = $rawAmount !== null && $rawAmount !== '';
+                $hasExplanation = $explanation !== '';
+
+                if (!$hasAmount && !$hasExplanation) {
+                    continue;
+                }
+
+                $items[] = [
+                    'amount' => (float) ($rawAmount ?: 0),
+                    'explanation' => $explanation,
+                ];
+            }
+        }
+
+        if (empty($items) && $request->filled('other_expense')) {
+            $legacyOtherExpense = $request->input('other_expense');
+            $decoded = json_decode($legacyOtherExpense, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+
+            if (is_numeric($legacyOtherExpense)) {
+                $items[] = [
+                    'amount' => (float) $legacyOtherExpense,
+                    'explanation' => '',
+                ];
+            }
+        }
+
+        return $items;
+    }
+
     public function print($id)
     {
         $record = TrillaRecord::with(['trilla.driver','trillaRecordChild'])

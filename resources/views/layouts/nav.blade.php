@@ -193,6 +193,8 @@
                 </li>
                 <li> <a href="{{url('driverReport')}}" ><i class="bx bx-list-ul"></i>Driver Sale Purchase & Profit</a>
                 </li>
+                <li> <a href="{{url('allDriverDailyReport')}}" ><i class="bx bx-list-ul"></i>All Driver Daily Report</a>
+                </li>
                 <li> <a href="{{url('cash-flow')}}" ><i class="bx bx-list-plus"></i>Cash Flow</a>
                 </li>
                 <li> <a href="{{url('driverOverAllReport')}}" ><i class="bx bx-list-plus"></i>All Driver Report</a>

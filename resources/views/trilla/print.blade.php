@@ -169,7 +169,7 @@ $totalCash += $row->cash_received;
 
 <tr>
 <td>Other Expense</td>
-<td>{{ $record->other_expense }}</td>
+<td>{{ $record->other_expense_total }}</td>
 </tr>
 
 <tr class="highlight">
@@ -177,6 +177,33 @@ $totalCash += $row->cash_received;
 <td>{{ $record->net_profit }}</td>
 </tr>
 
+</table>
+
+<h4 style="margin-top:20px;">Other Expense Details</h4>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 70%;">Explanation</th>
+            <th style="width: 30%;">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($record->other_expense_items as $expense)
+            <tr>
+                <td>{{ $expense['explanation'] ?: '-' }}</td>
+                <td>{{ $expense['amount'] }}</td>
+            </tr>
+        @empty
+            <tr>
+                <td>-</td>
+                <td>0</td>
+            </tr>
+        @endforelse
+        <tr>
+            <td><b>Total</b></td>
+            <td><b>{{ $record->other_expense_total }}</b></td>
+        </tr>
+    </tbody>
 </table>
 
 </div>

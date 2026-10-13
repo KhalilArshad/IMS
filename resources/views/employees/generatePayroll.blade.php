@@ -1,210 +1,315 @@
 
 @extends("layouts.app")
-@section("style")
-    <link href="assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-@endsection
+
 @section("wrapper")
-<!--start page wrapper -->
 <div class="page-wrapper">
     <div class="page-content">
-        <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-4">
             <div class="breadcrumb-title pe-3">Employees</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ url('getEmployees') }}">Employees List</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('employees-list') }}">Employees List</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Year Payroll Editor</li>
                     </ol>
                 </nav>
             </div>
         </div>
-        <!--end breadcrumb-->
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
+        @if (Session::has('status'))
+            <div class="alert alert-{{ Session::get('status') }} border-0 bg-{{ Session::get('status') }} alert-dismissible fade show">
+                <div class="text-white">{{ Session::get('message') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ Session::forget('status') }}
+                {{ Session::forget('message') }}
+            </div>
+        @endif
 
-                    @if (Session::has('status'))
-                    <div class="alert alert-{{ Session::get('status') }} border-0 bg-{{ Session::get('status') }} alert-dismissible fade show" id="dismiss">
-                        <div class="text-white">{{ Session::get('message')}}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                            {{ Session::forget('status') }}
-                            {{ Session::forget('message') }}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                    <div>
+                        <p class="text-uppercase text-muted mb-1" style="letter-spacing: 0.12em;">Payroll Workspace</p>
+                        <h3 class="mb-1">{{ $employee->name }}</h3>
+                        <p class="mb-0 text-muted">
+                            {{ $employee->designation ?? 'Employee' }} |
+                            Last saved month: <strong>{{ $lastMonth ?: 'No payroll saved yet' }}</strong>
+                        </p>
                     </div>
-                    @endif
+                    <form method="get" action="{{ route('createPayroll') }}" class="d-flex flex-wrap align-items-end gap-2">
+                        <input type="hidden" name="id" value="{{ $employee->id }}">
+                        <div>
+                            <label for="year" class="form-label mb-1">Payroll Year</label>
+                            <select name="year" id="year" class="form-select">
+                                @foreach ($yearOptions as $yearOption)
+                                    <option value="{{ $yearOption }}" {{ (int) $selectedYear === (int) $yearOption ? 'selected' : '' }}>
+                                        {{ $yearOption }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary">Open Year</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 bg-primary bg-opacity-10 h-100">
                     <div class="card-body">
-                        <!-- <div class="card"> -->
-                            <div class="card-header input-title">
-                                <h4>{{__('Generate Payroll Last month: ')}} {{$lastMonth}}</h4>
+                        <p class="text-muted mb-1">Basic Salary</p>
+                        <h4 class="mb-0">{{ number_format($employee->salary ?? 0, 2) }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-warning bg-opacity-10 h-100">
+                    <div class="card-body">
+                        <p class="text-muted mb-1">Current Advance</p>
+                        <h4 class="mb-0">{{ number_format($employee->advance ?? 0, 2) }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-danger bg-opacity-10 h-100">
+                    <div class="card-body">
+                        <p class="text-muted mb-1">Current Remaining</p>
+                        <h4 class="mb-0">{{ number_format($employee->remaining ?? 0, 2) }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-success bg-opacity-10 h-100">
+                    <div class="card-body">
+                        <p class="text-muted mb-1">Editing Year</p>
+                        <h4 class="mb-0">{{ $selectedYear }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h4 class="mb-1">Year-Wise Employee Payslip</h4>
+                        <p class="text-muted mb-0">Use the plus button to add the next month row, edit any saved month, and save the whole year together.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="add-row-btn">
+                        <i class="bx bx-plus"></i> Add Month Row
+                    </button>
+                </div>
+
+                <form method="post" action="{{ route('savePayroll') }}" autocomplete="off" id="year-payroll-form">
+                    @csrf
+                    <input type="hidden" name="employee_id" value="{{ $employee->id }}">
+                    <input type="hidden" name="year" value="{{ $selectedYear }}">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle" id="payroll-rows-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="min-width: 140px;">Month</th>
+                                    <th style="min-width: 130px;">Total Salary</th>
+                                    <th style="min-width: 130px;">Advance Amount</th>
+                                    <th style="min-width: 130px;">Old Remaining</th>
+                                    <th style="min-width: 130px;">Paid In Old</th>
+                                    <th style="min-width: 120px;">Overtime</th>
+                                    <th style="min-width: 130px;">Current Paid</th>
+                                    <th style="min-width: 140px;">Overall Remaining</th>
+                                    <th style="min-width: 110px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payroll-rows-body">
+                                @foreach ($payrollRows as $index => $row)
+                                    <tr class="payroll-row">
+                                        <td>
+                                            <input type="hidden" name="rows[{{ $index }}][id]" value="{{ $row['id'] }}">
+                                            <select name="rows[{{ $index }}][month]" class="form-select month-input" required>
+                                                <option value="">Select Month</option>
+                                                @foreach (['January','February','March','April','May','June','July','August','September','October','November','December'] as $month)
+                                                    <option value="{{ $month }}" {{ $row['month'] === $month ? 'selected' : '' }}>{{ $month }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][salary]" class="form-control salary-input" value="{{ $row['salary'] }}"></td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][advance]" class="form-control advance-input" value="{{ $row['advance'] }}"></td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][old_remaining]" class="form-control old-remaining-input" value="{{ $row['old_remaining'] }}"></td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][paid_in_advance]" class="form-control paid-old-input" value="{{ $row['paid_in_advance'] }}"></td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][overtime]" class="form-control overtime-input" value="{{ $row['overtime'] }}"></td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][current_paid]" class="form-control current-paid-input" value="{{ $row['current_paid'] }}"></td>
+                                        <td><input type="number" step="0.01" min="0" name="rows[{{ $index }}][remaining]" class="form-control remaining-input" value="{{ $row['remaining'] }}" readonly></td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-row-inline">
+                                                    <i class="bx bx-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-row">
+                                                    <i class="bx bx-minus"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 bg-light">
+                                <p class="text-muted mb-1">Months Added</p>
+                                <h5 class="mb-0" id="summary-total-months">0</h5>
                             </div>
-                            <!-- <div class="card-body"> -->
-
-                                <form method="post" action="{{ url('savePayroll') }}" autocomplete="off">
-                                    @csrf
-                                    <div class="border border-3 p-4 rounded borderRmv">
-                                       <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="name" class="form-label">Employee Name<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="text" disabled name="name" required class="form-control" id="name" value="{{$employee->name}}" placeholder="Enter Name">
-                                                <input type="hidden" name="employee_id" required class="form-control" id="employee_id" value="{{$employee->id}}" placeholder="Enter Name">
-                                               
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="remaining_amount" class="form-label">Remaining Amount<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="number" class="form-control" readonly name='remaining_amount' value="{{$employee->remaining??0}}"  id="remaining_amount" placeholder="Enter Email">
-
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="advance" class="form-label">Advance Amount<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="number" class="form-control" readonly name='advance' value="{{$employee->advance??0}}"  id="advance" placeholder="Enter Email">
-
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="date" class="form-label">Month<span
-                                                            class="text-danger"> *</span></label>
-                                                            <select name="month[]" id="month" required class="form-control" multiple>
-                                                                <option value="">Select Month</option>
-                                                                <option value="January">January</option>
-                                                                <option value="February">February</option>
-                                                                <option value="March">March</option>
-                                                                <option value="April">April</option>
-                                                                <option value="May">May</option>
-                                                                <option value="June">June</option>
-                                                                <option value="July">July</option>
-                                                                <option value="August">August</option>
-                                                                <option value="September">September</option>
-                                                                <option value="October">October</option>
-                                                                <option value="November">November</option>
-                                                                <option value="December">December</option>
-                                                            </select>
-
-                                        </div>
-                                        </div>
-                                      
-                                        
-                                       </div>
-                                       <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="paid_in_advance" class="form-label" style="color: red;">Paid In Advance</label>
-                                                <input type="number"  name="paid_in_advance"  class="form-control" id="paid_in_advance" value="0"  placeholder="Enter amount" required onchange="calculateRemaining()" onkeyup="calculateRemaining()">
-                                            </div>
-                                        </div>
-                                  
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="overtime" class="form-label">OverTime</label>
-                                                <input type="number"  name="overtime" value="0" class="form-control" id="overtime" placeholder="Enter overtime" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="current_paid" class="form-label">Current Paid<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="number" class="form-control"  name='current_paid'   id="current_paid" placeholder="Current paid Salary" value="0" onchange="calculateRemaining()" onkeyup="calculateRemaining()">
-
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="total_remaining" class="form-label">Total Remaining<span
-                                                    class="text-danger"> *</span></label>
-                                                <input type="number" class="form-control" readonly name='total_remaining'   id="total_remaining" placeholder="Total Remaining">
-
-                                            </div>
-                                        </div>
-                                       </div>
-
-                                 
-
-                                    <div class="mb-3 mt-3">
-                                        <div class="d-grid">
-                                            <button  type="submit" class="btn btn-info">Save</button>
-                                        </div>
-                                </div>
-                                </div>
-
-
-
-                                    <!-- </div> -->
-                                    <!-- </div> -->
-
-
-                                </div><!--end row-->
-                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 bg-light">
+                                <p class="text-muted mb-1">Year Salary Total</p>
+                                <h5 class="mb-0" id="summary-total-salary">0.00</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 bg-light">
+                                <p class="text-muted mb-1">Latest Overall Remaining</p>
+                                <h5 class="mb-0" id="summary-final-remaining">0.00</h5>
+                            </div>
                         </div>
                     </div>
 
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success px-4">Save Year Record</button>
                     </div>
-                </div>
-
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-<!--end page wrapper -->
 @endsection
 
 @section("script")
-    <script src="assets/plugins/smart-wizard/js/jquery.smartWizard.min.js"></script>
-    <script src="assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
-    <script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-    <script>
-   $(document).ready(function () {
-    $('#example').DataTable();
-    $('#month').select2({
-        placeholder: "Select Month",
-        allowClear: true
+<script>
+    const payrollMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const defaultSalary = @json((float) ($employee->salary ?? 0));
+    const defaultAdvance = @json((float) ($employee->advance ?? 0));
+    const defaultRemaining = @json((float) ($employee->remaining ?? 0));
+    let payrollRowIndex = {{ count($payrollRows) }};
+
+    function parseNumber(value) {
+        const number = parseFloat(value);
+        return isNaN(number) ? 0 : number;
+    }
+
+    function recalculateRow(row) {
+        const salary = parseNumber(row.querySelector('.salary-input').value);
+        const oldRemaining = parseNumber(row.querySelector('.old-remaining-input').value);
+        const paidOld = parseNumber(row.querySelector('.paid-old-input').value);
+        const overtime = parseNumber(row.querySelector('.overtime-input').value);
+        const currentPaid = parseNumber(row.querySelector('.current-paid-input').value);
+        const totalRemaining = oldRemaining + salary + overtime - paidOld - currentPaid;
+
+        row.querySelector('.remaining-input').value = Math.max(totalRemaining, 0).toFixed(2);
+    }
+
+    function recalculateSummary() {
+        const rows = document.querySelectorAll('.payroll-row');
+        let monthCount = 0;
+        let salaryTotal = 0;
+        let finalRemaining = 0;
+
+        rows.forEach((row) => {
+            const month = row.querySelector('.month-input').value;
+            if (month) {
+                monthCount++;
+            }
+
+            salaryTotal += parseNumber(row.querySelector('.salary-input').value);
+            finalRemaining = parseNumber(row.querySelector('.remaining-input').value);
+        });
+
+        document.getElementById('summary-total-months').textContent = monthCount;
+        document.getElementById('summary-total-salary').textContent = salaryTotal.toFixed(2);
+        document.getElementById('summary-final-remaining').textContent = finalRemaining.toFixed(2);
+    }
+
+    function bindRowEvents(row) {
+        row.querySelectorAll('input, select').forEach((input) => {
+            input.addEventListener('input', () => {
+                recalculateRow(row);
+                recalculateSummary();
+            });
+
+            input.addEventListener('change', () => {
+                recalculateRow(row);
+                recalculateSummary();
+            });
+        });
+
+        row.querySelector('.add-row-inline').addEventListener('click', addPayrollRow);
+        row.querySelector('.remove-row').addEventListener('click', () => removePayrollRow(row));
+        recalculateRow(row);
+    }
+
+    function buildMonthOptions() {
+        return payrollMonths.map((month) => `<option value="${month}">${month}</option>`).join('');
+    }
+
+    function addPayrollRow() {
+        const tbody = document.getElementById('payroll-rows-body');
+        const row = document.createElement('tr');
+        row.className = 'payroll-row';
+        row.innerHTML = `
+            <td>
+                <input type="hidden" name="rows[${payrollRowIndex}][id]" value="">
+                <select name="rows[${payrollRowIndex}][month]" class="form-select month-input" required>
+                    <option value="">Select Month</option>
+                    ${buildMonthOptions()}
+                </select>
+            </td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][salary]" class="form-control salary-input" value="${defaultSalary}"></td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][advance]" class="form-control advance-input" value="${defaultAdvance}"></td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][old_remaining]" class="form-control old-remaining-input" value="${defaultRemaining}"></td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][paid_in_advance]" class="form-control paid-old-input" value="0"></td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][overtime]" class="form-control overtime-input" value="0"></td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][current_paid]" class="form-control current-paid-input" value="0"></td>
+            <td><input type="number" step="0.01" min="0" name="rows[${payrollRowIndex}][remaining]" class="form-control remaining-input" value="${defaultRemaining}" readonly></td>
+            <td>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary add-row-inline"><i class="bx bx-plus"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="bx bx-minus"></i></button>
+                </div>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+        payrollRowIndex++;
+        bindRowEvents(row);
+        recalculateSummary();
+    }
+
+    function removePayrollRow(row) {
+        const rows = document.querySelectorAll('.payroll-row');
+        if (rows.length === 1) {
+            row.querySelectorAll('input').forEach((input) => {
+                if (input.type !== 'hidden') {
+                    input.value = input.classList.contains('remaining-input') ? '0.00' : 0;
+                }
+            });
+            row.querySelector('.month-input').value = '';
+            recalculateRow(row);
+            recalculateSummary();
+            return;
+        }
+
+        row.remove();
+        recalculateSummary();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.payroll-row').forEach(bindRowEvents);
+        document.getElementById('add-row-btn').addEventListener('click', addPayrollRow);
+        recalculateSummary();
     });
-    console.log("jQuery is ready");
-    calculateRemaining();
-});
-              function calculateRemaining() {
-                        var remaining_amount = parseFloat($('#remaining_amount').val());
-                        var paid_in_advance = parseFloat($('#paid_in_advance').val());
-                        var advance = parseFloat($('#advance').val());
-                        var current_paid = parseFloat($('#current_paid').val());
-                        var overtime = parseFloat($('#overtime').val());
-                        var total_remaining1 = remaining_amount-paid_in_advance  + overtime;
-                        if (current_paid > total_remaining1) {
-                            alert("Current Paid  cannot be greater than the total remaining.");
-                            $('#current_paid').val(0);
-                            current_paid = 0;
-                            total_remaining = total_remaining1 - current_paid;
-                        }else{
-
-                            total_remaining = total_remaining1 - current_paid;
-                        }
-                        if (paid_in_advance > advance) {
-                            alert("Paid in advance cannot be greater than the advance amount.");
-                            $('#paid_in_advance').val(advance);
-                            paid_in_advance = advance;
-                            total_remaining = total_remaining1;
-                        }
-                     
-                        
-                        // total_remaining = overtime + total_remaining;
-                        if (!isNaN(total_remaining)) {
-                            $('#total_remaining').val(total_remaining.toFixed(2));
-                        } else {
-                            $('#total_remaining').val('');
-                        }
-                    }
-
-    </script>
-
+</script>
 @endsection

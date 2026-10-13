@@ -203,9 +203,48 @@
                                 </div>
                             </div>
                             <div class="row mt-3">
-                                <div class="col-3">
-                                    <label for="other_expense" class="form-label">Other Expense <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" value="{{ $record->other_expense }}" min="0" name="other_expense" id="other_expense">
+                                <div class="col-12">
+                                    <label class="form-label">Other Expenses</label>
+                                    <input type="hidden" name="other_expense" id="other_expense">
+
+                                    <div class="row fw-bold mb-2">
+                                        <div class="col-md-3">Amount</div>
+                                        <div class="col-md-8">Explanation</div>
+                                        <div class="col-md-1 text-center">Action</div>
+                                    </div>
+
+                                    <div id="other-expense-container">
+                                        @php($otherExpenseItems = $record->other_expense_items)
+                                        @if(count($otherExpenseItems))
+                                            @foreach($otherExpenseItems as $expenseItem)
+                                                <div class="row other-expense-row mb-2">
+                                                    <div class="col-md-3">
+                                                        <input type="number" class="form-control other-expense-amount" name="other_expense_amount[]" value="{{ $expenseItem['amount'] ?? '' }}" step="0.01" placeholder="Amount">
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input type="text" class="form-control other-expense-explanation" name="other_expense_explanation[]" value="{{ $expenseItem['explanation'] ?? '' }}" placeholder="Explanation">
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <button type="button" class="btn btn-success addOtherExpense">+</button>
+                                                        <button type="button" class="btn btn-danger removeOtherExpense ms-1">-</button>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="row other-expense-row mb-2">
+                                                <div class="col-md-3">
+                                                    <input type="number" class="form-control other-expense-amount" name="other_expense_amount[]" value="" step="0.01" placeholder="Amount">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" class="form-control other-expense-explanation" name="other_expense_explanation[]" value="" placeholder="Explanation">
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-success addOtherExpense">+</button>
+                                                    <button type="button" class="btn btn-danger removeOtherExpense ms-1">-</button>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -273,6 +312,35 @@
 
         }
 
+        // Add Other Expense Row
+        if (e.target.classList.contains("addOtherExpense")) {
+
+            let row = document.querySelector(".other-expense-row").cloneNode(true);
+
+            row.querySelectorAll("input").forEach(input => {
+                input.value = "";
+            });
+
+            document.getElementById("other-expense-container").appendChild(row);
+        }
+
+        // Remove Other Expense Row
+        if (e.target.classList.contains("removeOtherExpense")) {
+
+            let rows = document.querySelectorAll(".other-expense-row");
+
+            if (rows.length > 1) {
+                e.target.closest(".other-expense-row").remove();
+            } else {
+                let firstRow = rows[0];
+                if (firstRow) {
+                    firstRow.querySelectorAll("input").forEach(input => input.value = "");
+                }
+            }
+
+            calculateTotals();
+        }
+
     });
 
     </script>
@@ -312,8 +380,6 @@
             document.getElementById('total_d_trip').value = dtrip;
             document.getElementById('total_maintenance').value = maintenance;
             document.getElementById('total_cash_received').value = cash;
-            document.getElementById('driver_salary').addEventListener('input', calculateTotals);
-            document.getElementById('other_expense').addEventListener('input', calculateTotals);
              // Driver Salary
             let driverSalary = parseFloat(document.getElementById('driver_salary').value) || 0;
 
@@ -325,8 +391,27 @@
             let profit = trip - totalExpenses;
             document.getElementById('profit').value = profit;
 
-            // Other Expense
-            let otherExpense = parseFloat(document.getElementById('other_expense').value) || 0;
+            // Other Expense (multiple rows)
+            let otherExpense = 0;
+            let otherExpenseItems = [];
+            let amountInputs = document.querySelectorAll('input[name="other_expense_amount[]"]');
+            let explanationInputs = document.querySelectorAll('input[name="other_expense_explanation[]"]');
+
+            amountInputs.forEach((amountInput, index) => {
+                let amountValue = parseFloat(amountInput.value);
+                let explanationValue = (explanationInputs[index]?.value || '').trim();
+
+                if (!isNaN(amountValue) || explanationValue !== '') {
+                    let amount = !isNaN(amountValue) ? amountValue : 0;
+                    otherExpense += amount;
+                    otherExpenseItems.push({
+                        amount: amount,
+                        explanation: explanationValue
+                    });
+                }
+            });
+
+            document.getElementById('other_expense').value = JSON.stringify(otherExpenseItems);
 
             // Net Profit
             let netProfit = profit - otherExpense;
@@ -339,7 +424,10 @@
                 e.target.name == "diesel[]" ||
                 e.target.name == "d_trip[]" ||
                 e.target.name == "maintenance[]" ||
-                e.target.name == "cash_received[]"
+                e.target.name == "cash_received[]" ||
+                e.target.name == "driver_salary" ||
+                e.target.name == "other_expense_amount[]" ||
+                e.target.name == "other_expense_explanation[]"
             ) {
                 calculateTotals();
             }
