@@ -153,7 +153,7 @@
                                     <th>پرانا بقایا</th>
                                     <th>پرانا موصول </th>
                                     <th>کل بقایا</th>
-                                    <th>منافع</th>
+                                    {{-- <th>منافع</th> --}}
                                      <th>تاریخ</th>
                                     </tr>
                                 </thead>
@@ -170,7 +170,7 @@
                                                 <td>{{ $child->old_remaining}}</td>
                                                 <td>{{ $child->old_received}}</td>
                                                 <td>{{ $child->net_remaining}}</td>
-                                                <td>{{ $child->profit}}</td>
+                                                {{-- <td>{{ $child->profit}}</td> --}}
                                                 <td>{{ $child->date}}</td>
                                             </tr>
                                     
